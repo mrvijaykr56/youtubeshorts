@@ -116,3 +116,26 @@ This single command automatically:
 2. Generates word-level synchronized ASS subtitles via Whisper.
 3. Renders the final 1080p/4K `.mp4` video with optical transitions (`xfade`), Ken Burns pan/zoom motion, background music with audio ducking, and subtitle burn in one go!
 
+---
+
+## 6. Channel Branding & Community Asset Generation 🎨📊
+
+Beyond 9:16 vertical story scenes, the visual director also produces marketing assets using Antigravity's native `generate_image` tool:
+
+1. **Community Tab Image Polls (1:1 Square)**:
+   - Generate or center-crop characters to 1024x1024 square cards.
+   - Stage cards in `backend/output/community_poll_assets/` (e.g. `poll_1_character.jpg`).
+   - Image polls generate 3x–5x more reach on new channels than standard text posts.
+
+2. **Channel Avatar Mascot (1:1 Square)**:
+   - Generate centered 1024x1024 3D Pixar character portrait with expressive glossy eyes, holding a glowing storybook.
+   - Save to `backend/output/channel_branding/channel_avatar_1024x1024.jpg`.
+
+3. **Panoramic Channel Banner (16:9 Landscape)**:
+   - Generate 16:9 panoramic cinematic landscape of the channel's recurring world.
+   - Upscale with Lanczos filter to 2560x1440.
+   - Save to `backend/output/channel_branding/channel_banner_2560x1440.jpg`.
+
+4. **Zero External API Mandate**:
+   - Always prioritize Antigravity's native `generate_image` tool. Never fall back to unverified free external image APIs.
+

@@ -38,6 +38,23 @@ This skill guides the agent in crafting viral, high-retention YouTube Shorts scr
    - **Font Size**: Reduced, compact font size (50px base) to keep the canvas clean and readable.
    - **Bilingual Shorts (Hindi Voice + English Captions)**: Always include both `"narration_hi"` (spoken in 100% pure Hindi) and `"narration"` (displayed in English captions).
 
+6. **High-CTR Viral Title Formula** 💥:
+   - Structure every title with a high-curiosity Hindi hook, an English contextual subtitle, and ranking tags:
+     `[Emotional Hindi Hook + Emoji] | [Punchy English Subtitle] | [Niche Tags #Shorts]`
+   - *Example*: `लालिची बंदर को मिली जादुई सीख! 🐒✨ Never Be Greedy | Hindi Kahaniya #Shorts`
+   - *Example*: `आसमान से गिरा एक जादुई तारा! 🐿️⭐ Cheeku's Magic Wish | Hindi Kids Story #Shorts`
+
+7. **The Infinite Seamless Loop (Targeting >100% APV)** 🔄:
+   - To maximize algorithmic retention, construct the final sentence so it grammatically and rhythmically connects directly back to the opening hook sentence.
+   - *Example Opening*: "क्या आपने कभी सोचा है कि आसमान का तारा ज़मीन पर गिरे तो क्या होगा? 🌟"
+   - *Example Ending*: "...और चीकू की यह जादुई कहानी हमें यही सिखाती है, ठीक जैसे..." (loops back to opening).
+
+8. **Audience & Growth Metadata Payload** 📈:
+   - Always include in the storyboard JSON:
+     - `story_moral`: Emotional moral in Hindi (`शिक्षा`) for parental sharing.
+     - `pinned_comment_question`: Thought-provoking Hindi question to drive high comment velocity.
+     - `self_declared_made_for_kids`: `false` (General Audience / Family-Friendly to unlock comments and notification bells).
+
 ---
 
 ## 2. Character DNA & World Consistency Framework 👥🌍
