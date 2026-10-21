@@ -20,10 +20,11 @@ This skill guides the agent in crafting viral, high-retention YouTube Shorts scr
    - *Bad*: "Today we will talk about honey and its properties."
    - *Viral*: "Did you know honey never expires? 🍯 Scientists ate 3,000-year-old honey from Egyptian tombs!"
 
-2. **Pacing & Word Count**:
-   - Total length: **5 to 8 scenes** (approx. 50–85 words total for a 30–45 second Short).
-   - Each narration sentence should be concise (8–14 words maximum) so TTS does not sound rushed and Whisper captions remain legible.
-   - 1 scene = 1 sentence = 1 visual image.
+2. **Pacing, Word Count & The 2-Line Per Scene Standard** 📜:
+   - **Scene Count**: 5 to 6 scenes.
+   - **2 Lines Per Scene Mandate**: Never write a bare 1-line scene. Each scene MUST have **2 engaging, descriptive sentence lines** (approx. 18–22 words per scene).
+   - **Target Duration**: **95–110 words total (~45–52 seconds)**. Single-sentence scenes end too fast (~25s) and feel incomplete; 2 lines per scene allow character depth, sensory detail, and emotional plot resolution while staying safely within the 60-second Shorts limit.
+   - 1 scene = 2 story lines = 1 cohesive visual image (held for 8–10 seconds with dynamic Ken Burns motion).
 
 3. **Subtitle Emoji Injection**:
    - Embed 1–2 contextually relevant emojis into each scene's narration (e.g. `🏛️`, `👑`, `⚡`, `💀`).
