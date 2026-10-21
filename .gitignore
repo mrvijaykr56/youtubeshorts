@@ -36,6 +36,9 @@ backend/.env
 frontend/.env
 *.env.*
 !.env.example
+*client_secret*.json
+backend/token.json
+token.json
 
 # Node / Frontend
 node_modules/

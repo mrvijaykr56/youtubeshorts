@@ -6,9 +6,12 @@ from googleapiclient.http import MediaFileUpload
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 
-scopes = ["https://www.googleapis.com/auth/youtube.upload"]
+scopes = [
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube.readonly"
+]
 
-def upload_video(video_path, title="My Shorts", description="Generated video", tags=None):
+def upload_video(video_path, title="My Shorts", description="Generated video", tags=None, privacy_status="private", category_id="1"):
     """
     Uploads a video to YouTube using the YouTube Data API v3.
     Requires client_secret.json to be present in the backend root directory.
@@ -71,10 +74,10 @@ def upload_video(video_path, title="My Shorts", description="Generated video", t
             "title": title,
             "description": description,
             "tags": tags,
-            "categoryId": "22" # People & Blogs
+            "categoryId": str(category_id)
           },
           "status": {
-            "privacyStatus": "private" # Default to private for safety
+            "privacyStatus": privacy_status
           }
         },
         

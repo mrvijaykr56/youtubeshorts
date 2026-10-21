@@ -117,28 +117,40 @@ def generate_audio(script_text, output_path, tld="com"):
     Falls back to gTTS (Google Translate TTS) if offline or on error.
     Keeps the legacy `tld` argument name for full backward compatibility.
     """
-    def clean_speech_text(text: str) -> str:
+    def clean_speech_text(text: str, is_hindi_mode: bool = False) -> str:
         import re
+        # 1. Strip bracketed notes like [SFX], [Laughter]
         text = re.sub(r'\[.*?\]', '', text)
+        # 2. Strip short parenthetical cues like (Whispering)
         def clean_parentheses(match):
             content = match.group(1).strip()
             if len(content.split()) <= 4:
                 return ""
             return f"({content})"
         text = re.sub(r'\((.*?)\)', clean_parentheses, text)
-        text = re.sub(r'\*+', '', text)
+        # 3. Strip ALL emojis and pictographs so TTS NEVER speaks emoji names (e.g. 'pleading face', 'sparkles')
+        text = re.sub(r'[\U00010000-\U0010ffff]', '', text)
+        text = re.sub(r'[\u2600-\u27bf]', '', text)
+        text = re.sub(r'[\u2300-\u23ff]', '', text)
+        text = re.sub(r'[\ufe00-\ufe0f]', '', text)
+        # 4. Clean formatting symbols
+        text = re.sub(r'[*_~`#|]', '', text)
         text = re.sub(r'\s+', ' ', text)
         return text.strip()
+
+    # Resolve voice and modifiers from profile key
+    key = str(tld).lower().strip()
+    is_hindi = "hi" in key or "bho" in key
 
     from scripts.script_polisher import parse_storyboard
     scenes = parse_storyboard(script_text)
     if scenes:
-        spoken_text = " ... ".join([clean_speech_text(scene["narration"]) for scene in scenes])
+        spoken_text = " ... ".join([
+            clean_speech_text(scene.get("narration_hi") if (is_hindi and scene.get("narration_hi")) else scene.get("narration", ""), is_hindi_mode=is_hindi)
+            for scene in scenes
+        ])
     else:
-        spoken_text = clean_speech_text(script_text)
-
-    # Resolve voice and modifiers from profile key
-    key = str(tld).lower().strip()
+        spoken_text = clean_speech_text(script_text, is_hindi_mode=is_hindi)
 
     # Special handling for KittenTTS — runs directly inside YTShorts!
     if key == "kittentts":

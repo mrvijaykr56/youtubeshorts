@@ -78,6 +78,7 @@ def generate_captions(audio_path, output_srt_path, style="elegant", hook_title="
     Returns the path of the generated ASS file.
     """
     output_ass_path = output_srt_path.replace(".srt", ".ass")
+    hook_title = ""  # Permanently disabled: no title banner is burned into video
     whisper_lang = WHISPER_LANGUAGE_MAP.get(script_language, "en")
 
     # Use 'medium' model for Indian languages — 'small' has poor accuracy on Devanagari/Bengali/Gurmukhi
@@ -272,12 +273,15 @@ def generate_ass_tiktok(segments, output_ass_path, hook_title="", total_duration
         f.write("Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n")
         # Select premium geometric font (Montserrat with Arial Black fallback)
         active_font = select_available_font(["Montserrat", "Arial Black"])
-        # Style definition: Alignment 5 = Middle-centered, Font, Size 80 (bigger & bolder), Primary White, Outline Black, OutlineWidth 4, Shadow 3 (high contrast shadow)
-        f.write(f"Style: Default,{active_font},80,&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,4,3,5,30,30,0,1\n")
-        if hook_title:
-            f.write(f"Style: HookTitle,{active_font},105,&H0000FFFF,&H00000000,&H00000000,&H80000000,1,0,0,0,100,100,0,0,1,6,0,8,30,30,220,1\n")
+        scale = height / 1920.0
+        base_fs = max(36, int(50 * scale))
+        margin_v = max(180, int(240 * scale))
+        outline_w = max(2, int(3.5 * scale))
+        shadow_d = max(1, int(2.5 * scale))
+        # Alignment 2 = Bottom-Centered, MarginV = 240 (safe bottom zone above Shorts UI)
+        f.write(f"Style: Default,{active_font},{base_fs},&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,{outline_w},{shadow_d},2,30,30,{margin_v},1\n")
         if cta_text:
-            f.write(f"Style: OutroTitle,{active_font},95,&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,6,3,5,30,30,0,1\n")
+            f.write(f"Style: OutroTitle,{active_font},85,&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,5,3,2,30,30,{margin_v},1\n")
         f.write("\n")
         
         f.write("[Events]\n")
@@ -285,22 +289,26 @@ def generate_ass_tiktok(segments, output_ass_path, hook_title="", total_duration
         if hook_title:
             f.write(f"Dialogue: 0,0:00:00.00,0:00:03.00,HookTitle,,0,0,0,,{hook_title.upper()}\n")
         
-        for chunk in chunks:
+        for c_idx, chunk in enumerate(chunks):
             if not chunk:
                 continue
             chunk_start = chunk[0]["start"]
             chunk_end = chunk[-1]["end"]
             
+            # Boundary guarantee: NEVER overlap with the next chunk to prevent dual-caption stacking
+            if c_idx + 1 < len(chunks) and chunks[c_idx + 1]:
+                next_start = chunks[c_idx + 1][0]["start"]
+                final_word_end = min(chunk_end, next_start)
+            else:
+                final_word_end = chunk_end
+
             # Create dialogue events for each word in the chunk
             for active_idx in range(len(chunk)):
                 start_time = format_ass_time(chunk[active_idx]["start"])
-                # End time: start of next word, or chunk end + 150ms trailing buffer
-                # (Whisper word-end timestamps tend to be 50-100ms early; the buffer
-                # prevents the last highlighted word from vanishing too quickly.)
                 if active_idx < len(chunk) - 1:
                     end_time = format_ass_time(chunk[active_idx + 1]["start"])
                 else:
-                    end_time = format_ass_time(chunk_end + 0.15)
+                    end_time = format_ass_time(final_word_end)
                     
                 # Build the text with active word highlighted
                 words_styled = []
@@ -314,15 +322,15 @@ def generate_ass_tiktok(segments, output_ass_path, hook_title="", total_duration
                 dialogue_text = " ".join(words_styled)
                 
                 # --- ADAPTIVE FONT SIZING FOR TIKTOK ---
-                # Default style size is 80. Reduce font size if the phrase is long to prevent line wrapping.
+                # Reduced default font size to prevent visual clutter and stay compact
                 raw_chunk_text = " ".join(w["word"] for w in chunk)
                 total_chars = len(raw_chunk_text)
                 if total_chars > 20:
-                    font_size = 62
+                    font_size = max(32, int(40 * scale))
                 elif total_chars > 14:
-                    font_size = 72
+                    font_size = max(36, int(45 * scale))
                 else:
-                    font_size = 80
+                    font_size = base_fs
                 dialogue_text = f"{{\\fs{font_size}}}" + dialogue_text
                 
                 f.write(f"Dialogue: 0,{start_time},{end_time},Default,,0,0,0,,{dialogue_text}\n")
@@ -344,7 +352,12 @@ def generate_ass_elegant(segments, output_ass_path, hook_title="", total_duratio
         f.write("[V4+ Styles]\n")
         f.write("Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n")
         active_font = select_available_font(["Inter", "Trebuchet MS", "Arial"])
-        f.write(f"Style: Default,{active_font},48,&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,2.5,1.5,2,30,30,100,1\n")
+        scale = height / 1920.0
+        base_fs = max(30, int(42 * scale))
+        margin_v = max(180, int(240 * scale))
+        outline_w = max(1.5, 2.5 * scale)
+        shadow_d = max(1.0, 1.5 * scale)
+        f.write(f"Style: Default,{active_font},{base_fs},&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,{outline_w:.1f},{shadow_d:.1f},2,30,30,{margin_v},1\n")
         if hook_title:
             f.write(f"Style: HookTitle,{active_font},100,&H0000FFFF,&H00000000,&H00000000,&H80000000,1,0,0,0,100,100,0,0,1,6,0,8,30,30,220,1\n")
         if cta_text:
@@ -587,9 +600,12 @@ def generate_ass_viral_hype(segments, output_ass_path, hook_title="", total_dura
         f.write("[V4+ Styles]\n")
         f.write("Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n")
         # Select premium geometric font (Montserrat with Arial Black fallback)
-        active_font = select_available_font(["Montserrat", "Arial Black"])
-        # Bold, Size 88 (large neon look), Primary White, Outline Black, OutlineWidth 5, Shadow 3 (3D pop), Alignment 5
-        f.write(f"Style: Default,{active_font},88,&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,5,3,5,30,30,0,1\n")
+        scale = height / 1920.0
+        base_fs = max(36, int(52 * scale))
+        margin_v = max(180, int(240 * scale))
+        outline_w = max(2, int(4 * scale))
+        shadow_d = max(1, int(2.5 * scale))
+        f.write(f"Style: Default,{active_font},{base_fs},&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,{outline_w},{shadow_d},2,30,30,{margin_v},1\n")
         if hook_title:
             f.write(f"Style: HookTitle,{active_font},105,&H0000FFFF,&H00000000,&H00000000,&H80000000,1,0,0,0,100,100,0,0,1,6,0,8,30,30,220,1\n")
         if cta_text:
@@ -638,11 +654,11 @@ def generate_ass_viral_hype(segments, output_ass_path, hook_title="", total_dura
                 raw_chunk_text = " ".join(w["word"] for w in chunk)
                 total_chars = len(raw_chunk_text)
                 if total_chars > 16:
-                    font_size = 68
+                    font_size = max(34, int(44 * scale))
                 elif total_chars > 11:
-                    font_size = 78
+                    font_size = max(38, int(48 * scale))
                 else:
-                    font_size = 88
+                    font_size = base_fs
                 dialogue_text = f"{{\\fs{font_size}}}" + dialogue_text
                 
                 f.write(f"Dialogue: 0,{start_time},{end_time},Default,,0,0,0,,{dialogue_text}\n")
@@ -651,3 +667,134 @@ def generate_ass_viral_hype(segments, output_ass_path, hook_title="", total_dura
             outro_start = format_ass_time(total_duration)
             outro_end = format_ass_time(total_duration + 2.0)
             f.write(f"Dialogue: 0,{outro_start},{outro_end},OutroTitle,,0,0,0,,{{\\fscx115\\fscy115\\c&H0000FFFF&}}{cta_text.upper()}{{\\fscx100\\fscy100\\c&H00FFFFFF&}}\n")
+
+
+def generate_bilingual_ass(scenes: list, total_duration: float, output_ass_path: str,
+                           style="tiktok", width=1080, height=1920, cta_text="",
+                           display_lang="English"):
+    """
+    Generates perfectly synchronized, word-highlighted ASS subtitles (in English or Hindi)
+    from storyboard scenes when the spoken voice is in Hindi.
+    Enforces reduced font size (50px base) and bottom-center alignment (Alignment 2).
+    """
+    if not scenes or total_duration <= 0:
+        return output_ass_path
+
+    is_hindi_sub = display_lang.lower() == "hindi"
+
+    # Proportionally distribute scene durations based on spoken text weight
+    speech_weights = [max(1, len(s.get("narration_hi", s.get("narration", "")).split())) for s in scenes]
+    total_words = max(1, sum(speech_weights))
+
+    all_chunks = []
+    cur_time = 0.0
+
+    for idx, s in enumerate(scenes):
+        scene_dur = total_duration * (speech_weights[idx] / total_words)
+        scene_end = cur_time + scene_dur
+        # Extract clean words based on display language
+        raw_text = s.get("narration_hi" if is_hindi_sub and s.get("narration_hi") else "narration", "").strip()
+        # Clean bracketed cues and emojis that could produce missing font glyph boxes
+        raw_text = re.sub(r'\[.*?\]', '', raw_text)
+        raw_text = re.sub(r'[\U00010000-\U0010ffff]', '', raw_text)
+        raw_text = re.sub(r'[\u2600-\u27bf]', '', raw_text)
+        raw_text = re.sub(r'[\u2300-\u23ff]', '', raw_text)
+        raw_text = re.sub(r'[\ufe00-\ufe0f]', '', raw_text)
+        raw_text = re.sub(r'[*_~`#|]', '', raw_text)
+        raw_text = re.sub(r'\s+', ' ', raw_text).strip()
+
+        words = raw_text.split()
+        if words:
+            # Group into 2-3 word chunks
+            chunk_size = 3
+            scene_chunks = [words[i:i + chunk_size] for i in range(0, len(words), chunk_size)]
+            chunk_dur = scene_dur / max(1, len(scene_chunks))
+            for c_idx, c_words in enumerate(scene_chunks):
+                c_start = cur_time + (c_idx * chunk_dur)
+                c_end = c_start + chunk_dur
+                w_dur = chunk_dur / max(1, len(c_words))
+                chunk_struct = []
+                for w_i, w in enumerate(c_words):
+                    word_display = w if is_hindi_sub else w.upper()
+                    chunk_struct.append({
+                        "word": word_display,
+                        "start": c_start + (w_i * w_dur),
+                        "end": c_start + ((w_i + 1) * w_dur)
+                    })
+                all_chunks.append(chunk_struct)
+        cur_time = scene_end
+
+    # Write ASS with Bottom-Centered alignment & compact font
+    scale = height / 1920.0
+    base_fs = max(36, int(50 * scale))
+    margin_v = max(180, int(240 * scale))
+    outline_w = max(2, int(3.5 * scale))
+    shadow_d = max(1, int(2.5 * scale))
+    if is_hindi_sub:
+        active_font = select_available_font(["Nirmala UI", "Mangal", "Arial Unicode MS"])
+    else:
+        active_font = select_available_font(["Montserrat", "Arial Black"])
+
+    with open(output_ass_path, "w", encoding="utf-8") as f:
+        f.write("[Script Info]\n")
+        f.write("ScriptType: v4.00+\n")
+        f.write(f"PlayResX: {width}\n")
+        f.write(f"PlayResY: {height}\n\n")
+
+        f.write("[V4+ Styles]\n")
+        f.write("Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n")
+        f.write(f"Style: Default,{active_font},{base_fs},&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,{outline_w},{shadow_d},2,30,30,{margin_v},1\n")
+        if cta_text:
+            f.write(f"Style: OutroTitle,{active_font},85,&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,5,3,2,30,30,{margin_v},1\n")
+        f.write("\n")
+
+        f.write("[Events]\n")
+        f.write("Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n")
+
+        for c_idx, chunk in enumerate(all_chunks):
+            if not chunk:
+                continue
+            chunk_start = chunk[0]["start"]
+            chunk_end = chunk[-1]["end"]
+
+            # Boundary guarantee: NEVER overlap with the next chunk to prevent dual-caption stacking
+            if c_idx + 1 < len(all_chunks) and all_chunks[c_idx + 1]:
+                next_start = all_chunks[c_idx + 1][0]["start"]
+                final_word_end = min(chunk_end, next_start)
+            else:
+                final_word_end = chunk_end
+
+            for active_idx in range(len(chunk)):
+                start_time = format_ass_time(chunk[active_idx]["start"])
+                if active_idx < len(chunk) - 1:
+                    end_time = format_ass_time(chunk[active_idx + 1]["start"])
+                else:
+                    end_time = format_ass_time(final_word_end)
+
+                words_styled = []
+                for idx, w in enumerate(chunk):
+                    if idx == active_idx:
+                        words_styled.append(f"{{\\fscx115\\fscy115\\c&H0000FFFF&}}{w['word']}{{\\fscx100\\fscy100\\c&H00FFFFFF&}}")
+                    else:
+                        words_styled.append(w["word"])
+
+                dialogue_text = " ".join(words_styled)
+                raw_chunk_text = " ".join(w["word"] for w in chunk)
+                total_chars = len(raw_chunk_text)
+                if total_chars > 20:
+                    font_size = max(32, int(40 * scale))
+                elif total_chars > 14:
+                    font_size = max(36, int(45 * scale))
+                else:
+                    font_size = base_fs
+                dialogue_text = f"{{\\fs{font_size}}}" + dialogue_text
+
+                f.write(f"Dialogue: 0,{start_time},{end_time},Default,,0,0,0,,{dialogue_text}\n")
+
+        if total_duration > 0 and cta_text:
+            outro_start = format_ass_time(total_duration)
+            outro_end = format_ass_time(total_duration + 2.0)
+            f.write(f"Dialogue: 0,{outro_start},{outro_end},OutroTitle,,0,0,0,,{{\\fscx115\\fscy115\\c&H0000FFFF&}}{cta_text.upper()}{{\\fscx100\\fscy100\\c&H00FFFFFF&}}\n")
+
+    return output_ass_path
+

@@ -176,6 +176,7 @@ def parse_storyboard(storyboard_text) -> list[dict]:
             for item in parsed:
                 if isinstance(item, dict):
                     narration = item.get("narration", "").strip()
+                    narration_hi = item.get("narration_hi", "").strip()
                     visual = item.get("visual", "").strip()
                     step_title = item.get("step_title", "").strip()  # Tutorial Mode field
                     slide_title = item.get("slide_title", "").strip()
@@ -185,11 +186,13 @@ def parse_storyboard(storyboard_text) -> list[dict]:
                     code_snippet = item.get("code_snippet", "").strip()
                     layout_type = item.get("layout_type", "").strip()
                     
-                    if narration:
+                    if narration or narration_hi:
                         scene = {
-                            "narration": narration,
-                            "visual": visual if visual else narration
+                            "narration": narration if narration else narration_hi,
+                            "visual": visual if visual else (narration if narration else narration_hi)
                         }
+                        if narration_hi:
+                            scene["narration_hi"] = narration_hi
                         if step_title:
                             scene["step_title"] = step_title
                         if slide_title:

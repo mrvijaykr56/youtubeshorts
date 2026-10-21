@@ -7,6 +7,8 @@ export default function ConfigPanel({
   setMusicTrack,
   captionStyle,
   setCaptionStyle,
+  captionLang = 'English',
+  setCaptionLang,
   musicVolume,
   setMusicVolume,
   videoResolution,
@@ -107,16 +109,16 @@ export default function ConfigPanel({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-2">
         {/* Voice Selection: Solo vs Dialogue */}
         {!isDialogueMode ? (
           <div className="space-y-2">
             <label htmlFor="voice-accent" className="text-xs font-semibold tracking-wider uppercase text-gray-400 flex items-center gap-1.5">
-              🎙️ Neural Character Voice
+              🎙️ Character Voice
             </label>
             <select
               id="voice-accent"
-              className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-4 text-sm text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
+              className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-3 text-xs text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
               value={voiceAccent}
               onChange={(e) => setVoiceAccent(e.target.value)}
             >
@@ -124,14 +126,14 @@ export default function ConfigPanel({
             </select>
           </div>
         ) : (
-          <div className="space-y-2 md:col-span-2 grid grid-cols-2 gap-3">
+          <div className="space-y-2 col-span-1 sm:col-span-2 grid grid-cols-2 gap-2">
             <div>
               <label htmlFor="voice-a" className="text-xs font-semibold tracking-wider uppercase text-cyan-400 flex items-center gap-1">
-                👧 Character A (Female)
+                👧 Character A
               </label>
               <select
                 id="voice-a"
-                className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-3 text-xs text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-cyan-500 cursor-pointer transition-all"
+                className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-2 text-xs text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-cyan-500 cursor-pointer transition-all"
                 value={voiceA}
                 onChange={(e) => setVoiceA(e.target.value)}
               >
@@ -140,11 +142,11 @@ export default function ConfigPanel({
             </div>
             <div>
               <label htmlFor="voice-b" className="text-xs font-semibold tracking-wider uppercase text-amber-400 flex items-center gap-1">
-                👦 Character B (Male)
+                👦 Character B
               </label>
               <select
                 id="voice-b"
-                className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-3 text-xs text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-amber-500 cursor-pointer transition-all"
+                className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-2 text-xs text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-amber-500 cursor-pointer transition-all"
                 value={voiceB}
                 onChange={(e) => setVoiceB(e.target.value)}
               >
@@ -161,7 +163,7 @@ export default function ConfigPanel({
           </label>
           <select
             id="music-track"
-            className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-4 text-sm text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
+            className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-3 text-xs text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
             value={musicTrack}
             onChange={(e) => setMusicTrack(e.target.value)}
           >
@@ -174,33 +176,49 @@ export default function ConfigPanel({
         {/* Subtitle / Caption Style */}
         <div className="space-y-2">
           <label htmlFor="caption-style" className="text-xs font-semibold tracking-wider uppercase text-gray-400 flex items-center gap-1.5">
-            💬 Subtitle Style
+            💬 Caption Style
           </label>
           <select
             id="caption-style"
-            className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-4 text-sm text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
+            className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-3 text-xs text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
             value={captionStyle}
             onChange={(e) => setCaptionStyle(e.target.value)}
           >
-            <option value="tiktok">💥 TikTok Word Highlight (Centered)</option>
-            <option value="viral">🔥 Viral Hype (Alex Hormozi Style + Emojis)</option>
-            <option value="elegant">📖 Elegant Bottom Block (Centered)</option>
+            <option value="tiktok">💥 TikTok Highlight</option>
+            <option value="viral">🔥 Viral Hype (Emojis)</option>
+            <option value="elegant">📖 Elegant Block</option>
+          </select>
+        </div>
+
+        {/* Subtitle Language (English vs Hindi) */}
+        <div className="space-y-2">
+          <label htmlFor="caption-lang" className="text-xs font-semibold tracking-wider uppercase text-gray-400 flex items-center gap-1.5">
+            🌐 Caption Language
+          </label>
+          <select
+            id="caption-lang"
+            className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-3 text-xs text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
+            value={captionLang}
+            onChange={(e) => setCaptionLang && setCaptionLang(e.target.value)}
+          >
+            <option value="English">🇬🇧 English Captions</option>
+            <option value="Hindi">🇮🇳 Hindi (हिन्दी) Captions</option>
           </select>
         </div>
 
         {/* Video Output Resolution */}
         <div className="space-y-2">
           <label htmlFor="video-resolution" className="text-xs font-semibold tracking-wider uppercase text-gray-400 flex items-center gap-1.5">
-            🎬 Video Resolution
+            🎬 Resolution
           </label>
           <select
             id="video-resolution"
-            className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-4 text-sm text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
+            className="mt-1 block w-full rounded-2xl border-0 bg-gray-950 py-3.5 px-3 text-xs text-gray-200 ring-1 ring-inset ring-gray-800 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
             value={videoResolution}
             onChange={(e) => setVideoResolution(e.target.value)}
           >
-            <option value="1080p">📱 1080p Full HD (Fast)</option>
-            <option value="4k">💎 4K Ultra HD (Master Quality)</option>
+            <option value="1080p">📱 1080p Full HD</option>
+            <option value="4k">💎 4K Ultra HD</option>
           </select>
         </div>
       </div>

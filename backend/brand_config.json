@@ -1,0 +1,44 @@
+{
+  "active_brand": "MagicalTalesKidz",
+  "brands": {
+    "MagicalTalesKidz": {
+      "channel_name": "Magical Tales Kidz",
+      "channel_handle": "@MagicalTalesKidz",
+      "channel_url": "https://www.youtube.com/@MagicalTalesKidz",
+      "niche": "Kids Animated Bedtime & Moral Stories",
+      "target_audience": "Kids, Toddlers, Parents, Family",
+      "preferred_art_style": "pixar",
+      "preferred_voice": "hi_female",
+      "voice_description": "Warm, engaging Indian Hindi storyteller (hi-IN-SwaraNeural)",
+      "caption_language": "English",
+      "caption_style": "tiktok",
+      "default_music": "lofi",
+      "outro_cta": "SUBSCRIBE TO @MagicalTalesKidz FOR MORE! 🔔",
+      "default_tags": [
+        "MagicalTalesKidz",
+        "kids stories",
+        "moral stories for kids",
+        "bedtime stories",
+        "hindi kahaniya",
+        "monkey stories",
+        "animated stories",
+        "fairy tales",
+        "shorts",
+        "yt shorts",
+        "moral kahaniya",
+        "stories in hindi"
+      ],
+      "default_hashtags": [
+        "#MagicalTalesKidz",
+        "#KidsStories",
+        "#BedtimeStories",
+        "#MoralStories",
+        "#HindiStories",
+        "#YouTubeShorts",
+        "#Shorts",
+        "#3DAnimation",
+        "#PixarStyle"
+      ]
+    }
+  }
+}

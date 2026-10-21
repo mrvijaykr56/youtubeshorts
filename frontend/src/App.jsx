@@ -33,6 +33,7 @@ function App() {
   const [musicVolume, setMusicVolume] = useState('0.12');
   const [captionStyle, setCaptionStyle] = useState('tiktok');
   const [artStyle, setArtStyle] = useState('cinematic');
+  const [captionLang, setCaptionLang] = useState('English'); // 'English' | 'Hindi'
   const [videoMode, setVideoMode] = useState('shorts'); // 'shorts' | 'tutorial'
   const [videoResolution, setVideoResolution] = useState('1080p'); // '1080p' | '4k'
 
@@ -117,6 +118,7 @@ function App() {
         transition_style: transitionStyle,
         music_track: musicTrack,
         caption_style: captionStyle,
+        caption_lang: captionLang,
         art_style: artStyle,
         music_volume: parseFloat(musicVolume),
         video_mode: effectiveMode,
@@ -216,6 +218,7 @@ function App() {
         voice_b: voiceB,
         transition_style: transitionStyle,
         caption_style: captionStyle,
+        caption_lang: captionLang,
         music_track: musicTrack,
         music_volume: parseFloat(musicVolume),
         art_style: artStyle,
@@ -241,10 +244,13 @@ function App() {
     const fastInterval = 2000;
     const slowInterval = 5000;
     let currentDelay = pollingMode === 'fast' ? fastInterval : slowInterval;
+    let consecutiveErrors = 0;
+    const maxConsecutiveErrors = 5;
 
     const doPoll = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/status/${currentJobId}`);
+        consecutiveErrors = 0; // Reset error counter on successful ping
         const { state, message, polished_script, progress } = response.data;
         
         setProgressText(message);
@@ -276,9 +282,16 @@ function App() {
 
         // Continue polling
         pollingTimeoutRef.current = setTimeout(doPoll, currentDelay);
-      } catch {
-        setStatus('error');
-        setProgressText('Lost connection to server.');
+      } catch (err) {
+        consecutiveErrors += 1;
+        console.warn(`[pollStatus] Network ping failed (${consecutiveErrors}/${maxConsecutiveErrors}):`, err);
+        if (consecutiveErrors >= maxConsecutiveErrors) {
+          setStatus('error');
+          setProgressText('Lost connection to server after multiple attempts.');
+          return;
+        }
+        // Resilient retry with 3s backoff
+        pollingTimeoutRef.current = setTimeout(doPoll, 3000);
       }
     };
 
@@ -471,6 +484,8 @@ function App() {
                 setMusicTrack={setMusicTrack}
                 captionStyle={captionStyle}
                 setCaptionStyle={setCaptionStyle}
+                captionLang={captionLang}
+                setCaptionLang={setCaptionLang}
                 musicVolume={musicVolume}
                 setMusicVolume={setMusicVolume}
                 videoResolution={videoResolution}

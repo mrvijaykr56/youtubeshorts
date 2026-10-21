@@ -96,19 +96,19 @@ def cleanup_intermediate_assets(job_id, audio_path, srt_path, image_paths):
         if audio_path and os.path.exists(audio_path):
             os.remove(audio_path)
             
+        norm_audio = audio_path + "._norm.mp3" if audio_path else ""
+        if norm_audio and os.path.exists(norm_audio):
+            try: os.remove(norm_audio)
+            except Exception: pass
+            
         if srt_path and os.path.exists(srt_path):
             os.remove(srt_path)
             
-        # We KEEP the captions segments JSON file to support direct metadata parsing later
-        # segments_json = srt_path.replace(".ass", "_segments.json").replace(".srt", "_segments.json")
-        # if os.path.exists(segments_json):
-        #     os.remove(segments_json)
+        ass_path = srt_path.replace(".srt", ".ass") if srt_path else ""
+        if ass_path and os.path.exists(ass_path):
+            try: os.remove(ass_path)
+            except Exception: pass
             
-        # We KEEP the slide images to allow subsequent edits and re-compilations!
-        # if image_paths:
-        #     for img_p in image_paths:
-        #         if os.path.exists(img_p):
-        #             os.remove(img_p)
         print(f"[app] Successfully cleaned up intermediate audio/subtitles for job {job_id} (preserved images & timeline segments).", flush=True)
     except Exception as e:
         print(f"[app] Warning: failed to clean up intermediate assets for job {job_id}: {e}", flush=True)
@@ -162,30 +162,41 @@ def generate_video_task(job_id, script, voice_accent="us", caption_style="elegan
         update_job_status(job_id, message='Generating captions (Whisper)...', progress=45)
 
         # Phase 2: Captions via Whisper with custom style, 3-second hook card, and 2-second outro card
+        # Phase 2: Captions via Whisper / Bilingual Synthesizer
         from scripts.caption_generator import generate_captions
         from pydub import AudioSegment
         audio = AudioSegment.from_file(audio_path)
         total_duration = len(audio) / 1000.0
         cta_text = "FOLLOW TO LEARN MORE! 🎓" if video_mode == 'tutorial' else "SUBSCRIBE FOR MORE! 🔔"
-        job_metadata = db.get_job(job_id)
-        hook_title = job_metadata.get('script_topic', '') if job_metadata else ''
-        if not hook_title and scenes:
-            first_scene = scenes[0]
-            hook_title = first_scene.get('slide_title') or first_scene.get('step_title') or ""
-            if not hook_title and first_scene.get('narration'):
-                words = [w for w in first_scene['narration'].split() if len(w) > 1]
-                hook_title = " ".join(words[:6]).strip(".,!?:-")
-        srt_path = generate_captions(
-            audio_path,
-            os.path.join(OUTPUT_DIR, f"{job_id}_captions.srt"),
-            style=caption_style,
-            hook_title=hook_title,
-            total_duration=total_duration,
-            cta_text=cta_text,
-            script_language=script_language,
-            width=width,
-            height=height
-        )
+        hook_title = ""  # Permanently disabled: no top title banners
+
+        is_hindi = "hi" in str(voice_accent).lower() or "bho" in str(voice_accent).lower()
+        ass_path = os.path.join(OUTPUT_DIR, f"{job_id}_captions.ass")
+
+        if is_hindi and scenes:
+            from scripts.caption_generator import generate_bilingual_ass
+            srt_path = generate_bilingual_ass(
+                scenes=scenes,
+                total_duration=total_duration,
+                output_ass_path=ass_path,
+                style=caption_style,
+                width=width,
+                height=height,
+                cta_text=cta_text,
+                display_lang="English"
+            )
+        else:
+            srt_path = generate_captions(
+                audio_path,
+                os.path.join(OUTPUT_DIR, f"{job_id}_captions.srt"),
+                style=caption_style,
+                hook_title=hook_title,
+                total_duration=total_duration,
+                cta_text=cta_text,
+                script_language=script_language,
+                width=width,
+                height=height
+            )
         update_job_status(job_id, progress=60)
 
         update_job_status(job_id, message='Generating AI images for each scene...', progress=65)
@@ -315,6 +326,15 @@ def generate_storyboard():
             
             if not scenes:
                 raise RuntimeError("Failed to generate storyboard scenes.")
+                
+            # Pre-flight storyboard validation
+            try:
+                from scripts.storyboard_validator import validate_storyboard
+                val_rep = validate_storyboard(scenes)
+                if not val_rep.get("valid", True):
+                    print(f"[app] Storyboard validation warnings: {val_rep.get('warnings', [])}", flush=True)
+            except Exception as val_err:
+                print(f"[app] Storyboard validation notice: {val_err}", flush=True)
                 
             total_scenes = len(scenes)
             # Store the parsed storyboard scenes in the in-memory job store
@@ -519,28 +539,47 @@ def compile_video():
             
             update_job_status(job_id, message='Generating captions (Whisper)...', progress=40)
             
-            # Captions generation with 3-second hook card and 2-second outro card
+            # Captions generation via Whisper / Bilingual Synthesizer
             from scripts.caption_generator import generate_captions
             from pydub import AudioSegment
             audio = AudioSegment.from_file(audio_path)
             total_duration = len(audio) / 1000.0
             cta_text = "FOLLOW TO LEARN MORE! 🎓" if video_mode == 'tutorial' else "SUBSCRIBE FOR MORE! 🔔"
-            job_metadata = db.get_job(job_id)
-            hook_title = job_metadata.get('script_topic', '') if job_metadata else ''
-            if not hook_title and scenes:
-                first_scene = scenes[0]
-                hook_title = first_scene.get('slide_title') or first_scene.get('step_title') or ""
-                if not hook_title and first_scene.get('narration'):
-                    words = [w for w in first_scene['narration'].split() if len(w) > 1]
-                    hook_title = " ".join(words[:6]).strip(".,!?:-")
-            srt_path = generate_captions(
-                audio_path,
-                os.path.join(OUTPUT_DIR, f"{job_id}_captions.srt"),
-                style=caption_style,
-                hook_title=hook_title,
-                total_duration=total_duration,
-                cta_text=cta_text
-            )
+            hook_title = ""  # Permanently disabled: no top title banners
+
+            from scripts.tts_generator import VOICE_LANGUAGE_MAP
+            voice_key = str(voice_accent or 'in_female').lower().strip()
+            script_lang = VOICE_LANGUAGE_MAP.get(voice_key, "English")
+            is_hindi = "hi" in voice_key or "bho" in voice_key
+            ass_path = os.path.join(OUTPUT_DIR, f"{job_id}_captions.ass")
+
+            stored_resolution = job_metadata.get('video_resolution', video_resolution) if job_metadata else video_resolution
+            w_comp, h_comp = (2160, 3840) if str(stored_resolution).lower().strip() == "4k" else (1080, 1920)
+
+            if is_hindi and scenes:
+                from scripts.caption_generator import generate_bilingual_ass
+                srt_path = generate_bilingual_ass(
+                    scenes=scenes,
+                    total_duration=total_duration,
+                    output_ass_path=ass_path,
+                    style=caption_style,
+                    width=w_comp,
+                    height=h_comp,
+                    cta_text=cta_text,
+                    display_lang=data.get('caption_lang', 'English')
+                )
+            else:
+                srt_path = generate_captions(
+                    audio_path,
+                    os.path.join(OUTPUT_DIR, f"{job_id}_captions.srt"),
+                    style=caption_style,
+                    hook_title=hook_title,
+                    total_duration=total_duration,
+                    cta_text=cta_text,
+                    script_language=script_lang,
+                    width=w_comp,
+                    height=h_comp
+                )
             update_job_status(job_id, progress=60)
             
             update_job_status(job_id, message='Stitching and rendering final video layers...', progress=70)
