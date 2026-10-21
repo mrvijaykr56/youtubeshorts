@@ -10,9 +10,9 @@ import traceback
 
 # Ensure UTF-8 output on Windows terminals
 if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace', line_buffering=True)
 if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
-    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace', line_buffering=True)
 
 backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 client_secrets_file = os.path.join(backend_dir, "client_secret.json")
@@ -20,7 +20,8 @@ token_file = os.path.join(backend_dir, "token.json")
 
 scopes = [
     "https://www.googleapis.com/auth/youtube.upload",
-    "https://www.googleapis.com/auth/youtube.readonly"
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtube.force-ssl"
 ]
 
 def authenticate():
@@ -42,7 +43,16 @@ def authenticate():
         if os.path.exists(token_file):
             print("Found existing token.json, verifying...", flush=True)
             try:
-                credentials = Credentials.from_authorized_user_file(token_file, scopes)
+                import json
+                with open(token_file, "r") as tf:
+                    token_data = json.load(tf)
+                granted_scopes = set(token_data.get("scopes", []))
+                if not set(scopes).issubset(granted_scopes):
+                    print("⚠️ Existing token is missing newly requested scopes (youtube.force-ssl).", flush=True)
+                    print("Re-authenticating to upgrade account permissions...", flush=True)
+                    credentials = None
+                else:
+                    credentials = Credentials.from_authorized_user_file(token_file, scopes)
             except Exception as e:
                 print(f"Token read error: {e}", flush=True)
 
@@ -57,18 +67,50 @@ def authenticate():
 
             if not credentials:
                 print("\nInitiating clean OAuth flow...", flush=True)
+                import wsgiref.simple_server
+                import wsgiref.util
+                import webbrowser
+
+                class RobustOAuthWSGIApp:
+                    def __init__(self):
+                        self.auth_response_uri = None
+
+                    def __call__(self, environ, start_response):
+                        uri = wsgiref.util.request_uri(environ)
+                        if "code=" in uri or "error=" in uri:
+                            self.auth_response_uri = uri
+                            start_response("200 OK", [("Content-Type", "text/html; charset=utf-8")])
+                            return [b"""<html><body style="font-family:sans-serif;text-align:center;padding:50px;background:#0f172a;color:#f8fafc;">
+                                <h1 style="color:#22c55e;">&#9989; YouTube Authorization Successful!</h1>
+                                <p style="font-size:18px;">Full account management permissions granted.</p>
+                                <p style="color:#94a3b8;">You may close this tab and return to the editor.</p>
+                            </body></html>"""]
+                        start_response("204 No Content", [])
+                        return []
+
                 flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
                     client_secrets_file, scopes
                 )
-                
-                # Single, clean invocation of run_local_server
-                # It starts a local server on port 8080 (or ephemeral), automatically generates
-                # the exact authorization URL, prints it, and opens the user's default browser.
-                credentials = flow.run_local_server(
-                    port=0,
-                    authorization_prompt_message="\n👉 VISIT THIS URL TO AUTHORIZE:\n{url}\n\nWaiting for browser callback...",
-                    open_browser=True
-                )
+
+                app = RobustOAuthWSGIApp()
+                local_server = wsgiref.simple_server.make_server("localhost", 0, app)
+                port = local_server.server_port
+                flow.redirect_uri = f"http://localhost:{port}/"
+                auth_url, _ = flow.authorization_url(access_type="offline", prompt="consent")
+
+                print(f"\n👉 VISIT THIS URL TO AUTHORIZE:\n{auth_url}\n", flush=True)
+                print("Waiting for browser callback...", flush=True)
+
+                webbrowser.open(auth_url)
+
+                while not app.auth_response_uri:
+                    local_server.handle_request()
+
+                local_server.server_close()
+
+                auth_response = app.auth_response_uri.replace("http:", "https:")
+                flow.fetch_token(authorization_response=auth_response)
+                credentials = flow.credentials
 
             with open(token_file, "w") as f:
                 f.write(credentials.to_json())

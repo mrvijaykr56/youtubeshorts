@@ -8,7 +8,8 @@ from google.auth.transport.requests import Request
 
 scopes = [
     "https://www.googleapis.com/auth/youtube.upload",
-    "https://www.googleapis.com/auth/youtube.readonly"
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtube.force-ssl"
 ]
 
 def upload_video(video_path, title="My Shorts", description="Generated video", tags=None, privacy_status="private", category_id="1"):
