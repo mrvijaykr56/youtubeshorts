@@ -45,16 +45,25 @@ This skill guides the agent in crafting viral, high-retention YouTube Shorts scr
    - *Example*: `लालिची बंदर को मिली जादुई सीख! 🐒✨ Never Be Greedy | Hindi Kahaniya #Shorts`
    - *Example*: `आसमान से गिरा एक जादुई तारा! 🐿️⭐ Cheeku's Magic Wish | Hindi Kids Story #Shorts`
 
-7. **The Infinite Seamless Loop (Targeting >100% APV)** 🔄:
-   - To maximize algorithmic retention, construct the final sentence so it grammatically and rhythmically connects directly back to the opening hook sentence.
-   - *Example Opening*: "क्या आपने कभी सोचा है कि आसमान का तारा ज़मीन पर गिरे तो क्या होगा? 🌟"
-   - *Example Ending*: "...और चीकू की यह जादुई कहानी हमें यही सिखाती है, ठीक जैसे..." (loops back to opening).
+7. **Seamless Loop & Complete Inspiring Ending (Targeting >100% APV)** 🔄:
+   - Construct endings that are clean, grammatically complete, and inspiring. 
+   - 🚫 **STRICT BAN ON "JUST LIKE..." / "ठीक जैसे..."**: NEVER end narration with trailing comparison stems such as `"just like..."`, `"just like"`, `"जैसे..."`, or `"ठीक जैसे..."`. Every ending sentence MUST be fully resolved, punchy, and self-contained.
+   - *Example Opening*: "क्या आप जानते हैं कि एक जादुई बत्तख पूरे गांव को कैसे बदल सकती है? 🪺✨"
+   - *Example Ending*: "हमेशा याद रखें, सब्र और संतोष ही जीवन का सबसे बड़ा खजाना है! 🌟" (Complete, inspiring takeaway).
 
 8. **Audience & Growth Metadata Payload** 📈:
    - Always include in the storyboard JSON:
      - `story_moral`: Emotional moral in Hindi (`शिक्षा`) for parental sharing.
      - `pinned_comment_question`: Thought-provoking Hindi question to drive high comment velocity.
      - `self_declared_made_for_kids`: `false` (General Audience / Family-Friendly to unlock comments and notification bells).
+
+9. **Top 10 Competitor SEO Architecture (Benchmarked vs Koo Koo TV, Infobells, PunToon Kids)** 🏆:
+   - **Leading Hashtags**: Place high-velocity hashtag cloud right at the very top of description (e.g. `#Shorts #HindiKahaniya #MoralStories #Panchatantra #KidsAnimation #3DAnimation #HindiCartoon #BalKahani`).
+   - **3-Tier Tag Cloud (25-28 Tags)**:
+     - *Tier 1 (Story/Character)*: Exact character names, story titles, English + transliterated Hindi (e.g. `sone ka anda`, `golden goose story`, `lalchi kisan`).
+     - *Tier 2 (High-Traffic Niche Umbrella)*: `jadui kahaniya`, `hindi animated tales`, `hindi stories for kids`, `hindi story cartoon`, `moral stories in hindi`, `panchatantra stories`, `stories for kids`, `bedtime stories in hindi`.
+     - *Tier 3 (Dual-Script Devanagari)*: `हिंदी कहानियां`, `पंचतंत्र की कहानियां`, `नैतिक कहानियां`, `हिंदी कार्टून`, `बाल कहानियां`.
+   - **Category**: Always enforce **Category 1 (Film & Animation)**.
 
 ---
 
@@ -212,4 +221,43 @@ Never automatically generate images without explicit user approval.
 2. Ask the user for approval:
    > *"The storyboard has passed all pre-flight checks (duration: ~Xs, scenes: N, token safety: 100%). Do you approve these scenes and visual directions, or would you like any adjustments before I generate the images?"*
 3. **Wait for user confirmation** before calling any image generation tools.
+
+---
+
+## 6. Top 10 Competitor Metadata & SEO Architecture 🏆
+
+Every generated Short must include competitor-benchmarked metadata learned directly from **Koo Koo TV (4.88M subs)**, **Infobells Hindi (72.8M subs)**, and **PunToon Kids (3.94M subs)**:
+
+### 1. Title Formulation (Strictly $\le 95$ Chars)
+YouTube rejects titles $\ge 100$ characters. Use the proven high-CTR formula:
+`[Emotional Hook / Intriguing Question in Hindi + 1-2 Emojis] [English Name] | 3D Hindi Kahaniya #Shorts`
+- *Example*: `कुल्हाड़ी नदी में गिरी, जलपरी ने क्या दिया? 🪓✨ Honest Woodcutter | 3D Hindi Kahaniya #Shorts` (92 chars)
+- *Example*: `रोज एक सोने का अंडा! पर लालच ने क्या किया? 🪺✨ Goose of Gold | 3D Hindi Kahaniya #Shorts` (90 chars)
+
+### 2. Infobells Leading Hashtag Cloud & Description
+Place 5–8 high-velocity hashtags at the very top of the description to lock in YouTube Shorts algorithmic classification immediately:
+```text
+#Shorts #HindiKahaniya #MoralStories #Panchatantra #[StoryKeyword] #3DAnimation #HindiCartoon #BalKahani
+
+[2-3 sentence engaging story summary in Hindi]
+
+🌟 कहानी की सीख (Moral of the Story):
+[Clear, inspiring moral message without trailing comparison phrases]
+
+🎬 Watch All 3D Hindi Stories in Official Playlist:
+https://www.youtube.com/playlist?list=PLJE6ifX-QD0A
+
+🔔 Subscribe to @MagicalTalesKidz for Daily 3D Magical Stories:
+https://www.youtube.com/@MagicalTalesKidz?sub_confirmation=1
+
+#Shorts #HindiKahaniya #MoralStories #Panchatantra #KidsAnimation
+```
+
+### 3. 3-Tier Video Tags Architecture (Strictly $\le 380$ Chars)
+To avoid YouTube's HTTP 400 `invalidTags` ceiling:
+1. **Tier 1 (Specific Story Tags - 5-7 tags)**: Story-specific search queries (English + Romanized Hindi).
+2. **Tier 2 (High-Volume Competitor Anchor Tags - 8-10 tags)**: `"Hindi Kahaniya"`, `"moral stories in hindi"`, `"panchatantra stories"`, `"kids moral stories"`, `"3d animated stories"`, `"hindi cartoon"`, `"bal kahaniya"`, `"jadui kahaniya"`, `"stories for kids"`, `"shorts"`, `"yt shorts"`.
+3. **Tier 3 (Devanagari Dual-Script Tags - 4-5 tags)**: `"हिंदी कहानियां"`, `"पंचतंत्र की कहानियां"`, `"नैतिक कहानियां"`, `"हिंदी कार्टून"`.
+- Total character length must never exceed 380 characters.
+
 

@@ -182,26 +182,26 @@ Every Short below is engineered with a **0–3s hook formula** designed to preve
 
 | # | Story Title | 0-2 Second Visual Hook | Hindi Opening Audio Line | Loop Ending Connection |
 | :-: | :--- | :--- | :--- | :--- |
-| **1** | The Magic Paintbrush | Boy paints a bird; it suddenly chirps and flies off the canvas! | "क्या कोई पेंटिंग सच में उड़ सकती है?" | "...और इसीलिए रोहन का ब्रश आज भी..." |
-| **2** | The Tiny Mouse & Lion | A tiny mouse chewing through thick steel ropes to free a roaring lion. | "इतने छोटे चूहे ने जंगल के राजा को कैसे बचाया?" | "...क्योंकि कोई भी दोस्त छोटा नहीं होता, जैसे..." |
-| **3** | The Golden Axe | Water spirit emerges holding a gleaming 24K gold axe in shimmering river. | "क्या आपने सोने की कुल्हाड़ी नदी से निकलते देखी है?" | "...और यही ईमानदारी का फल है जो शुरू हुआ था..." |
-| **4** | The Clever Rabbit | Rabbit points into a deep dark well where a reflection growls back. | "इस नन्हे खरगोश ने शेर को कुएं में कैसे गिराया?" | "...और जंगल आज भी याद रखता है कि..." |
-| **5** | The Thirsty Crow | Crow drops a bright red pebble into a flask; water sparkles at the brim. | "कौवे ने एक घूंट पानी के लिए क्या कमाल किया?" | "...क्योंकि मेहनत से ही प्यास बुझती है, जैसे..." |
-| **6** | The Goose of Gold | A golden egg cracks open with magical sparkles in an old barn. | "रोज एक सोने का अंडा! पर किसान ने ये क्या कर दिया?" | "...और लालच का नतीजा आज भी सबको याद है..." |
-| **7** | The Ant & The Dove | Ant bites hunter’s barefoot just as he aims an arrow at a dove. | "एक छोटी सी चींटी ने शिकारी का निशाना कैसे बिगाड़ा?" | "...क्योंकि एक नेकी दूसरी नेकी को जन्म देती है..." |
-| **8** | The Blue Jackal | A jackal slips into a dyer’s indigo vat and emerges glowing blue! | "अचानक ये सियार पूरा नीला कैसे हो गया?" | "...पर सच छुपता नहीं, जैसे उस दिन..." |
-| **9** | The Monkey & Crocodile | Monkey sitting high up on a jambul tree tossing ruby-red berries down. | "मगरमच्छ ने बंदर के कलेजे की मांग क्यों की?" | "...और चतुर बंदर ने अपनी जान बचाई जब..." |
-| **10** | The Singing Flute | Animals sleeping peacefully under an ancient banyan as notes float. | "इस बांसुरी की धुन सुनते ही सारे शिकारी क्यों सो गए?" | "...और जादुई धुन आज भी गूंजती है जब..." |
-| **11** | The Glowing Star | Squirrel holds a pulsing blue star that lights up the dark burrow. | "आसमान से गिरा ये जादुई तारा चीकू के हाथ कैसे लगा?" | "...और जंगल कभी अंधेरे में नहीं डूबता क्योंकि..." |
-| **12** | The Faithful Dog | Stray dog alerts the entire sleeping village just before a flood. | "इस वफादार कुत्ते ने रात के अंधेरे में सबको कैसे जगाया?" | "...क्योंकि सच्ची वफादारी कभी सोती नहीं..." |
-| **13** | The Two Pots | Clay pot and brass pot floating together down a rapid river. | "मिट्टी की हांडी ने पीतल की हांडी से टकराने से क्यों मना किया?" | "...और अपनी ताकत को पहचानना ही समझदारी है..." |
-| **14** | The Magic Seed | Tiny sprout bursts out of golden soil in fast-forward 3D blooming! | "इस बीज को बोते ही रात भर में क्या चमत्कार हुआ?" | "...और सब्र का सबसे मीठा फल मिलता है जैसे..." |
-| **15** | The Honest Boy | Boy returning a dropped diamond ring to the old village grandmother. | "सड़क पर पड़ी इस हीरे की अंगूठी को देखकर राजू ने क्या किया?" | "...क्योंकि सच्ची दौलत साफ दिल में होती है..." |
-| **16** | The Little Bear's Honey | Bear cub stuck head-first inside a hollow honey tree with buzzing bees. | "शहद के चक्कर में गोलू भालू पेड़ में कैसे अटक गया?" | "...और सब्र न करने का नतीजा यही होता है जब..." |
-| **17** | The Rainbow Peacock | Peacock shedding its dull feathers to reveal radiant neon sapphire plumes! | "नील मोर के पंखों में अचानक ये इंद्रधनुष कहाँ से आया?" | "...क्योंकि दूसरों की मदद करने से ही रंग निखरते हैं..." |
-| **18** | The Helpful Elephant | Baby elephant carrying tired forest baby animals safely across river. | "गोलू हाथी ने अपनी सूंड से एक तैरता हुआ पुल कैसे बना दिया?" | "...और एकता ही सबसे बड़ी ताकत बन जाती है..." |
-| **19** | The King's Ring | A tiny crow picking up a lost royal signet ring from palace mud. | "महल की सबसे कीमती अंगूठी एक कौवे को कैसे मिली?" | "...और किस्मत उन्हीं का साथ देती है जो..." |
-| **20** | The Magic Mirror | Mirror reflects the viewer's inner heart instead of their physical face. | "इस जादुई आईने में जो भी देखता है, सच क्यों दिखने लगता है?" | "...और असली सुंदरता अंदर होती है, ठीक जैसे..." |
+| **1** | The Magic Paintbrush | Boy paints a bird; it suddenly chirps and flies off the canvas! | "क्या कोई पेंटिंग सच में उड़ सकती है?" | "...और इसीलिए रोहन का जादुई ब्रश आज भी अमर है!" |
+| **2** | The Tiny Mouse & Lion | A tiny mouse chewing through thick steel ropes to free a roaring lion. | "इतने छोटे चूहे ने जंगल के राजा को कैसे बचाया?" | "...क्योंकि कोई भी सच्चा दोस्त कभी छोटा नहीं होता!" |
+| **3** | The Golden Axe | Water spirit emerges holding a gleaming 24K gold axe in shimmering river. | "क्या आपने सोने की कुल्हाड़ी नदी से निकलते देखी है?" | "...और यही ईमानदारी का सबसे अनमोल वरदान है!" |
+| **4** | The Clever Rabbit | Rabbit points into a deep dark well where a reflection growls back. | "इस नन्हे खरगोश ने शेर को कुएं में कैसे गिराया?" | "...और समझदारी हमेशा सबसे बड़ी ताकत साबित होती है!" |
+| **5** | The Thirsty Crow | Crow drops a bright red pebble into a flask; water sparkles at the brim. | "कौवे ने एक घूंट पानी के लिए क्या कमाल किया?" | "...क्योंकि सच्ची मेहनत और युक्ति से ही हर प्यास बुझती है!" |
+| **6** | The Goose of Gold | A golden egg cracks open with magical sparkles in an old barn. | "रोज एक सोने का अंडा! पर किसान ने ये क्या कर दिया?" | "...और सब्र ही इंसान का सबसे बड़ा खजाना है!" |
+| **7** | The Ant & The Dove | Ant bites hunter’s barefoot just as he aims an arrow at a dove. | "एक छोटी सी चींटी ने शिकारी का निशाना कैसे बिगाड़ा?" | "...क्योंकि एक छोटी सी नेकी हमेशा बड़ा जीवन बचाती है!" |
+| **8** | The Blue Jackal | A jackal slips into a dyer’s indigo vat and emerges glowing blue! | "अचानक ये सियार पूरा नीला कैसे हो गया?" | "...क्योंकि झूठ और ढोंग का रंग कभी ज्यादा दिन नहीं टिकता!" |
+| **9** | The Monkey & Crocodile | Monkey sitting high up on a jambul tree tossing ruby-red berries down. | "मगरमच्छ ने बंदर के कलेजे की मांग क्यों की?" | "...और शांत दिमाग से हर बड़े धोखे को हराया जा सकता है!" |
+| **10** | The Singing Flute | Animals sleeping peacefully under an ancient banyan as notes float. | "इस बांसुरी की धुन सुनते ही सारे शिकारी क्यों सो गए?" | "...और मधुर संगीत नफरत को भी प्यार में बदल देता है!" |
+| **11** | The Glowing Star | Squirrel holds a pulsing blue star that lights up the dark burrow. | "आसमान से गिरा ये जादुई तारा चीकू के हाथ कैसे लगा?" | "...और निस्वार्थ मदद ही असली रोशनी फैलाती है!" |
+| **12** | The Faithful Dog | Stray dog alerts the entire sleeping village just before a flood. | "इस वफादार कुत्ते ने रात के अंधेरे में सबको कैसे जगाया?" | "...क्योंकि सच्ची वफादारी कभी सोती नहीं!" |
+| **13** | The Two Pots | Clay pot and brass pot floating together down a rapid river. | "मिट्टी की हांडी ने पीतल की हांडी से टकराने से क्यों मना किया?" | "...और अपनी सीमा को पहचानना ही सच्ची समझदारी है!" |
+| **14** | The Magic Seed | Tiny sprout bursts out of golden soil in fast-forward 3D blooming! | "इस बीज को बोते ही रात भर में क्या चमत्कार हुआ?" | "...और सब्र का फल हमेशा सबसे मीठा होता है!" |
+| **15** | The Honest Boy | Boy returning a dropped diamond ring to the old village grandmother. | "सड़क पर पड़ी इस हीरे की अंगूठी को देखकर राजू ने क्या किया?" | "...क्योंकि सच्ची दौलत साफ और ईमानदार दिल में होती है!" |
+| **16** | The Little Bear's Honey | Bear cub stuck head-first inside a hollow honey tree with buzzing bees. | "शहद के चक्कर में गोलू भालू पेड़ में कैसे अटक गया?" | "...और जल्दबाजी हमेशा भारी नुकसान कराती है!" |
+| **17** | The Rainbow Peacock | Peacock shedding its dull feathers to reveal radiant neon sapphire plumes! | "नील मोर के पंखों में अचानक ये इंद्रधनुष कहाँ से आया?" | "...क्योंकि दूसरों की मदद करने से ही असली रंग निखरते हैं!" |
+| **18** | The Helpful Elephant | Baby elephant carrying tired forest baby animals safely across river. | "गोलू हाथी ने अपनी सूंड से एक तैरता हुआ पुल कैसे बना दिया?" | "...और आपसी एकता ही सबसे बड़ी शक्ति बन जाती है!" |
+| **19** | The King's Ring | A tiny crow picking up a lost royal signet ring from palace mud. | "महल की सबसे कीमती अंगूठी एक कौवे को कैसे मिली?" | "...और भलाई करने वालों का साथ पूरी कायनात देती है!" |
+| **20** | The Magic Mirror | Mirror reflects the viewer's inner heart instead of their physical face. | "इस जादुई आईने में जो भी देखता है, सच क्यों दिखने लगता है?" | "...और असली सुंदरता हमेशा साफ दिल में बसती है!" |
 
 ---
 

@@ -39,6 +39,8 @@ frontend/.env
 *client_secret*.json
 backend/token.json
 token.json
+backend/instagram_session.json
+*instagram_session*.json
 
 # Node / Frontend
 node_modules/

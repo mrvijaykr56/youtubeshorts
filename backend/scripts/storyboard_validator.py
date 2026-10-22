@@ -46,6 +46,14 @@ TTS_FORBIDDEN_PATTERNS = [
 ]
 
 
+# Banned incomplete comparison stems that leave narration hanging
+BANNED_NARRATION_PATTERNS = [
+    (r"\bjust like(?:\.\.\.|\b)", "forbidden comparison stem 'just like...' / 'just like'"),
+    (r"ठीक जैसे(?:\.\.\.|\b)", "forbidden comparison stem 'ठीक जैसे...'"),
+    (r"जैसे\.\.\.", "forbidden comparison stem 'जैसे...'"),
+]
+
+
 def sanitize_narration(text: str) -> str:
     """Cleans narration text to be safe for TTS synthesis and ASS caption subtitles."""
     # Strip markdown asterisks and underscores
@@ -57,6 +65,8 @@ def sanitize_narration(text: str) -> str:
         content = m.group(1).strip()
         return "" if len(content.split()) <= 4 else f"({content})"
     text = re.sub(r'\((.*?)\)', clean_parentheses, text)
+    # Strip forbidden trailing comparison stems like 'just like...' or 'ठीक जैसे...'
+    text = re.sub(r'[\s,–—-]+(?:just like|ठीक जैसे|जैसे)\s*\.{2,}\s*', ' ', text, flags=re.IGNORECASE)
     # Normalize whitespaces
     text = re.sub(r'\s+', ' ', text).strip()
     return text
@@ -153,6 +163,12 @@ def validate_storyboard(storyboard_input: Union[str, List[Dict[str, Any]]]) -> D
         for pattern, desc in TTS_FORBIDDEN_PATTERNS:
             if re.search(pattern, raw_narr):
                 warnings.append(f"Scene {scene_num}: Contains {desc} in narration ('{raw_narr[:30]}...'). This will be automatically cleaned.")
+
+        # Check for banned trailing stems like 'just like...' or 'ठीक जैसे...'
+        raw_narr_hi = str(item.get("narration_hi", ""))
+        for pattern, desc in BANNED_NARRATION_PATTERNS:
+            if re.search(pattern, raw_narr, flags=re.IGNORECASE) or re.search(pattern, raw_narr_hi, flags=re.IGNORECASE):
+                errors.append(f"Scene {scene_num}: Narration contains {desc}. Incomplete trailing stems are strictly banned! Ensure endings are fully resolved and punchy.")
 
         clean_narr = sanitize_narration(raw_narr)
         word_list = clean_narr.split()

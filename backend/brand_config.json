@@ -5,6 +5,8 @@
       "channel_name": "Magical Tales Kidz",
       "channel_handle": "@MagicalTalesKidz",
       "channel_url": "https://www.youtube.com/@MagicalTalesKidz",
+      "instagram_handle": "@magicaltaleskid",
+      "instagram_url": "https://www.instagram.com/magicaltaleskid/",
       "niche": "Kids Animated Bedtime & Moral Stories",
       "target_audience": "Kids, Toddlers, Parents, Family",
       "preferred_art_style": "pixar",
@@ -14,6 +16,7 @@
       "caption_style": "tiktok",
       "default_music": "none",
       "outro_cta": "SUBSCRIBE TO @MagicalTalesKidz FOR MORE! 🔔",
+      "instagram_bio_cta": "🎬 Watch full 3D Hindi stories on YouTube! Link in bio ✨",
       "default_tags": [
         "MagicalTalesKidz",
         "kids stories",
@@ -38,6 +41,20 @@
         "#Shorts",
         "#3DAnimation",
         "#PixarStyle"
+      ],
+      "default_instagram_hashtags": [
+        "#HindiReels",
+        "#HindiKahaniya",
+        "#MoralStories",
+        "#Panchatantra",
+        "#KidsAnimation",
+        "#HindiStories",
+        "#ReelsIndia",
+        "#PanchatantraTales",
+        "#3DAnimation",
+        "#ReelsInstagram",
+        "#ExplorePage",
+        "#MagicalTalesKidz"
       ]
     }
   }
