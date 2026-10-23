@@ -88,7 +88,7 @@ function TopNav({ phase, onReset, studioTab, setStudioTab }) {
         </div>
 
         {/* Mode Selector */}
-        <div className="seg-control hidden sm:inline-flex">
+        <div className="seg-control inline-flex">
           <button
             type="button"
             className={`seg-btn ${studioTab === 'video_to_video' ? 'active' : ''}`}
@@ -140,27 +140,8 @@ function TopNav({ phase, onReset, studioTab, setStudioTab }) {
         </div>
       )}
 
-      {/* Right side: Mobile switcher + Reset */}
+      {/* Right side: Reset */}
       <div className="flex items-center gap-2">
-        <div className="seg-control sm:hidden">
-          <button
-            type="button"
-            className={`seg-btn ${studioTab === 'video_to_video' ? 'active' : ''}`}
-            onClick={() => setStudioTab('video_to_video')}
-            style={{ padding: '4px 8px', fontSize: '11px' }}
-          >
-            🎬 5x Clips
-          </button>
-          <button
-            type="button"
-            className={`seg-btn ${studioTab === 'image_to_video' ? 'active' : ''}`}
-            onClick={() => setStudioTab('image_to_video')}
-            style={{ padding: '4px 8px', fontSize: '11px' }}
-          >
-            🖼️ Image
-          </button>
-        </div>
-
         <button className="btn-ghost" style={{ fontSize: '12px', padding: '7px 14px' }} onClick={onReset}>
           <RefreshCw size={13} /> New Project
         </button>
