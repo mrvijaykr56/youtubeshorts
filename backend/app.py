@@ -838,29 +838,55 @@ def generate_video_prompts():
     import json
 
     sys_prompt = f"""You are a master AI video director specializing in viral 9:16 vertical shorts for Google Veo, VideoFX, and Kling.
-The user will provide a topic or rough draft. Generate exactly 5 scenes (under 55 seconds total speech) with:
-1. "scene_number": integer (1 to 5)
-2. "narration": 1 punchy, high-retention narration sentence with 1-2 embedded emojis. In {language}.
-3. "video_prompt": A hyper-specific cinematic video generation prompt for Google Veo/VideoFX.
-   Always begin with: "Vertical 9:16 ratio. [Camera move: dolly in/drone descent/low angle tilt/orbit]. [Subject in motion with fluid dynamics]. [Atmospheric volumetric lighting, 35mm anamorphic lens, photorealistic 8K, 24fps]."
-   Maintain character/environment visual consistency across all 5 scenes.
+The user will provide a topic or rough draft. Generate exactly 5 scenes (under 55 seconds total speech).
+Return a JSON object with a single key "scenes" containing an array of exactly 5 scene objects:
+{{
+  "scenes": [
+    {{
+      "scene_number": 1,
+      "narration": "1 punchy, high-retention narration sentence with 1-2 embedded emojis in {language}.",
+      "video_prompt": "Vertical 9:16 ratio. [Camera move: dolly in/drone descent/low angle tilt/orbit]. [Subject in motion with fluid dynamics]. [Atmospheric volumetric lighting, 35mm anamorphic lens, photorealistic 8K, 24fps]."
+    }}
+  ]
+}}
+Maintain character and environmental visual consistency across all 5 scenes. Output strict JSON only."""
 
-Output strict JSON array of objects only. No markdown, no commentary."""
+    fallback = [
+        {"scene_number": 1, "narration": f"Did you know the secret behind {topic}? 🤯", "video_prompt": f"Vertical 9:16 ratio. Dramatic cinematic push in on {topic}. Volumetric atmospheric rim lighting, photorealistic 8K, 24fps."},
+        {"scene_number": 2, "narration": "Scientists made an unexpected discovery in 2026. 🔬", "video_prompt": "Vertical 9:16 ratio. Orbital 360 camera sweep around high-tech holographic scanning laboratory. Neon blue glow, 24fps."},
+        {"scene_number": 3, "narration": "The deeper they looked, the stranger the phenomenon became. ⚡", "video_prompt": "Vertical 9:16 ratio. Slow motion macro shot of energy pulsing and rippling outward with realistic particle physics, 8K."},
+        {"scene_number": 4, "narration": "Every test revealed patterns that shouldn't exist. 📜", "video_prompt": "Vertical 9:16 ratio. Cinematic low-angle tilt up revealing massive ancient geometric stone monoliths under a starry galaxy sky."},
+        {"scene_number": 5, "narration": "What do you think is really happening? Subscribe for part two! 🔔", "video_prompt": "Vertical 9:16 ratio. Cinematic slow drone pull back into misty clouds as dawn breaks over the horizon. Warm golden light, 8K, 24fps."}
+    ]
 
     try:
         raw_res = query_llm(topic, system_prompt=sys_prompt, response_format_json=True)
         cleaned = clean_json_string(raw_res)
         parsed = json.loads(cleaned)
-        scenes = parsed.get("scenes", parsed) if isinstance(parsed, dict) else parsed
-        return jsonify({'scenes': scenes})
+
+        scenes = []
+        if isinstance(parsed, dict) and "scenes" in parsed and isinstance(parsed["scenes"], list):
+            scenes = parsed["scenes"]
+        elif isinstance(parsed, list):
+            scenes = parsed
+        elif isinstance(parsed, dict):
+            if "scene_number" in parsed:
+                scenes = [parsed]
+            elif all(isinstance(v, dict) for v in parsed.values()):
+                scenes = list(parsed.values())
+            else:
+                scenes = fallback
+        else:
+            scenes = fallback
+
+        # Guarantee at least 5 scenes with valid structure
+        if len(scenes) < 5:
+            for i in range(len(scenes) + 1, 6):
+                scenes.append(fallback[i - 1])
+
+        return jsonify({'scenes': scenes[:5]})
     except Exception as e:
-        fallback = [
-            {"scene_number": 1, "narration": f"Did you know the secret behind {topic}? 🤯", "video_prompt": f"Vertical 9:16 ratio. Dramatic cinematic push in on {topic}. Volumetric atmospheric rim lighting, photorealistic 8K, 24fps."},
-            {"scene_number": 2, "narration": "Scientists made an unexpected discovery in 2026. 🔬", "video_prompt": "Vertical 9:16 ratio. Orbital 360 camera sweep around high-tech holographic scanning laboratory. Neon blue glow, 24fps."},
-            {"scene_number": 3, "narration": "The deeper they looked, the stranger the phenomenon became. ⚡", "video_prompt": "Vertical 9:16 ratio. Slow motion macro shot of energy pulsing and rippling outward with realistic particle physics, 8K."},
-            {"scene_number": 4, "narration": "Every test revealed patterns that shouldn't exist. 📜", "video_prompt": "Vertical 9:16 ratio. Cinematic low-angle tilt up revealing massive ancient geometric stone monoliths under a starry galaxy sky."},
-            {"scene_number": 5, "narration": "What do you think is really happening? Subscribe for part two! 🔔", "video_prompt": "Vertical 9:16 ratio. Cinematic slow drone pull back into misty clouds as dawn breaks over the horizon. Warm golden light, 8K, 24fps."}
-        ]
+        print(f"[app] generate_video_prompts fallback due to: {e}", flush=True)
         return jsonify({'scenes': fallback})
 
 @app.route('/status/<job_id>', methods=['GET'])
