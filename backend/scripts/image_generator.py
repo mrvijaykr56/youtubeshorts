@@ -36,10 +36,10 @@ def split_into_scenes(script: str) -> list[str]:
 
 
 STYLE_TEMPLATES = {
+    "pixar": "3D animated CGI character, Disney Pixar feature film style, cute expressive large glossy eyes, soft warm fairytale lighting, subsurface scattering, Octane render 8k, tactile rich textures, vibrant whimsical color palette, vertical 9:16 portrait orientation: {prompt}",
+    "3d_art": "3D animated CGI character, Disney Pixar feature film style, cute expressive large glossy eyes, soft warm fairytale lighting, subsurface scattering, Octane render 8k, tactile rich textures, vibrant whimsical color palette, vertical 9:16 portrait orientation: {prompt}",
     "cinematic": "Cinematic still, photorealistic, 8k resolution, highly detailed, 9:16 vertical portrait aspect ratio, dramatic rim lighting, moody atmosphere, shot on anamorphic lens, shallow depth of field, color graded, masterpiece: {prompt}",
     "cyberpunk": "Cyberpunk aesthetic, neon-infused street scene, high-tech low-life, rich glowing purple and cyan tones, cinematic vertical 9:16 portrait orientation, detailed rainy reflection, octane render, volumetric fog: {prompt}",
-    "pixar": "Cute 3D digital clay illustration, Pixar style, charming character, soft warm lighting, claymation, octane render, tactile textures, vibrant pastel color palette, vertical 9:16 portrait orientation: {prompt}",
-    "3d_art": "Cute 3D digital clay illustration, Pixar style, charming character, soft warm lighting, claymation, octane render, tactile textures, vibrant pastel color palette, vertical 9:16 portrait orientation: {prompt}",
     "anime": "Breathtaking anime style, rich colors, beautiful hand-drawn background, cinematic light rays, highly aesthetic, Makoto Shinkai and CoMix Wave Films vibe, vertical 9:16 portrait orientation: {prompt}",
     "painting": "Masterpiece oil painting on rough canvas, rich impasto brushstrokes, dramatic Chiaroscuro lighting, deep classical tones, Rembrandt style, gallery-grade quality, vertical 9:16 portrait orientation: {prompt}",
     "oil_painting": "Masterpiece oil painting on rough canvas, rich impasto brushstrokes, dramatic Chiaroscuro lighting, deep classical tones, Rembrandt style, gallery-grade quality, vertical 9:16 portrait orientation: {prompt}"
@@ -104,30 +104,37 @@ def enrich_visual_prompt(scene_visual: str, art_style: str, scene_index: int = 0
         prompt = prompt[:-1]
         
     modifiers = {
+        # 3D Pixar / Disney: feature film quality, subsurface scattering, glossy eyes, fairytale depth
+        "pixar": ", 3D Pixar animated feature film aesthetic, charming Disney Pixar character design, large glossy expressive eyes, subsurface skin and feather scattering, warm volumetric fairytale lighting, Octane Render, hyper-detailed whimsical 3D animation",
         # Cinematic: template already has 8k, photorealistic, rim lighting — add unique mood depth
         "cinematic": ", volumetric god rays, fine film grain, hyper-detailed textures, cinematic color grade",
         "cyberpunk": ", gorgeous glowing neon accents, highly detailed futuristic architecture, rain-soaked asphalt reflections, cyberpunk grit",
-        "pixar": ", warm claymation lighting, highly detailed soft textures, adorable cartoon features, high-fidelity digital art, colorful and whimsical",
         "anime": ", beautiful makoto shinkai aesthetic, gorgeous detailed background art, cinematic atmospheric light rays, soft anime colors, high aesthetic",
         "painting": ", thick heavy impasto brushstrokes, realistic rough canvas texture, rich oil colors, chiaroscuro shading, fine art masterpiece"
     }
     
     style_key = str(art_style).lower().strip()
-    match_key = "cinematic"
+    match_key = "pixar" if ("pixar" in style_key or "3d" in style_key or style_key == "") else "cinematic"
     if "cyber" in style_key:
         match_key = "cyberpunk"
-    elif "pixar" in style_key or "3d" in style_key:
-        match_key = "pixar"
     elif "anime" in style_key:
         match_key = "anime"
     elif "paint" in style_key or "oil" in style_key:
         match_key = "painting"
-    # Rotationally apply cinematic camera angles (Close-Up, Medium-Shot, Wide Epic Landscape)
-    camera_perspectives = [
-        ", dramatic close-up shot, extreme detail, cinematic studio lighting",
-        ", cinematic medium-shot, photorealistic details, 85mm portrait lens, shallow depth of field",
-        ", sweeping wide-angle cinematic shot, majestic scenery, dynamic volumetric lighting, golden hour octane render"
-    ]
+
+    # Rotationally apply style-appropriate camera angles without contaminating 3D animation with photorealism
+    if match_key == "pixar":
+        camera_perspectives = [
+            ", dramatic close-up shot, extreme 3D animated detail, warm studio lighting",
+            ", cinematic medium-shot, charming expressive character posture, 85mm portrait lens, soft fairytale depth of field",
+            ", sweeping wide-angle cinematic shot, majestic animated scenery, dynamic volumetric lighting, golden hour octane render"
+        ]
+    else:
+        camera_perspectives = [
+            ", dramatic close-up shot, extreme detail, cinematic studio lighting",
+            ", cinematic medium-shot, photorealistic details, 85mm portrait lens, shallow depth of field",
+            ", sweeping wide-angle cinematic shot, majestic scenery, dynamic volumetric lighting, golden hour octane render"
+        ]
     camera_modifier = camera_perspectives[scene_index % len(camera_perspectives)]
         
     return prompt + modifiers.get(match_key, "") + camera_modifier
@@ -284,7 +291,7 @@ def generate_scene_images(script: str, output_dir: str, job_id: str = "default",
     scenes = parse_storyboard(script)
     
     style_key = str(art_style).lower().strip()
-    style_template = STYLE_TEMPLATES.get(style_key, STYLE_TEMPLATES["cinematic"])
+    style_template = STYLE_TEMPLATES.get(style_key, STYLE_TEMPLATES["pixar"])
 
     import random
     if job_id and job_id != "default":
@@ -334,34 +341,42 @@ def generate_scene_images(script: str, output_dir: str, job_id: str = "default",
 
 
 def _create_fallback_image(output_path: str, width: int = 1080, height: int = 1920):
-    """Creates a premium high-aesthetic dark neon gradient fallback image using Pillow."""
+    """Creates a premium 3D Pixar-styled enchanted storybook fallback image using Pillow."""
     try:
-        from PIL import Image, ImageDraw, ImageFilter
-        # Create a deep elegant navy-slate background
-        img = Image.new("RGB", (width, height), color=(15, 16, 28))
+        from PIL import Image, ImageDraw
+        # Create a rich magical twilight-to-amber gradient (Pixar enchanted storybook palette)
+        img = Image.new("RGB", (width, height), color=(20, 15, 38))
         draw = ImageDraw.Draw(img)
         
-        # Draw a beautiful, smooth vertical linear gradient
+        # Draw a warm, smooth vertical linear gradient (magical deep indigo to warm sunset gold)
         for y in range(height):
-            # Slow transition from deep slate-blue to dark cosmic purple
-            r = int(12 + (y / height) * 20)
-            g = int(14 + (y / height) * 12)
-            b = int(24 + (y / height) * 26)
+            ratio = y / height
+            r = int(24 + ratio * 85)   # 24 -> 109
+            g = int(18 + ratio * 48)   # 18 -> 66
+            b = int(45 - ratio * 15)   # 45 -> 30
             draw.line([(0, y), (width, y)], fill=(r, g, b))
             
-        # Draw a sleek subtle glowing border frame inside the video boundaries
+        # Draw a warm golden fairytale storybook inner border
         border_inset = int(40 * (height / 1920.0))
-        border_w = int(4 * (height / 1920.0))
-        draw.rectangle([border_inset, border_inset, width - border_inset, height - border_inset], outline=(30, 40, 70), width=border_w)
+        border_w = int(3 * (height / 1920.0))
+        draw.rectangle(
+            [border_inset, border_inset, width - border_inset, height - border_inset],
+            outline=(218, 165, 32), # Goldenrod
+            width=border_w
+        )
         
-        # Subtly overlay a centered soft circular glow aura (neon cyan/mint themed)
+        # Soft concentric golden stardust aura (Pixar magic sparkle aesthetic)
         center_x = width // 2
-        center_y = height // 2
-        max_glow_radius = int(250 * (height / 1920.0))
-        for r_offset in range(max_glow_radius, 0, -10):
+        center_y = int(height * 0.48)
+        max_glow_radius = int(280 * (height / 1920.0))
+        for r_offset in range(max_glow_radius, 0, -8):
+            alpha_ratio = (max_glow_radius - r_offset) / max_glow_radius
+            gold_r = int(255 * alpha_ratio + 50 * (1 - alpha_ratio))
+            gold_g = int(215 * alpha_ratio + 30 * (1 - alpha_ratio))
+            gold_b = int(50 * alpha_ratio + 40 * (1 - alpha_ratio))
             draw.ellipse(
                 [center_x - r_offset, center_y - r_offset, center_x + r_offset, center_y + r_offset],
-                outline=(0, 255, 180),
+                outline=(gold_r, gold_g, gold_b),
                 width=1
             )
             

@@ -189,78 +189,74 @@ def generate_audio(script_text, output_path, tld="com"):
     rate  = modifiers.get("rate",  "+8%")
     pitch = modifiers.get("pitch", "+0Hz")
 
-    # If already generated via KittenTTS, skip running Edge TTS
+    # If not already generated via KittenTTS, run Edge TTS with gTTS fallback
     if not (os.path.exists(output_path) and os.path.getsize(output_path) > 1000):
         print(f"[tts_generator] Generating audio — voice: {voice}, rate: {rate}, pitch: {pitch}", flush=True)
-
-    try:
-        async def run_edge_tts():
-            communicate = edge_tts.Communicate(spoken_text, voice, rate=rate, pitch=pitch)
-            await communicate.save(output_path)
-
         try:
-            asyncio.get_running_loop()
-            import concurrent.futures
-            with concurrent.futures.ThreadPoolExecutor() as pool:
-                future = pool.submit(asyncio.run, run_edge_tts())
-                future.result(timeout=30)
-        except RuntimeError:
-            asyncio.run(run_edge_tts())
+            async def run_edge_tts():
+                communicate = edge_tts.Communicate(spoken_text, voice, rate=rate, pitch=pitch)
+                await communicate.save(output_path)
 
-        if os.path.exists(output_path) and os.path.getsize(output_path) > 1000:
-            # Post-process: professional podcast broadcast audio mastering
-            # 1. High-pass filter at 75Hz removes low-end sub-rumble
-            # 2. Bass warmth shelf (+3dB at 120Hz) delivers Shure SM7B studio richness
-            # 3. Presence equalizer (+1.5dB at 3kHz) enhances speech intelligibility
-            # 4. Treble air shelf (+2.5dB at 8kHz) adds crystal-clear studio polish
-            # 5. Smooth compand dynamics + broadcast-standard EBU R128 loudness (-16 LUFS)
             try:
-                import subprocess
-                norm_path = output_path + "._norm.mp3"
-                mastering_filter = (
-                    "highpass=f=75,"
-                    "bass=g=3.0:f=120:w=0.6,"
-                    "equalizer=f=3000:t=q:w=1.2:g=1.5,"
-                    "treble=g=2.5:f=8000:w=0.5,"
-                    "compand=attacks=0.02:decays=0.2:points=-60/-60|-24/-12|0/-1:gain=2,"
-                    "loudnorm=I=-16:TP=-1.5:LRA=11"
-                )
-                norm_result = subprocess.run([
-                    "ffmpeg", "-y", "-i", output_path,
-                    "-af", mastering_filter,
-                    "-ar", "44100", "-b:a", "192k",
-                    norm_path
-                ], capture_output=True, timeout=30)
-                if norm_result.returncode == 0 and os.path.exists(norm_path):
-                    os.replace(norm_path, output_path)
-                    print(f"[tts_generator] [OK] Professional podcast vocal mastering applied at {output_path}", flush=True)
-                else:
-                    print(f"[tts_generator] Warning: mastering failed, using raw TTS audio.", flush=True)
-                    if os.path.exists(norm_path):
-                        os.remove(norm_path)
-            except Exception as norm_err:
-                print(f"[tts_generator] Warning: loudnorm post-processing error: {norm_err}", flush=True)
-            return output_path
-        else:
-            raise RuntimeError("Edge TTS generated file was empty or missing.")
+                asyncio.get_running_loop()
+                import concurrent.futures
+                with concurrent.futures.ThreadPoolExecutor() as pool:
+                    future = pool.submit(asyncio.run, run_edge_tts())
+                    future.result(timeout=30)
+            except RuntimeError:
+                asyncio.run(run_edge_tts())
+        except Exception as edge_err:
+            print(f"[tts_generator] Edge TTS failed: {edge_err}. Falling back to gTTS...", flush=True)
+            try:
+                lang = "en"
+                fallback_tld = "co.in"
+                for prefix, lang_code in GTTS_LANG_MAP.items():
+                    if voice.startswith(prefix):
+                        lang = lang_code
+                        break
+                tts = gTTS(text=spoken_text, lang=lang, tld=fallback_tld)
+                tts.save(output_path)
+                print(f"[tts_generator] [OK] gTTS fallback saved to {output_path}", flush=True)
+            except Exception as gtts_err:
+                print(f"[tts_generator] [CRITICAL] gTTS also failed: {gtts_err}", flush=True)
+                raise RuntimeError(f"All TTS engines failed for text: {spoken_text[:50]}...")
 
-    except Exception as e:
-        print(f"[tts_generator] Edge TTS failed: {e}. Falling back to gTTS...", flush=True)
+    if os.path.exists(output_path) and os.path.getsize(output_path) > 1000:
+        # Post-process: professional podcast broadcast audio mastering
+        # 1. High-pass filter at 75Hz removes low-end sub-rumble
+        # 2. Bass warmth shelf (+3dB at 120Hz) delivers Shure SM7B studio richness
+        # 3. Presence equalizer (+1.5dB at 3kHz) enhances speech intelligibility
+        # 4. Treble air shelf (+2.5dB at 8kHz) adds crystal-clear studio polish
+        # 5. Smooth compand dynamics + broadcast-standard EBU R128 loudness (-16 LUFS)
         try:
-            lang = "en"
-            fallback_tld = "co.in"
-            for prefix, lang_code in GTTS_LANG_MAP.items():
-                if voice.startswith(prefix):
-                    lang = lang_code
-                    break
-
-            tts = gTTS(text=spoken_text, lang=lang, tld=fallback_tld)
-            tts.save(output_path)
-            print(f"[tts_generator] [OK] gTTS fallback saved to {output_path}", flush=True)
-            return output_path
-        except Exception as fallback_err:
-            print(f"[tts_generator] [CRITICAL] gTTS also failed: {fallback_err}", flush=True)
-            raise fallback_err
+            import subprocess
+            norm_path = output_path + "._norm.mp3"
+            mastering_filter = (
+                "highpass=f=75,"
+                "bass=g=3.0:f=120:w=0.6,"
+                "equalizer=f=3000:t=q:w=1.2:g=1.5,"
+                "treble=g=2.5:f=8000:w=0.5,"
+                "compand=attacks=0.02:decays=0.2:points=-60/-60|-24/-12|0/-1:gain=2,"
+                "loudnorm=I=-16:TP=-1.5:LRA=11"
+            )
+            norm_result = subprocess.run([
+                "ffmpeg", "-y", "-i", output_path,
+                "-af", mastering_filter,
+                "-ar", "44100", "-b:a", "192k",
+                norm_path
+            ], capture_output=True, timeout=30)
+            if norm_result.returncode == 0 and os.path.exists(norm_path):
+                os.replace(norm_path, output_path)
+                print(f"[tts_generator] [OK] Professional podcast vocal mastering applied at {output_path}", flush=True)
+            else:
+                print(f"[tts_generator] Warning: mastering failed, using raw TTS audio.", flush=True)
+                if os.path.exists(norm_path):
+                    os.remove(norm_path)
+        except Exception as norm_err:
+            print(f"[tts_generator] Warning: loudnorm post-processing error: {norm_err}", flush=True)
+        return output_path
+    else:
+        raise RuntimeError("Generated TTS audio file was empty or missing.")
 
 
 def generate_dialogue_speech(

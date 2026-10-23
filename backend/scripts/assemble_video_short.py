@@ -22,7 +22,7 @@ def main():
     parser.add_argument("--voice", type=str, default="in_female", help="Voice profile key (in_female, in_male, hi_male, etc.)")
     parser.add_argument("--caption_style", type=str, default="tiktok", help="Subtitle style (tiktok, elegant, karaoke)")
     parser.add_argument("--caption_lang", type=str, default="English", help="Caption language (English, Hindi)")
-    parser.add_argument("--music", type=str, default="lofi", help="Background music (none, lofi, upbeat)")
+    parser.add_argument("--music", type=str, default="none", help="Background music (none, lofi, upbeat)")
     parser.add_argument("--resolution", type=str, default="4k", help="Target resolution (1080p, 4k, 8k)")
     parser.add_argument("--transition", type=str, default="dynamic", help="Transitions (dynamic, dissolve, whip_pan, flash, none)")
     parser.add_argument("--mode", type=str, default="speed_ramp", help="Duration adaptation mode (speed_ramp, trim)")

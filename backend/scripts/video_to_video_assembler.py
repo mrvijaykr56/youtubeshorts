@@ -568,7 +568,7 @@ if __name__ == "__main__":
     parser.add_argument("--voice", type=str, default="in_female", help="Voice profile key")
     parser.add_argument("--caption_style", type=str, default="tiktok", help="Subtitle style")
     parser.add_argument("--caption_lang", type=str, default="English", help="Subtitle language")
-    parser.add_argument("--music", type=str, default="lofi", help="Background music (none, lofi, upbeat)")
+    parser.add_argument("--music", type=str, default="none", help="Background music (none, lofi, upbeat)")
     parser.add_argument("--resolution", type=str, default="4k", help="Resolution: 1080p, 4k, 8k")
     parser.add_argument("--transition", type=str, default="dynamic", help="Transition style: dynamic, dissolve, whip_pan, flash")
     parser.add_argument("--mode", type=str, default="speed_ramp", help="Duration adaptation mode: speed_ramp, trim")

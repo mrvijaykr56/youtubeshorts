@@ -90,13 +90,13 @@ Instagram is a prime discovery channel to drive high-retention subscribers to Yo
 ## 6. Automated Reel Packaging & Upload Workflow 📦
 
 ### A. Packaging Reels
-Run [`backend/scripts/prepare_instagram_reels.py`](file:///d:/WorkSpace/YTShorts/backend/scripts/prepare_instagram_reels.py) to package any ready Short:
+Run [`backend/scripts/prepare_instagram_reels.py`](file:///d:/WorkSpace/MyVideoWorkspace/backend/scripts/prepare_instagram_reels.py) to package any ready Short:
 - Copies the final MP4 to `backend/output/instagram_reels_packages/[video_id]/`.
 - Generates high-res 1080x1920 cover photo thumbnail.
 - Creates `caption.txt` containing the pre-formatted hook, story, moral, engagement CTA, and hashtag cloud.
 
 ### B. Automated Uploading via Python (`instagrapi`)
-Run [`backend/scripts/upload_instagram_reel.py`](file:///d:/WorkSpace/YTShorts/backend/scripts/upload_instagram_reel.py) to publish directly to [@magicaltaleskid](https://www.instagram.com/magicaltaleskid/):
+Run [`backend/scripts/upload_instagram_reel.py`](file:///d:/WorkSpace/MyVideoWorkspace/backend/scripts/upload_instagram_reel.py) to publish directly to [@magicaltaleskid](https://www.instagram.com/magicaltaleskid/):
 
 ```powershell
 # 1. List all ready reels

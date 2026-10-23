@@ -47,12 +47,12 @@ past the camera with realistic fluid dynamics. Photorealistic 8K, volumetric lig
 Once the 5 video clips are generated (e.g., `clip_1.mp4` to `clip_5.mp4`):
 
 ```powershell
-.\backend\venv\Scripts\python.exe backend\scripts\assemble_video_short.py `
+python backend\scripts\assemble_video_short.py `
     --job_dir "backend/output/my_short_01" `
     --resolution 4k `
     --voice in_female `
     --caption_style tiktok `
-    --music lofi `
+    --music none `
     --transition dynamic `
     --mode speed_ramp
 ```
@@ -65,7 +65,7 @@ Once the 5 video clips are generated (e.g., `clip_1.mp4` to `clip_5.mp4`):
 * `--transition`: `dynamic`, `dissolve`, `whip_pan`, `flash`, or `none`.
 * `--voice`: `in_female`, `in_male`, `hi_female` (Swara), `hi_male` (Madhur), `us`, etc.
 * `--caption_lang`: `English` (default) or `Hindi`.
-* `--music`: `none`, `lofi`, `upbeat`.
+* `--music`: `none` (default & mandatory standard for pure vocal clarity).
 
 ---
 

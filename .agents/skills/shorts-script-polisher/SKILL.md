@@ -9,7 +9,7 @@ description: >-
 
 # YouTube Shorts Script Polisher & Storyboard Director
 
-This skill guides the agent in crafting viral, high-retention YouTube Shorts scripts and converting them into structured storyboard JSON compatible with the YTShorts rendering pipeline.
+This skill guides the agent in crafting viral, high-retention YouTube Shorts scripts and converting them into structured storyboard JSON compatible with the MyVideoWorkspace rendering pipeline.
 
 ---
 
@@ -135,7 +135,7 @@ Standard storytelling or mind-blowing fact short.
 ]
 ```
 
-### Format B: 2-Character Dialogue Short
+### Format C: 2-Character Dialogue Short
 Alternating conversation between two characters (great for interviews, debates, or comedy).
 
 ```json

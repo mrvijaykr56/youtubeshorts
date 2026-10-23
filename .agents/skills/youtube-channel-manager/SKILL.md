@@ -42,7 +42,7 @@ Playlists increase session watch time and drive binge-viewing in the YouTube alg
 2. **Add Videos**:
    - Insert video items using `youtube.playlistItems().insert(part="snippet", body={...})`.
    - Check existing items to avoid duplicates.
-   - Script reference: [`backend/scripts/manage_channel.py`](file:///d:/WorkSpace/YTShorts/backend/scripts/manage_channel.py).
+   - Script reference: [`backend/scripts/manage_channel.py`](file:///d:/WorkSpace/MyVideoWorkspace/backend/scripts/manage_channel.py).
 
 ---
 
