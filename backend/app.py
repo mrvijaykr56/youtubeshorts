@@ -561,7 +561,9 @@ def compile_video():
             for i in range(len(scenes)):
                 img_path = os.path.join(OUTPUT_DIR, f"{job_id}_scene_{i:02d}.jpg")
                 if not os.path.exists(img_path):
-                    raise RuntimeError(f"Scene image {i+1} is missing. Please regenerate.")
+                    from scripts.image_generator import _create_fallback_image
+                    print(f"[app] Scene image {i+1} missing, creating fallback placeholder: {img_path}", flush=True)
+                    _create_fallback_image(img_path, width=w_comp, height=h_comp)
                 image_paths.append(img_path)
                 
             # Respect user's selected resolution (4K Ultra HD vs 1080p Full HD)
@@ -1094,7 +1096,8 @@ def upload_scene_image():
                 print(f"[app] Error updating uploaded scene reference in DB: {e}", flush=True)
                 
         return jsonify({
-            'success': True, 
+            'success': True,
+            'ok': True,
             'image_url': f'/output/{target_filename}?t={cache_buster}'
         })
     except Exception as e:

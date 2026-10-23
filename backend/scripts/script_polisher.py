@@ -84,8 +84,7 @@ LANGUAGE_DIRECTIVES = {
 def parse_storyboard(storyboard_text) -> list[dict]:
     """
     Parses a structured JSON storyboard string into a list of scenes.
-    Each scene is a dict with 'narration', 'visual', 'step_title', 'slide_title',
-    'bullets', and 'code_snippet' keys.
+    Each scene is a dict with 'narration', 'visual', and optional 'speaker'/'narration_hi'.
     Extremely robust against markdown formatting, mixed-case, delimiter-style fallbacks,
     and plain text splits.
     """
@@ -154,28 +153,6 @@ def parse_storyboard(storyboard_text) -> list[dict]:
                         }
                         if narration_hi:
                             scene["narration_hi"] = narration_hi
-                        if step_title:
-                            scene["step_title"] = step_title
-                        if slide_title:
-                            scene["slide_title"] = slide_title
-                        if summary:
-                            scene["summary"] = summary
-                        if section_title:
-                            scene["section_title"] = section_title
-                        if bullets:
-                            if isinstance(bullets, list):
-                                # Keep dictionary bullet structures intact; otherwise convert to string
-                                scene["bullets"] = [
-                                    b if isinstance(b, dict) else str(b).strip()
-                                    for b in bullets if b
-                                ]
-                            elif isinstance(bullets, str):
-                                scene["bullets"] = [b.strip() for b in bullets.split("\n") if b.strip()]
-                        if code_snippet:
-                            scene["code_snippet"] = code_snippet
-                        if layout_type:
-                            scene["layout_type"] = layout_type
-                        speaker = item.get("speaker", "").strip()
                         if speaker:
                             scene["speaker"] = speaker
                         voice_gender = item.get("voice_gender", "").strip().lower()
@@ -244,7 +221,7 @@ def parse_storyboard(storyboard_text) -> list[dict]:
         clean_fallback_text = text
         if '[' in clean_fallback_text or '{' in clean_fallback_text:
             clean_fallback_text = re.sub(r'[\{\}\[\]"\'\:\,]', ' ', clean_fallback_text)
-            clean_fallback_text = re.sub(r'\b(?:scene_number|narration|visual|step_title|scene)\b', ' ', clean_fallback_text, flags=re.IGNORECASE)
+            clean_fallback_text = re.sub(r'\b(?:scene_number|narration|visual|scene)\b', ' ', clean_fallback_text, flags=re.IGNORECASE)
             clean_fallback_text = re.sub(r'\s+', ' ', clean_fallback_text).strip()
             
         sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', clean_fallback_text) if len(s.strip()) > 10]
