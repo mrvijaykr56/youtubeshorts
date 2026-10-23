@@ -4,7 +4,10 @@ import time
 import random
 import requests
 from dotenv import load_dotenv
-
+from pathlib import Path
+_env_path = Path(__file__).resolve().parent.parent / ".env"
+if _env_path.exists():
+    load_dotenv(dotenv_path=_env_path)
 load_dotenv()
 
 def clean_json_string(text: str) -> str:
@@ -58,17 +61,21 @@ def query_llm(
     """
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     
-    # Try Google Gemini 2.5 Flash first
+    # Try Google Gemini (gemini-3.5-flash -> gemini-3.5-flash-lite -> gemini-flash-lite-latest)
     if api_key:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+        candidate_models = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-flash-lite-latest"]
         
         # Build contents structure
+        gen_config = {
+            "temperature": temperature,
+            "maxOutputTokens": max_tokens
+        }
+        if response_format_json:
+            gen_config["responseMimeType"] = "application/json"
+            
         payload = {
             "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {
-                "temperature": temperature,
-                "maxOutputTokens": max_tokens
-            }
+            "generationConfig": gen_config
         }
         
         if system_prompt:
@@ -76,32 +83,37 @@ def query_llm(
                 "parts": [{"text": system_prompt}]
             }
             
-        backoff = 2.0
-        for attempt in range(max_retries):
-            try:
-                print(f"[llm_client] Querying Gemini 2.5 Flash (attempt {attempt+1}/{max_retries})...", flush=True)
-                response = requests.post(url, json=payload, timeout=20)
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
-                    if parts:
-                        text = parts[0].get("text", "").strip()
-                        if text:
-                            return text
-                elif response.status_code == 429:
-                    wait_time = backoff + random.uniform(0.1, 1.0)
-                    print(f"[llm_client] Gemini rate limited (429). Retrying in {wait_time:.2f}s...", flush=True)
-                    time.sleep(wait_time)
-                    backoff *= 2.0
-                else:
-                    print(f"[llm_client] Gemini returned HTTP status {response.status_code}. Retrying...", flush=True)
-                    time.sleep(1.5)
-            except Exception as e:
-                print(f"[llm_client] Gemini request error: {e}. Retrying...", flush=True)
-                time.sleep(1.5)
-                
-        print("[llm_client] All Gemini API attempts failed. Transitioning to Pollinations fallback...", flush=True)
+        for model_name in candidate_models:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+            for attempt in range(max_retries):
+                try:
+                    print(f"[llm_client] Querying Google {model_name} (attempt {attempt+1}/{max_retries})...", flush=True)
+                    response = requests.post(url, json=payload, timeout=25)
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
+                        if parts:
+                            text = parts[0].get("text", "").strip()
+                            if text:
+                                return text
+                    elif response.status_code in (404, 503, 502, 504):
+                        print(f"[llm_client] {model_name} temporarily unavailable ({response.status_code}), swiftly switching to next Gemini model...", flush=True)
+                        break  # Immediately switch to next candidate Gemini model without delay
+                    elif response.status_code == 429:
+                        print(f"[llm_client] {model_name} rate limit reached (429), switching to next Gemini model...", flush=True)
+                        break
+                    else:
+                        print(f"[llm_client] {model_name} returned status {response.status_code}. Retrying...", flush=True)
+                        time.sleep(1.0)
+                except Exception as e:
+                    print(f"[llm_client] {model_name} network error: {e}. Trying next Gemini candidate...", flush=True)
+                    break
+                    
+        print("[llm_client] [WARNING] All Gemini candidate models failed.", flush=True)
+        return ""
+        
+    # If no API key is present in environment, fallback to keyless Pollinations LLM
         
     # Resilient fallback to keyless Pollinations LLM
     pollinations_url = "https://text.pollinations.ai/openai"
@@ -129,7 +141,7 @@ def query_llm(
     for attempt in range(max_llm_attempts):
         try:
             print(f"[llm_client] Querying Pollinations LLM (attempt {attempt+1}/{max_llm_attempts})...", flush=True)
-            response = requests.post(pollinations_url, json=payload, timeout=30)
+            response = requests.post(pollinations_url, json=payload, timeout=10)
             
             if response.status_code == 200:
                 data = response.json()

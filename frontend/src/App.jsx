@@ -471,7 +471,12 @@ function SceneCard({ idx, scene, imgUrl, onRegenerate, isRegenerating, onUploadI
       {/* Thumbnail */}
       <div style={{ position: 'relative', aspectRatio: '9/16', maxHeight: '300px', overflow: 'hidden',
         background: '#F2F7EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        className="group">
+        className="group"
+        onDragOver={e => e.preventDefault()}
+        onDrop={e => {
+          e.preventDefault();
+          if (e.dataTransfer.files?.[0]) onUploadImage(idx, e.dataTransfer.files[0]);
+        }}>
         {!imgLoaded && !isRegenerating && !isUploading && (
           <div className="animate-shimmer" style={{ position: 'absolute', inset: 0 }} />
         )}
@@ -484,37 +489,48 @@ function SceneCard({ idx, scene, imgUrl, onRegenerate, isRegenerating, onUploadI
 
         {/* Scene badge */}
         <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 10,
-          background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)',
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
           borderRadius: '99px', padding: '4px 10px', fontSize: '11px', fontWeight: 800,
           color: '#0F172A', border: '1px solid rgba(0,0,0,0.07)' }}>
           Scene {idx + 1}
           {scene.speaker && <span style={{ marginLeft: '6px', color: '#526658' }}>· {scene.speaker}</span>}
         </div>
 
-        {/* Hover overlay */}
+        {/* Permanent visible Upload / Replace button on top-right */}
+        {!isRegenerating && !isUploading && (
+          <label style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 12,
+            background: '#D4F84A', borderRadius: '99px', padding: '5px 12px',
+            fontSize: '11px', fontWeight: 800, color: '#0F172A', border: '1px solid rgba(0,0,0,0.12)',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)', transition: 'transform 0.15s ease' }}
+            className="hover:scale-105 active:scale-95"
+            title={`Upload custom 9:16 image for Scene ${idx + 1}`}>
+            <Upload size={12} strokeWidth={2.5} /> Upload
+            <input type="file" accept="image/*" className="hidden"
+              onChange={e => { if (e.target.files[0]) onUploadImage(idx, e.target.files[0]); }} />
+          </label>
+        )}
+
+        {/* Full Hover overlay for Drag/Drop guidance */}
         {!isRegenerating && !isUploading && (
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.45)',
             opacity: 0, transition: 'opacity 0.2s ease', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', zIndex: 10, backdropFilter: 'blur(2px)' }}
+            justifyContent: 'center', zIndex: 9, backdropFilter: 'blur(2px)', pointerEvents: 'none' }}
             className="group-hover:opacity-100">
-            <label style={{ background: '#D4F84A', color: '#0F172A', borderRadius: '99px',
-              padding: '10px 18px', fontSize: '12px', fontWeight: 800, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '6px', transition: 'transform 0.15s' }}
-              title="Upload custom 9:16 image">
-              <Upload size={14} /> Upload Image
-              <input type="file" accept="image/*" className="hidden"
-                onChange={e => { if (e.target.files[0]) onUploadImage(idx, e.target.files[0]); }} />
-            </label>
+            <span style={{ color: '#FFFFFF', fontSize: '12px', fontWeight: 700,
+              background: 'rgba(0,0,0,0.6)', padding: '6px 14px', borderRadius: '99px' }}>
+              Drop 9:16 image here
+            </span>
           </div>
         )}
 
         {(isRegenerating || isUploading) && (
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.85)',
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.9)',
             backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', gap: '10px', zIndex: 10 }}>
+            alignItems: 'center', justifyContent: 'center', gap: '10px', zIndex: 15 }}>
             <Loader2 size={28} color="#84CC16" style={{ animation: 'spin 1s linear infinite' }} />
             <p style={{ fontSize: '12px', fontWeight: 700, color: '#2D3B31' }}>
-              {isRegenerating ? 'Regenerating Art...' : 'Uploading...'}
+              {isRegenerating ? 'Regenerating Art...' : 'Uploading Image...'}
             </p>
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </div>
@@ -541,8 +557,17 @@ function SceneCard({ idx, scene, imgUrl, onRegenerate, isRegenerating, onUploadI
           <div style={{ fontSize: '10px', fontWeight: 700, color: '#8FAE97', textTransform: 'uppercase',
             letterSpacing: '0.07em', marginBottom: '6px' }}>🖼️ Visual Prompt</div>
           {isEditing ? (
-            <textarea value={editedPrompt} onChange={e => setEditedPrompt(e.target.value)}
-              className="lemon-input" style={{ minHeight: '55px', resize: 'none', lineHeight: '1.5', padding: '10px' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <textarea value={editedPrompt} onChange={e => setEditedPrompt(e.target.value)}
+                className="lemon-input" style={{ minHeight: '55px', resize: 'none', lineHeight: '1.5', padding: '10px' }} />
+              <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                padding: '8px 12px', background: '#F4F7F2', border: '1px dashed #A3C99F', borderRadius: '8px',
+                fontSize: '11px', fontWeight: 700, color: '#3A5A40', cursor: 'pointer' }}>
+                <Upload size={13} /> Choose Image File (.jpg, .png, .webp)
+                <input type="file" accept="image/*" className="hidden"
+                  onChange={e => { if (e.target.files[0]) onUploadImage(idx, e.target.files[0]); }} />
+              </label>
+            </div>
           ) : (
             <p style={{ fontSize: '12px', color: '#526658', lineHeight: '1.5', fontStyle: 'italic',
               background: '#FAFCF9', borderRadius: '10px', padding: '10px',
@@ -555,7 +580,7 @@ function SceneCard({ idx, scene, imgUrl, onRegenerate, isRegenerating, onUploadI
           {isEditing ? (
             <>
               <button onClick={() => { setIsEditing(false); onRegenerate(editedPrompt, editedNarration); }}
-                className="btn-lemon" style={{ flex: 1, fontSize: '12px', padding: '9px 12px', borderRadius: '10px' }}>
+                className="btn-lemon" style={{ flex: 1, fontSize: '12px', padding: '9px 12px', borderRadius: '10px', gap: '5px' }}>
                 <Check size={13} /> Save & Redraw
               </button>
               <button onClick={() => { setEditedPrompt(scene.visual || ''); setEditedNarration(scene.narration || ''); setIsEditing(false); }}
@@ -564,11 +589,21 @@ function SceneCard({ idx, scene, imgUrl, onRegenerate, isRegenerating, onUploadI
               </button>
             </>
           ) : (
-            <button onClick={() => setIsEditing(true)}
-              className="btn-ghost" style={{ flex: 1, fontSize: '12px', padding: '9px 12px',
-                borderRadius: '10px', justifyContent: 'center' }}>
-              <Edit3 size={13} /> Edit Scene
-            </button>
+            <>
+              <button onClick={() => setIsEditing(true)}
+                className="btn-ghost" style={{ flex: 1, fontSize: '12px', padding: '9px 12px',
+                  borderRadius: '10px', justifyContent: 'center', gap: '5px' }}>
+                <Edit3 size={13} /> Edit Text
+              </button>
+              <label className="btn-lemon" style={{ flex: 1, fontSize: '12px', padding: '9px 12px',
+                borderRadius: '10px', justifyContent: 'center', cursor: 'pointer', display: 'flex',
+                alignItems: 'center', gap: '6px' }}
+                title={`Upload custom 9:16 image for Scene ${idx + 1}`}>
+                <Upload size={13} strokeWidth={2.5} /> Upload Image
+                <input type="file" accept="image/*" className="hidden"
+                  onChange={e => { if (e.target.files[0]) onUploadImage(idx, e.target.files[0]); }} />
+              </label>
+            </>
           )}
         </div>
       </div>

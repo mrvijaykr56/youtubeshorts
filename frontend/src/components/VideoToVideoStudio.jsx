@@ -323,10 +323,20 @@ export default function VideoToVideoStudio() {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 block mb-1">Veo / VideoFX Prompt:</label>
-                  <div className="text-[10px] text-slate-600 bg-white border border-slate-200 rounded p-2 max-h-24 overflow-y-auto leading-relaxed select-all">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-[10px] font-bold text-slate-500">Veo / VideoFX Prompt:</label>
+                    {s.b_roll_prompt && (
+                      <span className="text-[9px] text-lime-700 font-bold bg-lime-100 px-1.5 py-0.5 rounded">B-Roll</span>
+                    )}
+                  </div>
+                  <div className="text-[10px] text-slate-600 bg-white border border-slate-200 rounded p-2 max-h-20 overflow-y-auto leading-relaxed select-all">
                     {s.video_prompt}
                   </div>
+                  {s.b_roll_prompt && (
+                    <div className="mt-1.5 text-[9px] text-slate-600 bg-slate-100/80 border border-slate-200/80 rounded p-1.5 leading-relaxed max-h-16 overflow-y-auto">
+                      <span className="font-bold text-slate-800">Alt Angle:</span> {s.b_roll_prompt}
+                    </div>
+                  )}
                 </div>
               </div>
 

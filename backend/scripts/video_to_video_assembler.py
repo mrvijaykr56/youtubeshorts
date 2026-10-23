@@ -492,6 +492,23 @@ def assemble_video_to_video(
     print("  Encoding master video with hardware acceleration...")
     subprocess.run(ffmpeg_cmd, check=True)
 
+    # 8. Generate High-Res Poster Thumbnail from Hook Scene
+    thumb_path = os.path.join(job_dir, "thumbnail.jpg")
+    try:
+        thumb_cmd = [
+            "ffmpeg", "-y",
+            "-ss", "1.0",
+            "-i", final_output,
+            "-vframes", "1",
+            "-q:v", "2",
+            thumb_path
+        ]
+        subprocess.run(thumb_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+        if os.path.exists(thumb_path):
+            print(f"   🖼️  Poster Thumbnail Ready: {thumb_path}")
+    except Exception:
+        pass
+
     size_mb = os.path.getsize(final_output) / (1024.0 * 1024.0)
     print(f"\n{'='*70}")
     print(f"🎉 MASTER VIDEO-TO-VIDEO SHORT READY: {final_output}")

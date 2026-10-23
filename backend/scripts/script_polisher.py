@@ -34,39 +34,6 @@ Expected JSON Structure:
 ]"""
 
 
-TUTORIAL_SYSTEM_PROMPT = """You are an expert educational content creator specializing in slide-based tutorial and how-to YouTube Shorts.
-Your job is to transform a raw tutorial topic into a clear, structured step-by-step presentation slide script.
-
-Rules:
-- Structure: Introduction (1 scene) + 4-7 numbered steps + optional Summary (1 scene). Total: 6-9 scenes.
-- Total word count: 100-150 words (fits in 60-90 seconds of speech at a calm tutorial pace).
-- Each scene = ONE educational slide. Spoken narration must be direct, simple, and calm (15-25 words per slide).
-- For each scene, you MUST generate structured slide slide_title, bullets, and optional code_snippet:
-  - slide_title: A bold, clear, descriptive title for the slide (e.g. "Step 1: Setup Workspace" or "List Comprehension syntax"). Max 6 words.
-  - bullets: A strict JSON array containing exactly 2 to 3 short, punchy bullet points. Bullet points must be concise (max 8 words each) so they fit nicely on a vertical mobile screen.
-  - code_snippet: Optional single line of code, CLI command, or key takeaway quote (e.g. "pip install edge-tts" or "fruits.append('kiwi')"). Leave empty string ("") if not applicable.
-  - visual: A clean background/illustration prompt for the graphic card (e.g., "Flat-lay clean 3D icon of a database, vibrant cyan glow, modern studio background").
-- Each scene must include a step_title: "Introduction", "Step 1" through "Step N", or "Summary".
-
-Format the output as a strict, clean JSON array. No markdown, no extra text.
-
-Expected JSON Structure:
-[
-  {
-    "scene_number": 1,
-    "step_title": "Introduction",
-    "slide_title": "Learn Python Lists",
-    "bullets": [
-      "Ordered sequence of elements",
-      "Defined using square brackets []",
-      "Dynamic and mutable lists"
-    ],
-    "code_snippet": "my_list = [1, 2, 3]",
-    "narration": "Today we'll learn about Python lists. Lists are highly flexible collections of ordered items that you can modify.",
-    "visual": "A clean 3D cartoon styled graphic of a numbered list, soft blue lighting, white studio background..."
-  },
-  ...
-]"""
 
 
 DIALOGUE_SYSTEM_PROMPT = """You are an expert viral YouTube Shorts director specializing in fast-paced 2-character conversational dialogue Shorts.
@@ -178,13 +145,7 @@ def parse_storyboard(storyboard_text) -> list[dict]:
                     narration = item.get("narration", "").strip()
                     narration_hi = item.get("narration_hi", "").strip()
                     visual = item.get("visual", "").strip()
-                    step_title = item.get("step_title", "").strip()  # Tutorial Mode field
-                    slide_title = item.get("slide_title", "").strip()
-                    summary = item.get("summary", "").strip()
-                    section_title = item.get("section_title", "").strip()
-                    bullets = item.get("bullets", [])
-                    code_snippet = item.get("code_snippet", "").strip()
-                    layout_type = item.get("layout_type", "").strip()
+                    speaker = item.get("speaker", "").strip()
                     
                     if narration or narration_hi:
                         scene = {
@@ -293,27 +254,7 @@ def parse_storyboard(storyboard_text) -> list[dict]:
                 "visual": s
             })
             
-    # Auto-recovery layer: Make sure all scenes have slide titles and bullets for tutorial mode
-    for idx, scene in enumerate(scenes):
-        if "step_title" in scene and "slide_title" not in scene:
-            scene["slide_title"] = scene["step_title"]
-        if "slide_title" not in scene:
-            scene["slide_title"] = f"Step {idx + 1}" if idx > 0 else "Introduction"
-            
-        if "bullets" not in scene:
-            # Generate 2 nice bullet points by splitting narration at punctuation clauses
-            narr = scene.get("narration", "")
-            clauses = [c.strip() for c in re.split(r'[,.!?]', narr) if len(c.strip()) > 6]
-            if len(clauses) >= 2:
-                scene["bullets"] = [clauses[0], clauses[1]]
-            else:
-                scene["bullets"] = [narr[:40] + "..." if len(narr) > 40 else narr, "Ready for the next step"]
-                
-        if "code_snippet" not in scene:
-            scene["code_snippet"] = ""
-
     return scenes
-
 
 
 def polish_with_pollinations(raw_script: str, system_prompt: str = None) -> str:
@@ -321,11 +262,7 @@ def polish_with_pollinations(raw_script: str, system_prompt: str = None) -> str:
     Polishes script using the centralized LLM client.
     """
     active_prompt = system_prompt or SYSTEM_PROMPT
-    user_content = (
-        f"Structure this into a tutorial storyboard for YouTube Shorts:\n\n{raw_script}"
-        if system_prompt
-        else f"Polish this script into a structured storyboard for YouTube Shorts:\n\n{raw_script}"
-    )
+    user_content = f"Polish this script into a structured storyboard for YouTube Shorts:\n\n{raw_script}"
     return query_llm(
         user_content,
         system_prompt=active_prompt,
@@ -385,169 +322,59 @@ def evaluate_script(script: str, mode: str = "shorts") -> float:
     words = spoken_text.split()
     word_count = len(words)
 
-    if mode == "tutorial":
-        # --- TUTORIAL MODE SCORING ---
-        # 1. Word Count Score (Ideal target of 100–150 words - max 40 points)
-        if 100 <= word_count <= 150:
-            score += 40.0
-        elif 80 <= word_count < 100 or 150 < word_count <= 180:
-            score += 25.0
-        elif 50 <= word_count < 80 or 180 < word_count <= 220:
-            score += 10.0
-        else:
-            score += 5.0
 
-        # 2. Clarity / Pacing (Direct, actionable sentences: ideal 15–25 words per step - max 30 points)
-        if scenes:
-            avg_words_per_scene = word_count / len(scenes)
-            if 15 <= avg_words_per_scene <= 25:
-                score += 30.0
-            elif 10 <= avg_words_per_scene < 15 or 25 < avg_words_per_scene <= 30:
-                score += 20.0
-            else:
-                score += 10.0
-        else:
-            score += 10.0
-
-        # 3. Structural Steps (Awards points for verified presence of "step_title" markers containing "Introduction", "Step", and "Summary" - max 30 points)
-        has_intro = False
-        has_step = False
-        has_summary = False
-        for scene in scenes:
-            title = scene.get("step_title", "").lower()
-            if "introduction" in title or "intro" in title:
-                has_intro = True
-            if "step" in title:
-                has_step = True
-            if "summary" in title or "conclusion" in title or "outro" in title:
-                has_summary = True
-
-        if has_intro:
-            score += 10.0
-        if has_step:
-            score += 10.0
-        if has_summary:
-            score += 10.0
-            
+    # --- SHORTS MODE SCORING ---
+    # 1. Word Count Score (45-75 words is ideal for Shorts - max 40 points)
+    if 45 <= word_count <= 75:
+        score += 40.0
+    elif 30 <= word_count < 45:
+        score += 25.0
+    elif 75 < word_count <= 90:
+        score += 20.0
     else:
-        # --- SHORTS MODE SCORING ---
-        # 1. Word Count Score (45-75 words is ideal for Shorts - max 40 points)
-        if 45 <= word_count <= 75:
-            score += 40.0
-        elif 30 <= word_count < 45:
-            score += 25.0
-        elif 75 < word_count <= 90:
+        score += 5.0  # too short or too long
+
+    # Split into sentences using simple regex
+    sentences = [s.strip() for s in re.split(r'[.!?]+', spoken_text) if s.strip()]
+    sentence_count = len(sentences)
+
+    if sentence_count > 0:
+        avg_sentence_len = word_count / sentence_count
+        
+        # 2. Punchiness / Sentence Length (Ideal is short, punchy sentences under 15 words - max 30 points)
+        if avg_sentence_len <= 12:
+            score += 30.0
+        elif avg_sentence_len <= 16:
             score += 20.0
         else:
-            score += 5.0  # too short or too long
+            score += 10.0
 
-        # Split into sentences using simple regex
-        sentences = [s.strip() for s in re.split(r'[.!?]+', spoken_text) if s.strip()]
-        sentence_count = len(sentences)
+        # 3. Hook strength in first sentence (max 30 points)
+        first_sentence = sentences[0].lower()
+        
+        is_question = spoken_text.strip().split('.')[0].strip().endswith('?') or first_sentence.endswith('?')
+        
+        hook_words = [
+            "ever wonder", "did you know", "what if", "imagine", "the shocking truth",
+            "this is why", "most people don't know", "secrets of", "stop doing", "never",
+            "you won't believe", "the truth about", "nobody talks about", "here's why",
+            "turns out", "the real reason", "scientists discovered", "this changes everything",
+            "warning", "actually", "this is illegal", "they don't want you to know"
+        ]
+        has_hook_word = any(hw in first_sentence for hw in hook_words)
 
-        if sentence_count > 0:
-            avg_sentence_len = word_count / sentence_count
-            
-            # 2. Punchiness / Sentence Length (Ideal is short, punchy sentences under 15 words - max 30 points)
-            if avg_sentence_len <= 12:
-                score += 30.0
-            elif avg_sentence_len <= 16:
-                score += 20.0
+        if is_question and has_hook_word:
+            score += 30.0
+        elif is_question or has_hook_word:
+            score += 20.0
+        else:
+            if len(first_sentence.split()) < 8:
+                score += 15.0
             else:
-                score += 10.0
+                score += 5.0
 
-            # 3. Hook strength in first sentence (max 30 points)
-            first_sentence = sentences[0].lower()
-            
-            is_question = spoken_text.strip().split('.')[0].strip().endswith('?') or first_sentence.endswith('?')
-            
-            hook_words = [
-                "ever wonder", "did you know", "what if", "imagine", "the shocking truth",
-                "this is why", "most people don't know", "secrets of", "stop doing", "never",
-                "you won't believe", "the truth about", "nobody talks about", "here's why",
-                "turns out", "the real reason", "scientists discovered", "this changes everything",
-                "warning", "actually", "this is illegal", "they don't want you to know"
-            ]
-            has_hook_word = any(hw in first_sentence for hw in hook_words)
-
-            if is_question and has_hook_word:
-                score += 30.0
-            elif is_question or has_hook_word:
-                score += 20.0
-            else:
-                if len(first_sentence.split()) < 8:
-                    score += 15.0
-                else:
-                    score += 5.0
-    
     return score
 
-
-
-def query_gemini_for_question(question: str) -> dict:
-    """
-    Queries Google Gemini (or falls back to Pollinations LLM proxy) using the centralized LLM client.
-    Returns a structured dictionary with a summary paragraph, section title, and key features.
-    """
-    import json
-    
-    prompt = (
-        f"You are a world-class professional educational instructor.\n"
-        f"For the question: '{question}', generate a structured JSON object containing a detailed, high-level summary paragraph and a list of exactly 5 key features.\n"
-        f"The JSON MUST be formatted EXACTLY like this with no other text, markdown formatting, or wrappers:\n"
-        f"{{\n"
-        f"  \"summary\": \"[A highly professional, bold summary paragraph of 2-3 sentences, maximum 45-50 words, detailing the core definition and importance of the topic]\",\n"
-        f"  \"section_title\": \"🔑 Key Features of [TopicName]\",\n"
-        f"  \"bullets\": [\n"
-        f"    {{\"title\": \"[Feature 1 Title (2-4 words)]\", \"description\": \"[Brief explanation of Feature 1, beginner-friendly]\"}},\n"
-        f"    {{\"title\": \"[Feature 2 Title]\", \"description\": \"[Brief explanation]\"}},\n"
-        f"    {{\"title\": \"[Feature 3 Title]\", \"description\": \"[Brief explanation]\"}},\n"
-        f"    {{\"title\": \"[Feature 4 Title]\", \"description\": \"[Brief explanation]\"}},\n"
-        f"    {{\"title\": \"[Feature 5 Title]\", \"description\": \"[Brief explanation]\"}}\n"
-        f"  ]\n"
-        f"}}\n"
-        f"Choose an appropriate, professional, and matching emoji for the section_title (e.g. 🔑 for features, ⚙️ for mechanics, 🛠️ for tools, etc.).\n"
-        f"Return ONLY the raw JSON string. Do not wrap it in ```json ... ``` blocks."
-    )
-    
-    default_data = {
-        "summary": f"{question.strip('? ').capitalize()} is an important technical concept that is widely used, highly scalable, and essential for modern developers and programmers.",
-        "section_title": f"🔑 Key Features of {question.strip('? ').capitalize()}",
-        "bullets": [
-            {"title": "Easy to Learn", "description": "Designed with a simple, clear, and readable structure suitable for beginners."},
-            {"title": "Highly Versatile", "description": "Applicable across web development, scripting, data operations, and automation."},
-            {"title": "Open Source", "description": "Free to use, modify, and distribute with a massive global supportive community."},
-            {"title": "Robust Ecosystem", "description": "Supported by thousands of external libraries, packages, and frameworks."},
-            {"title": "High Demand", "description": "Widely adopted by top tech companies globally, offering excellent career growth."}
-        ]
-    }
-
-    # Specific hardcoded answer for "python" question
-    if "python" in question.lower():
-        return {
-            "summary": "Python is a high-level, open-source programming language known for its simplicity, readability, and versatility. It's widely used in web development, data science, artificial intelligence, automation, and more, making it one of the most popular languages globally.",
-            "section_title": "🔑 Key Features of Python",
-            "bullets": [
-                {"title": "Easy to Learn & Read", "description": "Uses clear syntax and indentation, making it beginner-friendly."},
-                {"title": "Cross-Platform", "description": "Runs on Windows, macOS, Linux, and even mobile operating systems."},
-                {"title": "Open Source", "description": "Free to use, modify, and distribute under the Python Software Foundation license."},
-                {"title": "Extensive Libraries", "description": "Thousands of modules available via PyPI (Python Package Index)."},
-                {"title": "Versatile Applications", "description": "From web apps (Django, Flask) to machine learning (TensorFlow, PyTorch)."}
-            ]
-        }
-
-    try:
-        print(f"[script_polisher] Simple Q&A: Querying central LLM client for '{question}'...", flush=True)
-        response_text = query_llm(prompt, response_format_json=True, temperature=0.4, max_tokens=500)
-        if response_text:
-            cleaned_json = clean_json_string(response_text)
-            parsed = json.loads(cleaned_json)
-            if parsed.get("summary") and parsed.get("bullets"):
-                return parsed
-    except Exception as e:
-        print(f"[script_polisher] Simple Q&A querying failed: {e}", flush=True)
-
-    return default_data
 
 
 def polish_script(raw_script: str, mode: str = "shorts", language: str = "English") -> str:
@@ -555,77 +382,16 @@ def polish_script(raw_script: str, mode: str = "shorts", language: str = "Englis
     Orchestrates script polishing. Supports modes:
       - 'shorts' (default): viral YouTube Shorts — 5-7 scenes, 60-80 words, hook-first.
       - 'dialogue': multi-character conversational banter — alternating 2 characters with speaker tags.
-      - 'tutorial': instructional How-To — 6-9 numbered steps, 100-150 words, calm tone.
     language: target narration language (e.g. 'Hindi', 'Bengali'). Defaults to 'English'.
     """
     import json
-    if mode == "tutorial":
-        mode_label = "Tutorial"
-    elif mode == "dialogue":
-        mode_label = "Dialogue"
-    else:
-        mode_label = "Shorts"
-
-    # Simple Question-Answer Detection for Tutorial Mode
-    if mode == "tutorial":
-        clean_raw = raw_script.strip().lower()
-        is_simple_question = (
-            clean_raw.endswith("?") or
-            any(clean_raw.startswith(q) for q in ["what is", "how to", "why is", "explain", "define", "what are", "who is", "how does"])
-        ) and len(raw_script.split()) < 15
-        
-        if is_simple_question:
-            print(f"[script_polisher] Detected Simple Q&A Prompt: '{raw_script}'", flush=True)
-            qa_data = query_gemini_for_question(raw_script)
-            
-            # Construct a beautiful, fluent narration reading out the summary and the complete bullet details (titles and descriptions)
-            summary_text = qa_data.get("summary", "")
-            section_name = qa_data.get("section_title", "").replace("🔑", "").replace("⚙️", "").replace("🛠️", "").strip()
-            
-            bullets_text_list = []
-            for b in qa_data.get("bullets", []):
-                title = b.get("title", "").strip().rstrip(".")
-                desc = b.get("description", "").strip().rstrip(".")
-                if title and desc:
-                    bullets_text_list.append(f"{title}: {desc}")
-                elif title:
-                    bullets_text_list.append(title)
-            
-            narration_parts = [summary_text]
-            if bullets_text_list:
-                narration_parts.append(f"Regarding the {section_name}:")
-                # Join with full stops so TTS pauses naturally between key points!
-                narration_parts.append(". ".join(bullets_text_list) + ".")
-            narration_text = " ".join(narration_parts)
-            
-            print(f"[script_polisher] Generated Narration: '{narration_text}'", flush=True)
-            
-            # Format custom slide scene with rich structured data
-            formatted_title = raw_script.strip("? ").upper() + "?"
-            scene = {
-                "scene_number": 1,
-                "step_title": "Q&A",
-                "slide_title": formatted_title,
-                "summary": qa_data.get("summary", ""),
-                "section_title": qa_data.get("section_title", ""),
-                "bullets": qa_data.get("bullets", []), # List of dicts [{"title": "...", "description": "..."}, ...]
-                "code_snippet": "",
-                "layout_type": "simple_qa",
-                "narration": narration_text,
-                "visual": f"A clean 3D illustration representing {raw_script}, glowing highlights, vector logo style"
-            }
-            return json.dumps([scene], ensure_ascii=False, indent=2)
+    mode_label = "Dialogue" if mode == "dialogue" else "Shorts"
 
     import concurrent.futures
 
     # Phase 1 & 2: Dynamic Style Meta-Prompting Layer
     style_modifiers = analyze_script_style(raw_script)
-    if mode == "dialogue":
-        base_prompt = DIALOGUE_SYSTEM_PROMPT
-    elif mode == "tutorial":
-        base_prompt = TUTORIAL_SYSTEM_PROMPT
-    else:
-        base_prompt = SYSTEM_PROMPT
+    base_prompt = DIALOGUE_SYSTEM_PROMPT if mode == "dialogue" else SYSTEM_PROMPT
 
     # Inject language directive when a non-English voice is selected
     lang_directive = LANGUAGE_DIRECTIVES.get(language, "")

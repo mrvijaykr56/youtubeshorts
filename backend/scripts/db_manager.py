@@ -68,7 +68,7 @@ class SQLiteJobStore:
     """
     ALLOWED_FIELDS = {"state", "message", "progress", "polished_script", "file", "art_style", "video_mode", "video_resolution"}
 
-    def __init__(self, db_path: str = None):
+    def __init__(self, db_path: str = None, reconcile: bool = False):
         self.fallback = None
         
         if db_path is None:
@@ -96,14 +96,14 @@ class SQLiteJobStore:
                         updated_at REAL
                     )
                 """)
-                # Reconcile interrupted jobs from previous server runs
-                cursor = conn.execute("""
-                    UPDATE jobs 
-                    SET state = 'error', message = 'Interrupted by server restart', updated_at = ?
-                    WHERE state IN ('pending', 'generating', 'compiling_video', 'generating_storyboard', 'pending_compile')
-                """, (time.time(),))
-                if cursor.rowcount > 0:
-                    print(f"[db_manager] Reconciled {cursor.rowcount} interrupted job(s) from previous session.", flush=True)
+                if reconcile:
+                    cursor = conn.execute("""
+                        UPDATE jobs 
+                        SET state = 'error', message = 'Interrupted by server restart', updated_at = ?
+                        WHERE state IN ('pending', 'generating', 'compiling_video', 'generating_storyboard', 'pending_compile')
+                    """, (time.time(),))
+                    if cursor.rowcount > 0:
+                        print(f"[db_manager] Reconciled {cursor.rowcount} interrupted job(s) from previous session.", flush=True)
             conn.close()
             print(f"[db_manager] Durable WAL-enabled SQLite store initialized successfully at: {self.db_path}", flush=True)
         except Exception as e:
@@ -129,15 +129,18 @@ class SQLiteJobStore:
         video_mode = kwargs.get("video_mode", "shorts")
         video_resolution = kwargs.get("video_resolution", "1080p")
         
+        polished_script = kwargs.get("polished_script")
+        file_val = kwargs.get("file")
+        
         try:
             conn = self._get_conn()
             with conn:
                 conn.execute(
                     """
-                    INSERT INTO jobs (job_id, state, message, progress, art_style, video_mode, video_resolution, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO jobs (job_id, state, message, progress, polished_script, file, art_style, video_mode, video_resolution, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
-                    (job_id, state, message, progress, art_style, video_mode, video_resolution, now, now)
+                    (job_id, state, message, progress, polished_script, file_val, art_style, video_mode, video_resolution, now, now)
                 )
             conn.close()
         except Exception as e:

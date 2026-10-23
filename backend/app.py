@@ -27,7 +27,7 @@ CORS(app, expose_headers=["Content-Disposition"])
 
 # Initialize the persistent SQLite database store
 from scripts.db_manager import SQLiteJobStore
-db = SQLiteJobStore()
+db = SQLiteJobStore(reconcile=True)
 
 from concurrent.futures import ThreadPoolExecutor
 MAX_CONCURRENT_JOBS = int(os.getenv("MAX_CONCURRENT_JOBS", 2))
@@ -63,7 +63,7 @@ def cleanup_old_files():
                     continue
                     
                 age = now - os.path.getmtime(file_path)
-                is_final_video = filename.endswith("_final.mp4")
+                is_final_video = filename.endswith("_final.mp4") or (filename.endswith(".mp4") and not filename.startswith("clip_"))
                 ttl = 86400 if is_final_video else 3600  # 24h for final, 1h for intermediates
                 if age > ttl:
                     os.remove(file_path)
@@ -167,7 +167,7 @@ def generate_video_task(job_id, script, voice_accent="us", caption_style="elegan
         from pydub import AudioSegment
         audio = AudioSegment.from_file(audio_path)
         total_duration = len(audio) / 1000.0
-        cta_text = "FOLLOW TO LEARN MORE! 🎓" if video_mode == 'tutorial' else "SUBSCRIBE FOR MORE! 🔔"
+        cta_text = "SUBSCRIBE FOR MORE! 🔔"
         hook_title = ""  # Permanently disabled: no top title banners
 
         is_hindi = "hi" in str(voice_accent).lower() or "bho" in str(voice_accent).lower()
@@ -210,51 +210,33 @@ def generate_video_task(job_id, script, voice_accent="us", caption_style="elegan
             update_job_status(job_id, message=msg, progress=pct)
 
         # Phase 3: Generate AI images per scene
-        if video_mode == 'tutorial':
-            from scripts.tutorial_image_generator import generate_scene_images as generate_tutorial_images
-            image_paths = generate_tutorial_images(scenes if scenes else polished_script, OUTPUT_DIR, job_id=job_id, art_style=art_style, width=width, height=height, progress_callback=on_video_image_progress)
-        else:
-            from scripts.image_generator import generate_scene_images
-            image_paths = generate_scene_images(scenes if scenes else polished_script, OUTPUT_DIR, job_id=job_id, art_style=art_style, width=width, height=height, progress_callback=on_video_image_progress)
+        from scripts.image_generator import generate_scene_images
+        image_paths = generate_scene_images(scenes if scenes else polished_script, OUTPUT_DIR, job_id=job_id, art_style=art_style, width=width, height=height, progress_callback=on_video_image_progress)
         update_job_status(job_id, progress=80)
 
         update_job_status(job_id, message='Rendering video with AI backgrounds and subtitles...', progress=85)
 
-        # Assemble video — extract tutorial step labels if in tutorial mode
-        tutorial_steps = None
-        if video_mode == 'tutorial' and scenes:
-            tutorial_steps = [s.get('step_title', f'Step {i+1}') for i, s in enumerate(scenes)]
-            print(f"[app] generate_video_task Tutorial mode: step labels = {tutorial_steps}", flush=True)
-
         # Phase 4: Assemble video with zoompan, audio mix, and style mapping
-        if video_mode == 'tutorial':
-            from scripts.tutorial_video_generator import generate_video as generate_tutorial_video
-            final_video_path = generate_tutorial_video(
-                audio_path,
-                srt_path,
-                os.path.join(OUTPUT_DIR, f"{job_id}_final.mp4"),
-                image_paths=image_paths,
-                music_track=music_track,
-                caption_style=caption_style,
-                music_volume=music_volume,
-                script=scenes if scenes else polished_script,
-                tutorial_steps=tutorial_steps,
-                resolution=stored_resolution
-            )
-        else:
-            from scripts.video_generator import generate_video
-            final_video_path = generate_video(
-                audio_path,
-                srt_path,
-                os.path.join(OUTPUT_DIR, f"{job_id}_final.mp4"),
-                image_paths=image_paths,
-                music_track=music_track,
-                caption_style=caption_style,
-                music_volume=music_volume,
-                script=scenes if scenes else polished_script,
-                resolution=stored_resolution,
-                transition_style=transition_style
-            )
+        from scripts.video_generator import generate_video
+        final_video_path = generate_video(
+            audio_path,
+            srt_path,
+            os.path.join(OUTPUT_DIR, f"{job_id}_final.mp4"),
+            image_paths=image_paths,
+            music_track=music_track,
+            caption_style=caption_style,
+            music_volume=music_volume,
+            script=scenes if scenes else polished_script,
+            resolution=stored_resolution,
+            transition_style=transition_style
+        )
+
+        import shutil
+        target_video = os.path.join(OUTPUT_DIR, f"{job_id}.mp4")
+        try:
+            shutil.copyfile(final_video_path, target_video)
+        except Exception:
+            pass
 
         update_job_status(
             job_id,
@@ -294,7 +276,7 @@ def generate_storyboard():
     caption_style = data.get('caption_style', 'elegant')
     music_track = data.get('music_track', 'none')
     art_style = data.get('art_style', 'cinematic')
-    video_mode = data.get('video_mode', 'shorts')  # 'shorts', 'dialogue', or 'tutorial'
+    video_mode = data.get('video_mode', 'shorts')  # 'shorts' or 'dialogue'
     video_resolution = data.get('video_resolution', '1080p')
     transition_style = data.get('transition_style', 'dynamic')
     voice_a = data.get('voice_a', voice_accent or 'in_female')
@@ -310,12 +292,7 @@ def generate_storyboard():
         with jobs_lock:
             running_jobs.add(job_id)
         try:
-            if video_mode == "dialogue":
-                mode_label = "Dialogue"
-            elif video_mode == "tutorial":
-                mode_label = "Tutorial"
-            else:
-                mode_label = "Shorts"
+            mode_label = "Dialogue" if video_mode == "dialogue" else "Shorts"
             update_job_status(job_id, state='generating_storyboard', message=f'Polishing script ({mode_label} mode) with AI...', progress=10)
             
             from scripts.script_polisher import polish_script, parse_storyboard
@@ -351,10 +328,7 @@ def generate_storyboard():
                     msg = f"Generated scene image {current_count} of {total_count} ({pct}% complete)..."
                 update_job_status(job_id, message=msg, progress=pct)
 
-            if video_mode == 'tutorial':
-                from scripts.tutorial_image_generator import generate_scene_images
-            else:
-                from scripts.image_generator import generate_scene_images
+            from scripts.image_generator import generate_scene_images
                 
             image_paths = generate_scene_images(
                 script=json.dumps(scenes, ensure_ascii=False),
@@ -458,11 +432,7 @@ def regenerate_image():
             scenes[scene_idx]['slide_style'] = data['slide_style'].strip()
             
         # Download new image using a fresh, randomized seed offset and correct resolution
-        video_mode = job.get('video_mode', 'shorts')
-        if video_mode == 'tutorial':
-            from scripts.tutorial_image_generator import download_single_image, STYLE_TEMPLATES, build_story_context
-        else:
-            from scripts.image_generator import download_single_image, STYLE_TEMPLATES, build_story_context
+        from scripts.image_generator import download_single_image, STYLE_TEMPLATES, build_story_context
         style_key = str(art_style).lower().strip()
         style_template = STYLE_TEMPLATES.get(style_key, STYLE_TEMPLATES["cinematic"])
         seed_offset = random.randint(10000, 999999)
@@ -516,6 +486,8 @@ def compile_video():
         
     db.update_job(job_id, state='pending_compile', message='Initializing final video render...', progress=5, video_resolution=video_resolution)
     
+    job_metadata = job or {}
+    
     def compile_task():
         with jobs_lock:
             running_jobs.add(job_id)
@@ -544,7 +516,7 @@ def compile_video():
             from pydub import AudioSegment
             audio = AudioSegment.from_file(audio_path)
             total_duration = len(audio) / 1000.0
-            cta_text = "FOLLOW TO LEARN MORE! 🎓" if video_mode == 'tutorial' else "SUBSCRIBE FOR MORE! 🔔"
+            cta_text = "SUBSCRIBE FOR MORE! 🔔"
             hook_title = ""  # Permanently disabled: no top title banners
 
             from scripts.tts_generator import VOICE_LANGUAGE_MAP
@@ -584,19 +556,12 @@ def compile_video():
             
             update_job_status(job_id, message='Stitching and rendering final video layers...', progress=70)
             
-            # Gather scene images with proactive local slide recovery
+            # Gather scene images
             image_paths = []
-            stored_mode = job_metadata.get('video_mode', video_mode) if job_metadata else video_mode
             for i in range(len(scenes)):
                 img_path = os.path.join(OUTPUT_DIR, f"{job_id}_scene_{i:02d}.jpg")
                 if not os.path.exists(img_path):
-                    if stored_mode == 'tutorial':
-                        from scripts.slide_renderer import render_slide
-                        print(f"[app] Proactively auto-recovering missing tutorial slide frame {i+1}...", flush=True)
-                        scenes[i]["art_style"] = job_metadata.get('art_style', 'cinematic') if job_metadata else 'cinematic'
-                        render_slide(scenes[i], img_path, width=2160, height=3840)
-                    else:
-                        raise RuntimeError(f"Scene image {i+1} is missing. Please regenerate.")
+                    raise RuntimeError(f"Scene image {i+1} is missing. Please regenerate.")
                 image_paths.append(img_path)
                 
             # Respect user's selected resolution (4K Ultra HD vs 1080p Full HD)
@@ -604,42 +569,28 @@ def compile_video():
             if not stored_resolution:
                 stored_resolution = '1080p'
             
-            tutorial_steps = None
-            stored_mode = job_metadata.get('video_mode', video_mode) if job_metadata else video_mode
-            if stored_mode == 'tutorial':
-                tutorial_steps = [s.get('step_title', f'Step {i+1}') for i, s in enumerate(scenes)]
-                print(f"[app] Tutorial mode: step labels = {tutorial_steps}", flush=True)
-
-            if stored_mode == 'tutorial':
-                from scripts.tutorial_video_generator import generate_video as generate_tutorial_video
-                final_video_path = generate_tutorial_video(
-                    audio_path,
-                    srt_path,
-                    os.path.join(OUTPUT_DIR, f"{job_id}_final.mp4"),
-                    image_paths=image_paths,
-                    music_track=music_track,
-                    caption_style=caption_style,
-                    music_volume=music_volume,
-                    script=scenes,
-                    tutorial_steps=tutorial_steps,
-                    resolution=stored_resolution
-                )
-            else:
-                from scripts.video_generator import generate_video
-                trans_style = data.get('transition_style', 'dynamic')
-                final_video_path = generate_video(
-                    audio_path,
-                    srt_path,
-                    os.path.join(OUTPUT_DIR, f"{job_id}_final.mp4"),
-                    image_paths=image_paths,
-                    music_track=music_track,
-                    caption_style=caption_style,
-                    music_volume=music_volume,
-                    script=scenes,
-                    resolution=stored_resolution,
-                    transition_style=trans_style
-                )
+            from scripts.video_generator import generate_video
+            trans_style = data.get('transition_style', 'dynamic')
+            final_video_path = generate_video(
+                audio_path,
+                srt_path,
+                os.path.join(OUTPUT_DIR, f"{job_id}_final.mp4"),
+                image_paths=image_paths,
+                music_track=music_track,
+                caption_style=caption_style,
+                music_volume=music_volume,
+                script=scenes,
+                resolution=stored_resolution,
+                transition_style=trans_style
+            )
             
+            import shutil
+            target_video = os.path.join(OUTPUT_DIR, f"{job_id}.mp4")
+            try:
+                shutil.copyfile(final_video_path, target_video)
+            except Exception:
+                pass
+
             update_job_status(
                 job_id,
                 state='completed',
@@ -744,6 +695,17 @@ def assemble_video_clips_task(
             duration_mode=duration_mode
         )
 
+        import shutil
+        target_video = os.path.join(OUTPUT_DIR, f"{job_id}.mp4")
+        target_thumb = os.path.join(OUTPUT_DIR, f"{job_id}_thumb.jpg")
+        src_thumb = os.path.join(job_dir, "thumbnail.jpg")
+        try:
+            shutil.copyfile(final_path, target_video)
+            if os.path.exists(src_thumb):
+                shutil.copyfile(src_thumb, target_thumb)
+        except Exception:
+            pass
+
         update_job_status(
             job_id,
             state='completed',
@@ -845,18 +807,19 @@ Return a JSON object with a single key "scenes" containing an array of exactly 5
     {{
       "scene_number": 1,
       "narration": "1 punchy, high-retention narration sentence with 1-2 embedded emojis in {language}.",
-      "video_prompt": "Vertical 9:16 ratio. [Camera move: dolly in/drone descent/low angle tilt/orbit]. [Subject in motion with fluid dynamics]. [Atmospheric volumetric lighting, 35mm anamorphic lens, photorealistic 8K, 24fps]."
+      "video_prompt": "Vertical 9:16 ratio. [Camera move: dolly in/drone descent/low angle tilt/orbit]. [Subject in motion with fluid dynamics]. [Atmospheric volumetric lighting, 35mm anamorphic lens, photorealistic 8K, 24fps].",
+      "b_roll_prompt": "Vertical 9:16 ratio. [Macro close-up / alternate dynamic angle]. [High texture detail, shallow depth of field, 8K]."
     }}
   ]
 }}
 Maintain character and environmental visual consistency across all 5 scenes. Output strict JSON only."""
 
     fallback = [
-        {"scene_number": 1, "narration": f"Did you know the secret behind {topic}? 🤯", "video_prompt": f"Vertical 9:16 ratio. Dramatic cinematic push in on {topic}. Volumetric atmospheric rim lighting, photorealistic 8K, 24fps."},
-        {"scene_number": 2, "narration": "Scientists made an unexpected discovery in 2026. 🔬", "video_prompt": "Vertical 9:16 ratio. Orbital 360 camera sweep around high-tech holographic scanning laboratory. Neon blue glow, 24fps."},
-        {"scene_number": 3, "narration": "The deeper they looked, the stranger the phenomenon became. ⚡", "video_prompt": "Vertical 9:16 ratio. Slow motion macro shot of energy pulsing and rippling outward with realistic particle physics, 8K."},
-        {"scene_number": 4, "narration": "Every test revealed patterns that shouldn't exist. 📜", "video_prompt": "Vertical 9:16 ratio. Cinematic low-angle tilt up revealing massive ancient geometric stone monoliths under a starry galaxy sky."},
-        {"scene_number": 5, "narration": "What do you think is really happening? Subscribe for part two! 🔔", "video_prompt": "Vertical 9:16 ratio. Cinematic slow drone pull back into misty clouds as dawn breaks over the horizon. Warm golden light, 8K, 24fps."}
+        {"scene_number": 1, "narration": f"Did you know the secret behind {topic}? 🤯", "video_prompt": f"Vertical 9:16 ratio. Dramatic cinematic push in on {topic}. Volumetric atmospheric rim lighting, photorealistic 8K, 24fps.", "b_roll_prompt": f"Vertical 9:16 ratio. Macro extreme close-up on intricate details of {topic}. Shallow depth of field, anamorphic bokeh, 8K."},
+        {"scene_number": 2, "narration": "Scientists made an unexpected discovery in 2026. 🔬", "video_prompt": "Vertical 9:16 ratio. Orbital 360 camera sweep around high-tech holographic scanning laboratory. Neon blue glow, 24fps.", "b_roll_prompt": "Vertical 9:16 ratio. Over-the-shoulder view of scientist operating transparent neon holographic interface with particle physics."},
+        {"scene_number": 3, "narration": "The deeper they looked, the stranger the phenomenon became. ⚡", "video_prompt": "Vertical 9:16 ratio. Slow motion macro shot of energy pulsing and rippling outward with realistic particle physics, 8K.", "b_roll_prompt": "Vertical 9:16 ratio. Wide panoramic descent into subterranean glowing cavern with iridescent crystals vibrating."},
+        {"scene_number": 4, "narration": "Every test revealed patterns that shouldn't exist. 📜", "video_prompt": "Vertical 9:16 ratio. Cinematic low-angle tilt up revealing massive ancient geometric stone monoliths under a starry galaxy sky.", "b_roll_prompt": "Vertical 9:16 ratio. Slow tracking dolly shot across ancient glowing runic inscriptions carved into obsidian stone."},
+        {"scene_number": 5, "narration": "What do you think is really happening? Subscribe for part two! 🔔", "video_prompt": "Vertical 9:16 ratio. Cinematic slow drone pull back into misty clouds as dawn breaks over the horizon. Warm golden light, 8K, 24fps.", "b_roll_prompt": "Vertical 9:16 ratio. Dramatic silhouette gazing outward toward glowing dawn horizon, soft lens flare, 24fps."}
     ]
 
     try:
@@ -955,21 +918,21 @@ def query_seo_metadata(job_id, job, timeline_str):
     from scripts.llm_client import query_llm, clean_json_string
     prompt = (
         f"You are a professional YouTube video optimizer and SEO expert.\n"
-        f"Generate an highly engaging, click-worthy Title, an optimized Description, and search-relevant tags for an educational tutorial video.\n"
-        f"Script topic: {job.get('script_topic', 'AI Tutorial')}\n\n"
+        f"Generate a highly engaging, click-worthy Title, an optimized Description, and search-relevant tags for a viral YouTube Shorts video.\n"
+        f"Script topic: {job.get('script_topic', 'AI Short')}\n\n"
         f"The description must include the following precise timeline chapters to make the video interactive and highly navigable:\n"
         f"{timeline_str}\n\n"
         f"Format your response as a valid JSON object with the following keys:\n"
-        f"  \"title\": \"[SEO title under 60 characters]\",\n"
-        f"  \"description\": \"[Engaging description paragraph summarizing the value of the video, followed by the timeline chapters above, and concluding with call-to-actions]\",\n"
+        f"  \"title\": \"[SEO title under 60 characters with emojis]\",\n"
+        f"  \"description\": \"[Engaging description paragraph summarizing the story, followed by the timeline chapters above, and concluding with call-to-actions]\",\n"
         f"  \"tags\": \"[10-15 search tags separated by commas]\"\n"
         f"Return ONLY the raw JSON string with no markdown formatting."
     )
     
     fallback_data = {
-        "title": f"Step-by-Step Tutorial on {job.get('script_topic', 'Topic')}",
-        "description": f"Learn all about {job.get('script_topic', 'this topic')} in our detailed step-by-step educational walkthrough!\n\n{timeline_str}",
-        "tags": f"education, howto, learn, {job.get('script_topic', 'topic')}"
+        "title": f"The Story of {job.get('script_topic', 'Shorts')}",
+        "description": f"Discover {job.get('script_topic', 'this story')}!\n\n{timeline_str}",
+        "tags": f"shorts, viral, storytelling, {job.get('script_topic', 'story')}"
     }
 
     try:
@@ -1027,9 +990,9 @@ def upload(job_id):
             seo_data = query_seo_metadata(job_id, job, timeline_str)
             return jsonify({
                 'requires_manual': True,
-                'title': seo_data.get('title', f"How to understand {job.get('script_topic', 'Topic')}")[:100],
-                'description': seo_data.get('description', f"A step-by-step educational walkthrough.\n\n{timeline_str}"),
-                'tags': seo_data.get('tags', 'tutorial, education, learn'),
+                'title': seo_data.get('title', f"The Story of {job.get('script_topic', 'Story')}")[:100],
+                'description': seo_data.get('description', f"A captivating short story.\n\n{timeline_str}"),
+                'tags': seo_data.get('tags', 'shorts, story, viral'),
                 'video_url': f"/download/{job_id}",
                 'message': 'YouTube Client Secrets are not configured. We have automatically generated a fully optimized AI Publishing Package. You can download the video and copy-paste these fields directly into YouTube Studio!'
             })
@@ -1037,9 +1000,9 @@ def upload(job_id):
             print(f"[app] SEO Pack generation fallback error: {e}", flush=True)
             return jsonify({
                 'requires_manual': True,
-                'title': f"Step-by-Step {job.get('script_topic', 'Tutorial')}",
-                'description': f"A comprehensive tutorial walkthrough.\n\n{timeline_str}",
-                'tags': 'education, learning, how-to',
+                'title': f"The Story of {job.get('script_topic', 'Story')}",
+                'description': f"A captivating short story.\n\n{timeline_str}",
+                'tags': 'shorts, story, storytelling',
                 'video_url': f"/download/{job_id}",
                 'message': 'YouTube Client Secrets are not configured. Here is your timeline-grounded publishing package for manual upload.'
             })

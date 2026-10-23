@@ -155,26 +155,6 @@ Alternating conversation between two characters (great for interviews, debates, 
 ]
 ```
 
-### Format C: Step-by-Step Educational Tutorial
-Used for slide-based tutorials with titles and bullet points.
-
-```json
-[
-  {
-    "scene_number": 1,
-    "step_title": "Introduction",
-    "slide_title": "Master Python Lists",
-    "bullets": [
-      "Ordered collection of items",
-      "Defined with square brackets []",
-      "Fully mutable and dynamic"
-    ],
-    "code_snippet": "fruits = ['apple', 'mango']",
-    "narration": "Here are 3 essential tricks to master Python lists in under 30 seconds! 🐍",
-    "visual": "Sleek 3D modern developer workstation, glowing Python code on monitor, minimalist dark mode studio aesthetic"
-  }
-]
-```
 
 ---
 

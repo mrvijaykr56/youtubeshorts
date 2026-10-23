@@ -63,5 +63,33 @@ Once the 5 video clips are generated (e.g., `clip_1.mp4` to `clip_5.mp4`):
   * `speed_ramp` (recommended): Rescales playback speed so the entire clip action matches narration without abrupt cuts.
   * `trim`: Trims excess length to exact narration duration.
 * `--transition`: `dynamic`, `dissolve`, `whip_pan`, `flash`, or `none`.
-* `--voice`: `in_female`, `in_male`, `hi_male`, `hi_female`, etc.
+* `--voice`: `in_female`, `in_male`, `hi_female` (Swara), `hi_male` (Madhur), `us`, etc.
+* `--caption_lang`: `English` (default) or `Hindi`.
 * `--music`: `none`, `lofi`, `upbeat`.
+
+---
+
+## 4. Bilingual Hindi Audio + English Subtitles Workflow 🇮🇳💬
+
+For viral content targeted at global and Indian demographics:
+* Pass `--voice hi_female` (or `hi_male`) and `--caption_lang English`.
+* In `script.json` (or JSON payload), provide each scene with:
+  * `narration_hi`: Spoken Hindi dialogue (*"समुद्र की गहराइयों में एक अद्भुत दुनिया छिपी है।"*)
+  * `narration`: English translation (*"A magical glowing realm lies deep in the ocean."*)
+* **Result:** The Edge Neural TTS speaks Hindi with podcast vocal compression, while the video renders synchronized English TikTok kinetic pop captions.
+
+---
+
+## 5. Poster Thumbnail Auto-Extraction 🖼️
+
+The assembly engine automatically extracts a high-resolution 9:16 poster frame at `t = 1.0s` directly from the rendered master video:
+* Saved to: `backend/output/<job_id>_thumb.jpg` and `backend/output/<job_id>_video_job/thumbnail.jpg`.
+* Usable immediately as the video poster in web players and thumbnail asset for social APIs.
+
+---
+
+## 6. Cross-Platform Publishing Integration 📲
+
+The output master `.mp4` and `thumbnail.jpg` directly connect with other agentic skills:
+1. **YouTube Shorts Upload:** Feed output video to `youtube-channel-manager` with timeline chapters and SEO tags.
+2. **Instagram Reels:** Use `instagram-reels-manager` to distribute the 9:16 cut with high-save hook captions.

@@ -114,43 +114,8 @@ def get_video_encoder_args(crf=None):
         return args
 
 
-def _make_step_overlay_filter(step_label: str, width: int, height: int) -> str:
-    """
-    Returns an FFmpeg drawtext vf filter fragment that renders a tutorial step
-    label (e.g. 'STEP 1' / 'INTRODUCTION') as a clean pill-shaped overlay.
-    Pill sizing and borders are dynamically scaled based on the target vertical resolution.
-    """
-    safe_label = step_label.upper().replace("'", "").replace("\\", "").replace(":", "")
-    font_candidates = [
-        r"C:\Windows\Fonts\arialbd.ttf",
-        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
-        "/System/Library/Fonts/Helvetica.ttf",
-    ]
-    fontfile_arg = ""
-    for fp in font_candidates:
-        if os.path.exists(fp):
-            safe_fp = fp.replace("\\", "/").replace(":", "\\:")
-            fontfile_arg = f"fontfile='{safe_fp}':"
-            break
-            
-    # Dynamically scale font overlay sizes relative to a 1080x1920 base canvas
-    scale_factor = height / 1920.0
-    font_size = int(46 * scale_factor)
-    border_w = int(18 * scale_factor)
-    margin_x = int(44 * scale_factor)
-    margin_y = int(52 * scale_factor)
-    
-    return (
-        f"drawtext={fontfile_arg}"
-        f"text='{safe_label}':"
-        f"fontsize={font_size}:fontcolor=white:"
-        f"x={margin_x}:y={margin_y}:"
-        f"box=1:boxcolor=0x1a1a2e@0.82:boxborderw={border_w}"
-    )
-
-
 def _make_image_clip_ffmpeg(img_path: str, duration: float, width: int, height: int, output_path: str,
-                             motion_type: str = "zoom_in", step_label: str = None,
+                             motion_type: str = "zoom_in",
                              is_first: bool = False, is_last: bool = False):
     """
     Uses FFmpeg to scale an image and create a fixed-duration silent video clip at 30fps.
@@ -302,7 +267,6 @@ def generate_video(
     caption_style: str = "elegant",
     music_volume: float = 0.12,
     script: str = "",
-    tutorial_steps: list | None = None,
     resolution: str = "4k",
     transition_style: str = "dynamic"
 ) -> str:
@@ -311,7 +275,6 @@ def generate_video(
     Supports dynamic resolution (1080p Full HD vs 4K Ultra HD) for master-grade sharpness.
     Mixes copyright-free background music if specified with automatic sidechain compression ducking.
     Burns in styled captions (Standard Bottom vs TikTok Middle Flash).
-    When tutorial_steps is provided, overlays step labels ("INTRO", "STEP 1"...) on each scene clip.
     transition_style: 'dynamic', 'whip_pan', 'dissolve', 'flash', 'slide', or 'none'.
     """
     # Respect user selected resolution (1080p Full HD vs 4K Ultra HD)
@@ -384,7 +347,6 @@ def generate_video(
         duration = narration_duration + 2.0
 
         # Convert each AI image into a timed zoompan video clip with alternating motions.
-        # Tutorial Mode: if tutorial_steps is provided, burn step label onto each clip.
         scene_paths = []
         motions = ["zoom_in", "zoom_out", "pan_right", "pan_left"]
         for i, img_path in enumerate(image_paths):
@@ -394,9 +356,7 @@ def generate_video(
             # Extend the very last scene clip by 2.0 seconds for the Outro CTA Card
             if i == len(image_paths) - 1:
                 scene_dur += 2.0
-            step_label = tutorial_steps[i] if tutorial_steps and i < len(tutorial_steps) else None
-            print(f"[video_generator] Creating scene {i+1}/{len(image_paths)} ({scene_dur:.2f}s) motion={motion_type}"
-                  + (f" label='{step_label}'" if step_label else ""), flush=True)
+            print(f"[video_generator] Creating scene {i+1}/{len(image_paths)} ({scene_dur:.2f}s) motion={motion_type}", flush=True)
             is_first = (i == 0)
             is_last = (i == len(image_paths) - 1)
             # Add transition overlap duration to each clip except the last when xfade is active
@@ -404,7 +364,7 @@ def generate_video(
             if transition_style != "none" and not is_last:
                 clip_dur += 0.35
             _make_image_clip_ffmpeg(img_path, clip_dur, width, height, scene_out,
-                                    motion_type=motion_type, step_label=step_label,
+                                    motion_type=motion_type,
                                     is_first=is_first, is_last=is_last)
             scene_paths.append(scene_out)
 
@@ -568,13 +528,8 @@ def generate_video(
     # All output is now .ass (Advanced SubStation Alpha) — always contains
     # embedded style tags. Never use force_style overrides for .ass files.
     # (Legacy .srt branch removed — system always generates .ass via Whisper.)
-    # Phase 4: Neon Scrubber Retention Bar + Subtitle burning pass
-    vf_filter = (
-        f"drawbox=x=0:y=ih-24:w=iw:h=14:color=black@0.4:t=fill,"
-        f"drawbox=x=0:y=ih-24:w='iw*(t/{duration:.3f})':h=14:color=0x00F0FF@0.9:t=fill,"
-        f"drawbox=x='iw*(t/{duration:.3f})-6':y=ih-26:w=6:h=18:color=white@0.95:t=fill,"
-        f"subtitles='{safe_srt_path}'"
-    )
+    # Phase 4: Subtitle burning pass (clean frame without bottom scrubber line)
+    vf_filter = f"subtitles='{safe_srt_path}'"
 
     ffmpeg_cmd = [
         "ffmpeg", "-y",
