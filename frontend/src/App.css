@@ -1,85 +1,164 @@
-/* Lemon Studio Design Tokens & Utilities */
-:root {
-  --lemon-accent: #D4F84A;
-  --lemon-accent-hover: #C1E833;
-  --lemon-bg: #F8FAFC;
-  --lemon-card: #FFFFFF;
-  --lemon-border: #E2E8F0;
-  --lemon-text-main: #0F172A;
-  --lemon-text-muted: #64748B;
-}
+/* App.css — Lemon Green Theme Supplemental Styles */
 
-body {
-  background-color: var(--lemon-bg);
-  color: var(--lemon-text-main);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-.lemon-input {
-  background: #FFFFFF;
-  border: 1.5px solid #E2E8F0;
-  color: #0F172A;
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-size: 13px;
-  transition: all 0.2s ease;
-  outline: none;
-}
-
-.lemon-input:focus {
-  border-color: #0F172A;
-  box-shadow: 0 0 0 3px rgba(212, 248, 74, 0.45);
-}
-
-.lemon-btn-primary {
+/* Lemon glow CTA button */
+.btn-lemon {
   background: #D4F84A;
   color: #0F172A;
-  font-weight: 700;
-  border-radius: 14px;
-  padding: 12px 24px;
+  font-weight: 800;
+  border-radius: 16px;
+  padding: 14px 28px;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(212, 248, 74, 0.35);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  letter-spacing: 0.02em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
 }
-
-.lemon-btn-primary:hover:not(:disabled) {
-  background: #C1E833;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(212, 248, 74, 0.45);
+.btn-lemon:hover {
+  background: #C4EE33;
+  box-shadow: 0 8px 30px rgba(212, 248, 74, 0.4), 0 2px 8px rgba(212, 248, 74, 0.25);
+  transform: translateY(-2px);
 }
-
-.lemon-btn-primary:disabled {
-  opacity: 0.5;
+.btn-lemon:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+.btn-lemon:disabled {
+  opacity: 0.45;
   cursor: not-allowed;
+  transform: none;
   box-shadow: none;
 }
 
-.lemon-card {
-  background: #FFFFFF;
-  border: 1.5px solid #E2E8F0;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+/* Ghost secondary button */
+.btn-ghost {
+  background: transparent;
+  color: #526658;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 10px 20px;
+  border: 1.5px solid #E3EAE0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-ghost:hover {
+  background: #F8FAF6;
+  border-color: #C8DABB;
+  color: #2D3B31;
 }
 
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* White surface card */
+.card, .lemon-card {
+  background: #FFFFFF;
+  border: 1.5px solid #E3EAE0;
+  border-radius: 20px;
+  box-shadow: 0 2px 16px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
 }
-::-webkit-scrollbar-track {
-  background: #F1F5F9;
+
+.lemon-btn-primary {
+  background: #D4F84A;
+  color: #0F172A;
+  font-weight: 800;
+  border-radius: 14px;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 3px;
+.lemon-btn-primary:hover {
+  background: #C4EE33;
+  box-shadow: 0 8px 30px rgba(212, 248, 74, 0.4), 0 2px 8px rgba(212, 248, 74, 0.25);
+  transform: translateY(-2px);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+.lemon-btn-primary:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+.lemon-btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Lemon select/input focus ring */
+.lemon-input {
+  background: #FFFFFF;
+  border: 1.5px solid #E3EAE0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #0F172A;
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
+  appearance: none;
+}
+.lemon-input:focus {
+  border-color: #84CC16;
+  box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.12);
+}
+
+/* Step number badge */
+.step-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #E3EAE0;
+  color: #526658;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.step-badge.active {
+  background: #D4F84A;
+  color: #0F172A;
+}
+.step-badge.done {
+  background: #2D3B31;
+  color: #D4F84A;
+}
+
+/* Segment control */
+.seg-control {
+  background: #F2F7EE;
+  border: 1.5px solid #E3EAE0;
+  border-radius: 12px;
+  padding: 3px;
+  display: inline-flex;
+  gap: 2px;
+}
+.seg-btn {
+  padding: 7px 14px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #526658;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.seg-btn.active {
+  background: #FFFFFF;
+  color: #0F172A;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+}
+.seg-btn:hover:not(.active) {
+  color: #2D3B31;
 }
