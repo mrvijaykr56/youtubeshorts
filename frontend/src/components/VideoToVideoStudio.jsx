@@ -203,44 +203,44 @@ export default function VideoToVideoStudio() {
   };
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto py-6">
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-900/60 via-purple-900/40 to-slate-900/80 border border-violet-500/30 p-6 md:p-8 backdrop-blur-xl shadow-2xl">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/20 border border-violet-400/30 text-violet-300 text-xs font-semibold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" /> Generative Video-to-Video Engine
-            </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-              Multi-Clip AI Video Studio <span className="text-violet-400">(4K / 8K)</span>
-            </h1>
-            <p className="text-sm md:text-base text-gray-300 max-w-2xl leading-relaxed">
-              Direct and stitch 5 AI video clips (Google Veo, VideoFX, Luma, Kling) into an ultra-high-definition, 
-              cinematic YouTube Short or Reel with seamless transitions, TTS voiceover, and kinetic captions.
-            </p>
+    <div className="space-y-6 max-w-5xl mx-auto">
+      {/* Header Banner (Lemon Accent) */}
+      <div className="lemon-card p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border-slate-200">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold uppercase tracking-wider">
+            <span style={{ color: '#0F172A' }}>✨</span>
+            <span>Generative Video-to-Video Engine</span>
           </div>
-
-          <a
-            href="https://labs.google/fx/tools/video-fx"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-all shadow-lg hover:shadow-violet-500/25 shrink-0"
-          >
-            Open Google VideoFX <ExternalLink className="w-4 h-4" />
-          </a>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Multi-Clip AI Video Studio <span style={{ color: '#0F172A', background: '#D4F84A', padding: '2px 8px', borderRadius: '8px' }}>(4K / 8K)</span>
+          </h1>
+          <p className="text-sm text-slate-500 max-w-xl leading-relaxed">
+            Direct and stitch 5 AI video clips (Google Veo, VideoFX, Luma, Kling) into an ultra-high-definition, 
+            cinematic YouTube Short or Reel with seamless transitions, TTS voiceover, and kinetic captions.
+          </p>
         </div>
+
+        <a
+          href="https://labs.google/fx/tools/video-fx"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-sm shrink-0"
+        >
+          <span>Open Google VideoFX</span>
+          <ExternalLink className="w-3.5 h-3.5" />
+        </a>
       </div>
 
       {/* STEP 1: Gemini Pro Video Prompt Director */}
-      <div className="rounded-2xl bg-gray-900/70 border border-gray-800 p-6 backdrop-blur-md shadow-xl space-y-4">
+      <div className="lemon-card p-6 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400 font-bold">
+            <div style={{ background: '#D4F84A' }} className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-900 font-extrabold text-sm">
               1
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Direct 5-Scene Storyboard with Gemini Pro</h2>
-              <p className="text-xs text-gray-400">Generates synchronized narration and Google Veo / VideoFX camera prompts.</p>
+              <h2 className="text-base font-bold text-slate-900">Direct 5-Scene Storyboard with Gemini Pro</h2>
+              <p className="text-xs text-slate-400">Generates synchronized narration and Google Veo / VideoFX camera prompts.</p>
             </div>
           </div>
 
@@ -248,7 +248,7 @@ export default function VideoToVideoStudio() {
             <select
               value={promptLanguage}
               onChange={(e) => setPromptLanguage(e.target.value)}
-              className="bg-gray-800 border border-gray-700 text-gray-200 text-xs rounded-lg px-3 py-2 outline-none focus:border-violet-500"
+              className="lemon-input py-1.5 px-3 text-xs"
             >
               <option value="English">English</option>
               <option value="Hindi">Hindi (हिंदी)</option>
@@ -258,7 +258,7 @@ export default function VideoToVideoStudio() {
             <button
               onClick={handleGeneratePrompts}
               disabled={isDirecting || !topic.trim()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-medium text-xs transition-all disabled:opacity-50 shadow-md"
+              className="lemon-btn-primary py-2 px-4 text-xs"
             >
               {isDirecting ? (
                 <>
@@ -273,35 +273,35 @@ export default function VideoToVideoStudio() {
           </div>
         </div>
 
-        <div className="relative">
+        <div>
           <input
             type="text"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             placeholder="e.g. Mysterious ancient glowing city discovered in deepest oceanic trench..."
-            className="w-full bg-gray-950/80 border border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
+            className="w-full lemon-input text-sm"
           />
         </div>
 
         {/* 5 Generated Scene Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 pt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-1">
           {scenes.map((s, idx) => (
             <div
               key={idx}
-              className="rounded-xl bg-gray-950/70 border border-gray-800/90 p-3.5 flex flex-col justify-between space-y-3 hover:border-violet-500/40 transition-colors group"
+              className="rounded-xl border border-slate-200 bg-slate-50/60 p-3 flex flex-col justify-between space-y-2.5 hover:border-slate-300 transition-colors"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded">
+                  <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-slate-200/80 text-slate-800">
                     Scene {s.scene_number || idx + 1}
                   </span>
                   <button
                     onClick={() => handleCopyPrompt(s.video_prompt, idx)}
-                    className="text-gray-400 hover:text-white p-1 rounded hover:bg-gray-800 transition-colors"
+                    className="text-slate-400 hover:text-slate-900 p-1 rounded hover:bg-slate-200/60 transition-colors cursor-pointer"
                     title="Copy Veo prompt"
                   >
                     {copiedIndex === idx ? (
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
                     ) : (
                       <Copy className="w-3.5 h-3.5" />
                     )}
@@ -309,7 +309,7 @@ export default function VideoToVideoStudio() {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-semibold text-gray-400 block mb-1">Narration:</label>
+                  <label className="text-[10px] font-bold text-slate-500 block mb-1">Narration:</label>
                   <textarea
                     rows={2}
                     value={s.narration}
@@ -318,13 +318,13 @@ export default function VideoToVideoStudio() {
                       updated[idx].narration = e.target.value;
                       setScenes(updated);
                     }}
-                    className="w-full bg-gray-900 border border-gray-800 text-[11px] text-gray-200 rounded p-1.5 focus:border-violet-500 outline-none resize-none leading-snug"
+                    className="w-full lemon-input text-[11px] p-2 resize-none leading-snug"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-semibold text-gray-400 block mb-1">Veo / VideoFX Prompt:</label>
-                  <div className="text-[10px] text-gray-300 bg-gray-900/90 border border-gray-800/80 rounded p-2 max-h-24 overflow-y-auto leading-relaxed select-all">
+                  <label className="text-[10px] font-bold text-slate-500 block mb-1">Veo / VideoFX Prompt:</label>
+                  <div className="text-[10px] text-slate-600 bg-white border border-slate-200 rounded p-2 max-h-24 overflow-y-auto leading-relaxed select-all">
                     {s.video_prompt}
                   </div>
                 </div>
@@ -332,11 +332,11 @@ export default function VideoToVideoStudio() {
 
               <button
                 onClick={() => handleCopyPrompt(s.video_prompt, idx)}
-                className="w-full text-center text-[10px] py-1.5 rounded bg-gray-800/80 hover:bg-violet-600/30 text-gray-300 hover:text-violet-200 border border-gray-700/50 transition-all font-medium flex items-center justify-center gap-1.5"
+                className="w-full text-center text-[10px] py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 transition-all font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
               >
                 {copiedIndex === idx ? (
                   <>
-                    <Check className="w-3 h-3 text-emerald-400" /> Copied!
+                    <Check className="w-3 h-3 text-emerald-600" /> Copied!
                   </>
                 ) : (
                   <>
@@ -350,46 +350,46 @@ export default function VideoToVideoStudio() {
       </div>
 
       {/* STEP 2: Drag & Drop 5 Video Clips */}
-      <div className="rounded-2xl bg-gray-900/70 border border-gray-800 p-6 backdrop-blur-md shadow-xl space-y-4">
+      <div className="lemon-card p-6 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400 font-bold">
+            <div style={{ background: '#D4F84A' }} className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-900 font-extrabold text-sm">
               2
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Upload Generated AI Video Clips (Up to 5)</h2>
-              <p className="text-xs text-gray-400">Drag and drop your 9:16 clips from Google Veo, VideoFX, or Luma.</p>
+              <h2 className="text-base font-bold text-slate-900">Upload Generated AI Video Clips (Up to 5)</h2>
+              <p className="text-xs text-slate-400">Drag and drop your 9:16 clips from Google Veo, VideoFX, or Luma.</p>
             </div>
           </div>
 
           <div
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleBatchDrop}
-            className="text-xs text-violet-400 bg-violet-500/10 border border-violet-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5"
+            className="text-xs text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium"
           >
-            <Upload className="w-3.5 h-3.5" /> Tip: Drag all 5 video files here at once
+            <Upload className="w-3.5 h-3.5" /> Drag all 5 clips here
           </div>
         </div>
 
         {/* 5 Slot Upload Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
           {[0, 1, 2, 3, 4].map((slotIdx) => {
             const clip = clips[slotIdx];
             return (
               <div
                 key={slotIdx}
-                className={`relative rounded-xl border-2 transition-all p-3 flex flex-col justify-between items-center min-h-[220px] ${
+                className={`relative rounded-xl border-2 transition-all p-3 flex flex-col justify-between items-center min-h-[200px] ${
                   clip
-                    ? 'border-violet-500/60 bg-gray-950/80'
-                    : 'border-dashed border-gray-800 bg-gray-950/40 hover:border-gray-700'
+                    ? 'border-slate-800 bg-slate-50'
+                    : 'border-dashed border-slate-200 bg-slate-50/50 hover:border-slate-300'
                 }`}
               >
-                <div className="w-full flex items-center justify-between text-[11px] text-gray-400 mb-2">
-                  <span className="font-semibold text-violet-400">Clip #{slotIdx + 1}</span>
+                <div className="w-full flex items-center justify-between text-[11px] text-slate-500 mb-1.5">
+                  <span className="font-bold text-slate-800">Clip #{slotIdx + 1}</span>
                   {clip && (
                     <button
                       onClick={() => handleRemoveClip(slotIdx)}
-                      className="text-red-400 hover:text-red-300 p-1 rounded hover:bg-red-500/10 transition-colors"
+                      className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors cursor-pointer"
                       title="Remove clip"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -399,7 +399,7 @@ export default function VideoToVideoStudio() {
 
                 {clip ? (
                   <div className="w-full flex flex-col items-center space-y-2">
-                    <div className="w-full aspect-[9/16] max-h-36 rounded-lg overflow-hidden bg-black border border-gray-800 relative">
+                    <div className="w-full aspect-[9/16] max-h-36 rounded-lg overflow-hidden bg-black border border-slate-200 relative">
                       <video
                         src={clip.previewUrl}
                         className="w-full h-full object-cover"
@@ -408,24 +408,24 @@ export default function VideoToVideoStudio() {
                       />
                     </div>
                     <div className="w-full text-center">
-                      <p className="text-[11px] text-gray-200 font-medium truncate w-full" title={clip.name}>
+                      <p className="text-[11px] text-slate-800 font-semibold truncate w-full" title={clip.name}>
                         {clip.name}
                       </p>
-                      <span className="text-[10px] text-gray-400">{clip.sizeMb} MB</span>
+                      <span className="text-[10px] text-slate-400">{clip.sizeMb} MB</span>
                     </div>
                   </div>
                 ) : (
                   <div
                     onClick={() => fileInputRefs.current[slotIdx]?.click()}
-                    className="w-full flex-1 flex flex-col items-center justify-center gap-2 cursor-pointer p-4 text-center group"
+                    className="w-full flex-1 flex flex-col items-center justify-center gap-2 cursor-pointer p-3 text-center group"
                   >
-                    <div className="w-10 h-10 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center text-gray-400 group-hover:text-violet-400 group-hover:border-violet-500/50 transition-colors">
-                      <Upload className="w-4 h-4" />
+                    <div className="w-9 h-9 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 group-hover:text-slate-800 group-hover:border-slate-400 transition-colors shadow-2xs">
+                      <Upload className="w-3.5 h-3.5" />
                     </div>
-                    <span className="text-[11px] font-medium text-gray-400 group-hover:text-gray-200 transition-colors">
+                    <span className="text-[11px] font-bold text-slate-600 group-hover:text-slate-900 transition-colors">
                       Select Clip #{slotIdx + 1}
                     </span>
-                    <span className="text-[9px] text-gray-600">.mp4, .mov (9:16)</span>
+                    <span className="text-[9px] text-slate-400">.mp4 (9:16)</span>
                   </div>
                 )}
 
@@ -443,68 +443,68 @@ export default function VideoToVideoStudio() {
       </div>
 
       {/* STEP 3: Studio Customization & Assembly Settings */}
-      <div className="rounded-2xl bg-gray-900/70 border border-gray-800 p-6 backdrop-blur-md shadow-xl space-y-5">
+      <div className="lemon-card p-6 space-y-5">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400 font-bold">
+          <div style={{ background: '#D4F84A' }} className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-900 font-extrabold text-sm">
             3
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Timeline, Audio & Mastering Controls</h2>
-            <p className="text-xs text-gray-400">Configure resolution, duration speed-ramping, transitions, and audio sync.</p>
+            <h2 className="text-base font-bold text-slate-900">Timeline, Audio & Mastering Controls</h2>
+            <p className="text-xs text-slate-400">Configure resolution, duration speed-ramping, transitions, and audio sync.</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
           {/* Resolution */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-300">Target Resolution</label>
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-slate-700">Target Resolution</label>
             <select
               value={resolution}
               onChange={(e) => setResolution(e.target.value)}
-              className="w-full bg-gray-950 border border-gray-800 text-gray-200 text-xs rounded-xl p-2.5 outline-none focus:border-violet-500"
+              className="w-full lemon-input"
             >
-              <option value="1080p">1080p Full HD (1080x1920)</option>
-              <option value="4k">4K Ultra HD (2160x3840) — Recommended</option>
-              <option value="8k">Ultra 8K Master (4320x7680)</option>
+              <option value="1080p">1080p Full HD</option>
+              <option value="4k">4K Ultra HD (Recommended)</option>
+              <option value="8k">8K Master</option>
             </select>
           </div>
 
           {/* Duration Mode */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-300">Duration Adaptation</label>
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-slate-700">Duration Adaptation</label>
             <select
               value={durationMode}
               onChange={(e) => setDurationMode(e.target.value)}
-              className="w-full bg-gray-950 border border-gray-800 text-gray-200 text-xs rounded-xl p-2.5 outline-none focus:border-violet-500"
+              className="w-full lemon-input"
             >
-              <option value="speed_ramp">Speed-Ramp (Preserves full visual action)</option>
-              <option value="trim">Clean Trim (Cuts excess to voiceover)</option>
+              <option value="speed_ramp">Speed-Ramp (Preserve motion)</option>
+              <option value="trim">Clean Trim (Cut to voice)</option>
             </select>
           </div>
 
           {/* Transitions */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-300">Scene Transitions</label>
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-slate-700">Scene Transitions</label>
             <select
               value={transitionStyle}
               onChange={(e) => setTransitionStyle(e.target.value)}
-              className="w-full bg-gray-950 border border-gray-800 text-gray-200 text-xs rounded-xl p-2.5 outline-none focus:border-violet-500"
+              className="w-full lemon-input"
             >
-              <option value="dynamic">Dynamic Mix (Fade, Whip Pan, Circle)</option>
-              <option value="dissolve">Cinematic Dissolve / Crossfade</option>
-              <option value="whip_pan">Whip Pan / Slide</option>
+              <option value="dynamic">Dynamic Mix</option>
+              <option value="dissolve">Cinematic Dissolve</option>
+              <option value="whip_pan">Whip Pan</option>
               <option value="flash">Flash to Black</option>
-              <option value="none">Hard Cut (No Transition)</option>
+              <option value="none">Hard Cut</option>
             </select>
           </div>
 
           {/* Voiceover Accent */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-300">Narration Voice</label>
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-slate-700">Narration Voice</label>
             <select
               value={voiceAccent}
               onChange={(e) => setVoiceAccent(e.target.value)}
-              className="w-full bg-gray-950 border border-gray-800 text-gray-200 text-xs rounded-xl p-2.5 outline-none focus:border-violet-500"
+              className="w-full lemon-input"
             >
               <option value="in_female">Indian English — Female (Neerja)</option>
               <option value="in_male">Indian English — Male (Prabhat)</option>
@@ -515,26 +515,26 @@ export default function VideoToVideoStudio() {
           </div>
 
           {/* Captions Style */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-300">Captions Style</label>
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-slate-700">Captions Style</label>
             <select
               value={captionStyle}
               onChange={(e) => setCaptionStyle(e.target.value)}
-              className="w-full bg-gray-950 border border-gray-800 text-gray-200 text-xs rounded-xl p-2.5 outline-none focus:border-violet-500"
+              className="w-full lemon-input"
             >
-              <option value="tiktok">TikTok Kinetic Pop (Highlight)</option>
+              <option value="tiktok">TikTok Kinetic Pop</option>
               <option value="karaoke">Karaoke Yellow Glow</option>
               <option value="elegant">Cinematic Clean Bottom</option>
             </select>
           </div>
 
           {/* Captions Language */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-300">Subtitle Language</label>
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-slate-700">Subtitle Language</label>
             <select
               value={captionLang}
               onChange={(e) => setCaptionLang(e.target.value)}
-              className="w-full bg-gray-950 border border-gray-800 text-gray-200 text-xs rounded-xl p-2.5 outline-none focus:border-violet-500"
+              className="w-full lemon-input"
             >
               <option value="English">English</option>
               <option value="Hindi">Hindi (हिंदी)</option>
@@ -542,25 +542,25 @@ export default function VideoToVideoStudio() {
           </div>
 
           {/* Background Music */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-300">Background Music</label>
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-slate-700">Background Music</label>
             <select
               value={musicTrack}
               onChange={(e) => setMusicTrack(e.target.value)}
-              className="w-full bg-gray-950 border border-gray-800 text-gray-200 text-xs rounded-xl p-2.5 outline-none focus:border-violet-500"
+              className="w-full lemon-input"
             >
-              <option value="lofi">Lo-Fi Ambient (Auto-Ducked)</option>
-              <option value="upbeat">Upbeat Cinematic Energy</option>
-              <option value="none">Zero BGM (Clean Voice Only)</option>
+              <option value="lofi">Lo-Fi Ambient (Ducked)</option>
+              <option value="upbeat">Upbeat Energy</option>
+              <option value="none">Zero BGM (Clean Voice)</option>
             </select>
           </div>
         </div>
 
         {/* Action Button */}
-        <div className="pt-4 border-t border-gray-800/80 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="text-xs text-gray-400">
+        <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-xs text-slate-500">
             Clips ready:{' '}
-            <span className="font-bold text-violet-400">
+            <span className="font-bold text-slate-900">
               {clips.filter(Boolean).length} of 5 selected
             </span>
           </div>
@@ -568,7 +568,7 @@ export default function VideoToVideoStudio() {
           <button
             onClick={handleAssemble}
             disabled={isAssembling || clips.filter(Boolean).length === 0}
-            className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-sm tracking-wide transition-all shadow-xl hover:shadow-violet-500/25 disabled:opacity-50"
+            className="w-full sm:w-auto lemon-btn-primary py-3 px-8 text-xs font-bold"
           >
             {isAssembling ? (
               <>
@@ -585,14 +585,14 @@ export default function VideoToVideoStudio() {
 
       {/* Assembly Progress & Output Display */}
       {isAssembling && (
-        <div className="rounded-2xl bg-gray-900 border border-violet-500/40 p-6 shadow-2xl space-y-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-200 font-semibold">{assemblyMessage}</span>
-            <span className="text-violet-400 font-bold">{assemblyProgress}%</span>
+        <div className="lemon-card p-6 border-slate-300 space-y-3">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+            <span>{assemblyMessage}</span>
+            <span>{assemblyProgress}%</span>
           </div>
-          <div className="w-full bg-gray-950 rounded-full h-3 overflow-hidden border border-gray-800">
+          <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-violet-500 to-indigo-500 h-full transition-all duration-300 rounded-full"
+              className="bg-slate-900 h-full transition-all duration-300 rounded-full"
               style={{ width: `${assemblyProgress}%` }}
             />
           </div>
@@ -600,27 +600,28 @@ export default function VideoToVideoStudio() {
       )}
 
       {errorText && (
-        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
           {errorText}
         </div>
       )}
 
       {finalVideoUrl && (
-        <div className="rounded-2xl bg-gray-900 border border-emerald-500/40 p-6 md:p-8 shadow-2xl space-y-6">
+        <div className="lemon-card p-6 md:p-8 space-y-6 max-w-2xl mx-auto">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-emerald-400 font-bold text-lg">
-              <CheckCircle2 className="w-5 h-5" /> Master Video Ready!
+            <div className="flex items-center gap-2 text-slate-900 font-extrabold text-lg">
+              <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+              <span>Master Video Ready!</span>
             </div>
             <a
               href={finalVideoUrl}
               download="master_video_short.mp4"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-lg"
+              className="lemon-btn-primary px-5 py-2 text-xs"
             >
-              Download MP4
+              <Download className="w-3.5 h-3.5" /> Download MP4
             </a>
           </div>
 
-          <div className="max-w-md mx-auto aspect-[9/16] rounded-2xl overflow-hidden bg-black border border-gray-800 shadow-2xl">
+          <div className="max-w-md mx-auto aspect-[9/16] rounded-2xl overflow-hidden bg-black border border-slate-200 shadow-xl">
             <video src={finalVideoUrl} controls autoPlay className="w-full h-full object-cover" />
           </div>
         </div>

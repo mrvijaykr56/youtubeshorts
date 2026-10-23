@@ -1,25 +1,157 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { RefreshCw, Video, Clapperboard, Edit, Check, X, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Editor, { createButton, Toolbar, BtnBold, BtnItalic, BtnUnderline, BtnBulletList, BtnLink, BtnClearFormatting, BtnUndo, BtnRedo } from 'react-simple-wysiwyg';
+import {
+  RefreshCw, Edit3, Check, X, Upload, Download,
+  Share2, AlertCircle, CheckCircle2, Loader2,
+  ChevronDown, ChevronUp, Copy, Sparkles, Film,
+  Sliders, Music, Volume2, Users, Video, Play, ExternalLink
+} from 'lucide-react';
+import './App.css';
 
-// Define custom alignment buttons using the library's utility
-const BtnAlignLeft = createButton('Left align', '⬅️', 'justifyLeft');
-const BtnAlignCenter = createButton('Center align', '🟰', 'justifyCenter');
-const BtnAlignRight = createButton('Right align', '➡️', 'justifyRight');
-
-// Import modular components
-import ScriptInput from './components/ScriptInput';
-import StyleSelector from './components/StyleSelector';
-import ConfigPanel from './components/ConfigPanel';
-import RenderStepper from './components/RenderStepper';
-import ResultDisplay from './components/ResultDisplay';
 import VideoToVideoStudio from './components/VideoToVideoStudio';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
-function App() {
+// ── Voice Options ────────────────────────────────────────────────────────────
+const VOICE_OPTIONS = [
+  { value: 'in_female', label: 'English (Female) — Neerja', group: '🇮🇳 Indian English' },
+  { value: 'in_male',   label: 'English (Male) — Prabhat',   group: '🇮🇳 Indian English' },
+  { value: 'hi_female', label: 'Hindi (Female) — Swara',     group: '🗣️ Hindi' },
+  { value: 'hi_male',   label: 'Hindi (Male) — Madhur',      group: '🗣️ Hindi' },
+  { value: 'us',        label: 'US English — Professional',  group: '🇺🇸 English' },
+  { value: 'bn_female', label: 'Bengali (Female) — Tanishaa', group: '🗣️ Regional' },
+  { value: 'pa_female', label: 'Punjabi (Female) — Vaani',   group: '🗣️ Regional' },
+  { value: 'child_english', label: 'Child Tone (English)',   group: '👶 Special' },
+];
+
+const ART_STYLES = [
+  { id: 'cinematic',   name: 'Cinematic',   icon: '🎬', desc: 'Photorealistic, dramatic' },
+  { id: 'pixar',       name: 'Pixar 3D',    icon: '🧸', desc: 'Vibrant soft clay' },
+  { id: 'anime',       name: 'Anime',       icon: '🌸', desc: 'Makoto Shinkai style' },
+  { id: 'cyberpunk',   name: 'Cyberpunk',   icon: '🌌', desc: 'Neon synthwave glow' },
+  { id: 'oil_painting',name: 'Oil Paint',   icon: '🎨', desc: 'Classical canvas' },
+];
+
+const STORY_STARTERS = [
+  { label: '🧠 Mind-Blowing Fact',  text: 'Did you know that honey never expires? Archaeologists have found 3000-year-old honey in Egyptian tombs — still perfectly edible. Why does honey last forever while everything else rots?' },
+  { label: '📜 Ancient Mystery',    text: 'The Great Pyramid of Giza was built with over 2.3 million stone blocks, each weighing up to 80 tons. Modern engineers still cannot fully explain how ancient Egyptians transported and placed them with such precision.' },
+  { label: '😂 Everyday Comedy',    text: 'आज सुबह जब मैंने अपना स्कूल बैग उठाया तो लगा जैसे उसमें किताबों के साथ-साथ सब्ज़ी मंडी भी रखी हो। बैग की ज़िप खोली तो अंदर से तीन पेंसिलें, दो रबर, और एक आधा खाया हुआ समोसा निकला!' },
+  { label: '🚀 Future Tech',        text: 'Scientists are developing brain-computer interfaces that let paralyzed patients control computers with their thoughts alone. Within 10 years, we may be able to send emotions and memories directly from one brain to another.' },
+];
+
+const PIPELINE_STEPS = [
+  { name: 'Script Polish', icon: '✍️' },
+  { name: 'Voice Synth',   icon: '🎙️' },
+  { name: 'Subtitles',     icon: '💬' },
+  { name: 'Scene Art',     icon: '🖼️' },
+  { name: 'Render',        icon: '🎬' },
+];
+
+function getActiveStep(status, progress) {
+  if (status === 'generating_storyboard') return progress < 20 ? 0 : 3;
+  if (progress < 35) return 1;
+  if (progress < 60) return 2;
+  if (progress < 65) return 3;
+  return 4;
+}
+
+// ── VoiceSelect Component ───────────────────────────────────────────────────
+function VoiceSelect({ id, value, onChange }) {
+  const groups = [...new Set(VOICE_OPTIONS.map(v => v.group))];
+  return (
+    <select id={id} value={value} onChange={e => onChange(e.target.value)} className="lemon-input w-full">
+      {groups.map(g => (
+        <optgroup key={g} label={g}>
+          {VOICE_OPTIONS.filter(v => v.group === g).map(v => (
+            <option key={v.value} value={v.value}>{v.label}</option>
+          ))}
+        </optgroup>
+      ))}
+    </select>
+  );
+}
+
+// ── TopNav Header ────────────────────────────────────────────────────────────
+function TopNav({ phase, onReset, studioTab, setStudioTab }) {
+  const phases = ['01 Concept', '02 Storyboard', '03 Export'];
+  const phaseIdx = phase === 'concept' ? 0 : phase === 'storyboard' ? 1 : 2;
+
+  return (
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3 flex items-center justify-between shadow-xs">
+      {/* Brand Logo */}
+      <div className="flex items-center gap-3">
+        <div style={{ background: '#D4F84A', borderRadius: '12px', padding: '6px 10px', fontSize: '20px', lineHeight: 1 }}>
+          🍋
+        </div>
+        <div>
+          <span className="font-extrabold text-base text-slate-900 tracking-tight">
+            Shorts Studio AI
+          </span>
+          <span className="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 uppercase tracking-wider">
+            Pro 4K/8K
+          </span>
+        </div>
+      </div>
+
+      {/* Mode Switcher Tabs */}
+      <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+        <button
+          onClick={() => setStudioTab('video_to_video')}
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            studioTab === 'video_to_video'
+              ? 'bg-white text-slate-900 shadow-xs'
+              : 'text-slate-500 hover:text-slate-900'
+          }`}
+        >
+          <span>🎬</span>
+          <span>Video-to-Video</span>
+        </button>
+        <button
+          onClick={() => setStudioTab('image_to_video')}
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            studioTab === 'image_to_video'
+              ? 'bg-white text-slate-900 shadow-xs'
+              : 'text-slate-500 hover:text-slate-900'
+          }`}
+        >
+          <span>🖼️</span>
+          <span>Image-to-Video</span>
+        </button>
+      </div>
+
+      {/* Phase Stepper (Image Mode) */}
+      <div className="hidden md:flex items-center gap-3">
+        {phases.map((p, idx) => (
+          <div key={p} className="flex items-center gap-2">
+            <span
+              className={`text-xs font-bold px-2.5 py-1 rounded-lg transition-all ${
+                phaseIdx === idx
+                  ? 'bg-slate-900 text-white'
+                  : phaseIdx > idx
+                  ? 'text-emerald-700 bg-emerald-50 font-semibold'
+                  : 'text-slate-400'
+              }`}
+            >
+              {p}
+            </span>
+            {idx < phases.length - 1 && <span className="text-slate-300">/</span>}
+          </div>
+        ))}
+      </div>
+
+      {/* Reset */}
+      <button
+        onClick={onReset}
+        className="text-xs font-semibold text-slate-500 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+      >
+        New Project
+      </button>
+    </header>
+  );
+}
+
+export default function App() {
   const [studioTab, setStudioTab] = useState('video_to_video'); // 'video_to_video' | 'image_to_video'
   const [script, setScript] = useState('');
   const [status, setStatus] = useState('idle'); // idle, generating_storyboard, storyboard_ready, compiling, completed, error
@@ -28,92 +160,99 @@ function App() {
   const [progressPercent, setProgressPercent] = useState(0);
   const [videoUrl, setVideoUrl] = useState(null);
   const [polishedScript, setPolishedScript] = useState(null);
-  
-  // Custom Studio Upgrades States
+
+  // Studio Settings
   const [voiceAccent, setVoiceAccent] = useState('in_female');
   const [musicTrack, setMusicTrack] = useState('lofi');
   const [musicVolume, setMusicVolume] = useState('0.12');
   const [captionStyle, setCaptionStyle] = useState('tiktok');
   const [artStyle, setArtStyle] = useState('cinematic');
-  const [captionLang, setCaptionLang] = useState('English'); // 'English' | 'Hindi'
+  const [captionLang, setCaptionLang] = useState('English');
   const [videoMode, setVideoMode] = useState('shorts'); // 'shorts' | 'tutorial'
-  const [videoResolution, setVideoResolution] = useState('1080p'); // '1080p' | '4k'
+  const [videoResolution, setVideoResolution] = useState('4k'); // '1080p' | '4k' | '8k'
+  const [transitionStyle, setTransitionStyle] = useState('dynamic');
 
-  // Multi-Character Dialogue & Transition States
+  // Dialogue Mode
   const [isDialogueMode, setIsDialogueMode] = useState(false);
   const [voiceA, setVoiceA] = useState('in_female');
   const [voiceB, setVoiceB] = useState('in_male');
-  const [transitionStyle, setTransitionStyle] = useState('dynamic');
 
-  // Storyboard editing states
+  // Storyboard editing
   const [storyboardScenes, setStoryboardScenes] = useState(null);
   const [regeneratingIndex, setRegeneratingIndex] = useState(null);
-  const [uploadingIndex, setUploadingIndex] = useState(null);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+
   const pollingTimeoutRef = useRef(null);
 
-  const artStyles = [
-    { id: 'cinematic', name: 'Cinematic Film', description: 'Photorealistic, dramatic lighting', icon: '🎬', gradient: 'from-amber-400 to-orange-500' },
-    { id: 'cyberpunk', name: 'Cyberpunk', description: 'Neon synthwave glow', icon: '🌌', gradient: 'from-fuchsia-500 to-indigo-500' },
-    { id: 'pixar', name: 'Pixar 3D', description: 'Vibrant, soft clay rendering', icon: '🧸', gradient: 'from-sky-400 to-blue-500' },
-    { id: 'anime', name: 'Anime', description: 'Makoto Shinkai hand-drawn art', icon: '🌸', gradient: 'from-emerald-400 to-teal-500' },
-    { id: 'oil_painting', name: 'Oil Painting', description: 'Canvas textures, classical style', icon: '🎨', gradient: 'from-rose-500 to-red-600' }
-  ];
+  // Determine current phase: 'concept' | 'storyboard' | 'export'
+  const currentPhase =
+    status === 'completed'
+      ? 'export'
+      : storyboardScenes && storyboardScenes.length > 0
+      ? 'storyboard'
+      : 'concept';
 
-  const pipelineSteps = [
-    { name: 'Script Polishing', desc: 'AI Storyboarding' },
-    { name: 'Neural Voiceover', desc: 'Synthesizing voice' },
-    { name: 'ASS Subtitles', desc: 'Whisper word-timestamps' },
-    { name: 'Scene Art', desc: 'Generating background scenes' },
-    { name: 'Video Render', desc: 'Concatenating & mixing audio' }
-  ];
-
-  const getActiveStepIndex = () => {
-    if (status === 'generating_storyboard') {
-      if (progressPercent < 20) return 0;  // Script polishing
-      return 3;                             // Scene Art (Generating draft images)
-    }
-    // During compilation phase:
-    if (progressPercent < 35) return 1;    // Neural Voiceover
-    if (progressPercent < 60) return 2;    // ASS Subtitles
-    if (progressPercent < 65) return 3;    // Scene Art (Proactive auto-recovery/checks)
-    return 4;                               // Video render (FFmpeg stitching & burning)
-  };
-
-  const handleGenerateStoryboard = async () => {
-    if (status === 'completed' || status === 'error') {
-      if (pollingTimeoutRef.current) {
-        clearTimeout(pollingTimeoutRef.current);
-        pollingTimeoutRef.current = null;
-      }
-      setStatus('idle');
-      setScript('');
-      setVideoUrl(null);
-      setPolishedScript(null);
-      setStoryboardScenes(null);
-      return;
-    }
-
-    if (!script.trim()) return;
-
-    // Validate minimum word count — too few words produce poor storyboards
-    const wordCount = script.trim().split(/\s+/).filter(Boolean).length;
-    if (videoMode === 'shorts' && wordCount < 10) {
-      setStatus('error');
-      setProgressText(`Script too short (${wordCount} words). Please enter at least 10 words for a meaningful Short.`);
-      return;
-    }
-    
-    setStatus('generating_storyboard');
-    setProgressText('Polishing script and building storyboard visual drafts...');
-    setProgressPercent(5);
+  const handleReset = () => {
+    if (pollingTimeoutRef.current) clearTimeout(pollingTimeoutRef.current);
+    setStatus('idle');
+    setScript('');
+    setJobId(null);
     setVideoUrl(null);
     setPolishedScript(null);
     setStoryboardScenes(null);
+    setProgressPercent(0);
+    setProgressText('');
+  };
+
+  // Poll Job Status
+  const pollStatus = async (currentJobId) => {
+    if (!currentJobId) return;
+    try {
+      const res = await axios.get(`${API_BASE_URL}/status/${currentJobId}`);
+      const data = res.data;
+      setProgressText(data.message || 'Processing...');
+      if (data.progress !== undefined) setProgressPercent(data.progress);
+
+      if (data.polished_script) {
+        setPolishedScript(data.polished_script);
+        try {
+          const parsed = JSON.parse(data.polished_script);
+          setStoryboardScenes(parsed.get ? parsed.get('scenes', parsed) : parsed);
+        } catch { /* ignore */ }
+      }
+
+      if (data.state === 'storyboard_ready') {
+        setStatus('storyboard_ready');
+        setProgressPercent(100);
+        return;
+      } else if (data.state === 'completed') {
+        setStatus('completed');
+        setProgressPercent(100);
+        setVideoUrl(`${API_BASE_URL}/download/${currentJobId}.mp4`);
+        return;
+      } else if (data.state === 'error') {
+        setStatus('error');
+        return;
+      }
+
+      pollingTimeoutRef.current = setTimeout(() => pollStatus(currentJobId), 2000);
+    } catch (err) {
+      console.warn('Poll error, retrying:', err);
+      pollingTimeoutRef.current = setTimeout(() => pollStatus(currentJobId), 3000);
+    }
+  };
+
+  // Generate Storyboard Draft
+  const handleGenerateStoryboard = async () => {
+    if (!script.trim()) return;
+    setStatus('generating_storyboard');
+    setProgressText('Polishing script and generating 9:16 background scenes...');
+    setProgressPercent(10);
+    setStoryboardScenes(null);
 
     try {
-      const effectiveMode = isDialogueMode ? 'dialogue' : videoMode;
-      const response = await axios.post(`${API_BASE_URL}/storyboard`, { 
-        script,
+      const payload = {
+        script: script.trim(),
         voice_accent: isDialogueMode ? voiceA : voiceAccent,
         voice_a: voiceA,
         voice_b: voiceB,
@@ -123,1022 +262,460 @@ function App() {
         caption_lang: captionLang,
         art_style: artStyle,
         music_volume: parseFloat(musicVolume),
-        video_mode: effectiveMode,
+        video_mode: isDialogueMode ? 'dialogue' : videoMode,
         video_resolution: videoResolution
-      });
-      const newJobId = response.data.job_id;
+      };
+
+      const res = await axios.post(`${API_BASE_URL}/storyboard`, payload);
+      const newJobId = res.data.job_id;
       setJobId(newJobId);
       pollStatus(newJobId);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       setStatus('error');
-      setProgressText('Failed to initialize storyboard draft generation.');
+      setProgressText('Failed to start storyboard generation. Check backend.');
     }
   };
 
-  const handleRegenerateSceneImage = async (index, customPrompt, slideData = {}) => {
-    setRegeneratingIndex(index);
+  // Compile Final Master Video
+  const handleCompileVideo = async () => {
+    if (!jobId || !storyboardScenes) return;
+    setStatus('compiling');
+    setProgressText('Compiling final video with audio sync, transitions, and subtitles...');
+    setProgressPercent(20);
+
     try {
-      const response = await axios.post(`${API_BASE_URL}/regenerate-image`, {
+      const payload = {
         job_id: jobId,
-        scene_index: index,
-        prompt: customPrompt,
-        art_style: artStyle,
-        ...slideData
+        scenes: storyboardScenes,
+        voice_accent: isDialogueMode ? voiceA : voiceAccent,
+        music_track: musicTrack,
+        caption_style: captionStyle,
+        caption_lang: captionLang,
+        music_volume: parseFloat(musicVolume),
+        video_resolution: videoResolution,
+        transition_style: transitionStyle
+      };
+
+      await axios.post(`${API_BASE_URL}/compile`, payload);
+      pollStatus(jobId);
+    } catch (err) {
+      console.error(err);
+      setStatus('error');
+      setProgressText('Failed to compile video.');
+    }
+  };
+
+  // Regenerate Single Scene Image
+  const handleRegenerateScene = async (idx, prompt) => {
+    setRegeneratingIndex(idx);
+    try {
+      const res = await axios.post(`${API_BASE_URL}/regenerate-image`, {
+        job_id: jobId,
+        scene_index: idx,
+        prompt: prompt,
+        art_style: artStyle
       });
-      
-      if (response.data.success) {
-        const updatedScenes = [...storyboardScenes];
-        // Append a cache-buster query parameter to force dynamic image reload in browser
-        // eslint-disable-next-line react-hooks/purity
-        const cacheBuster = `?t=${Date.now()}`;
-        updatedScenes[index].image_url = `${API_BASE_URL}${response.data.image_url}${cacheBuster}`;
-        updatedScenes[index].visual = customPrompt;
-        
-        // Sync updated slide metadata back to local state
-        if (slideData.slide_title !== undefined) updatedScenes[index].slide_title = slideData.slide_title;
-        if (slideData.bullets !== undefined) updatedScenes[index].bullets = slideData.bullets;
-        if (slideData.code_snippet !== undefined) updatedScenes[index].code_snippet = slideData.code_snippet;
-        if (slideData.narration !== undefined) updatedScenes[index].narration = slideData.narration;
-        if (slideData.font_family !== undefined) updatedScenes[index].font_family = slideData.font_family;
-        if (slideData.font_size !== undefined) updatedScenes[index].font_size = slideData.font_size;
-        if (slideData.font_color !== undefined) updatedScenes[index].font_color = slideData.font_color;
-        if (slideData.alignment !== undefined) updatedScenes[index].alignment = slideData.alignment;
-        if (slideData.line_height !== undefined) updatedScenes[index].line_height = slideData.line_height;
-        if (slideData.bg_color !== undefined) updatedScenes[index].bg_color = slideData.bg_color;
-        if (slideData.slide_style !== undefined) updatedScenes[index].slide_style = slideData.slide_style;
-        
-        setStoryboardScenes(updatedScenes);
+      if (res.data.success) {
+        const updated = [...storyboardScenes];
+        updated[idx].image_url = `${API_BASE_URL}${res.data.image_url}?t=${Date.now()}`;
+        setStoryboardScenes(updated);
       }
-    } catch (error) {
-      console.error("Failed to regenerate image", error);
-      alert("Failed to regenerate scene background. Please try again.");
+    } catch (err) {
+      console.error(err);
+      alert('Failed to regenerate image.');
     } finally {
       setRegeneratingIndex(null);
     }
   };
 
-  const handleUploadSceneImage = async (sceneIdx, file) => {
-    if (!jobId) return;
-    
-    setUploadingIndex(sceneIdx);
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('job_id', jobId);
-    formData.append('scene_index', sceneIdx);
-
-    try {
-      const response = await axios.post(`${API_BASE_URL}/upload-scene-image`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      if (response.data.success) {
-        const updatedScenes = [...storyboardScenes];
-        updatedScenes[sceneIdx].image_url = `${API_BASE_URL}${response.data.image_url}`;
-        setStoryboardScenes(updatedScenes);
-      }
-    } catch (error) {
-      console.error('Failed to upload custom image:', error);
-      alert('Failed to upload custom image. Please try again.');
-    } finally {
-      setUploadingIndex(null);
-    }
-  };
-
-  const handleCompileVideo = async () => {
-    setStatus('compiling');
-    setProgressText('Voice synthesizers and video compilers standing by...');
-    setProgressPercent(5);
-    
-    try {
-      const effectiveMode = isDialogueMode ? 'dialogue' : videoMode;
-      await axios.post(`${API_BASE_URL}/compile`, {
-        job_id: jobId,
-        voice_accent: isDialogueMode ? voiceA : voiceAccent,
-        voice_a: voiceA,
-        voice_b: voiceB,
-        transition_style: transitionStyle,
-        caption_style: captionStyle,
-        caption_lang: captionLang,
-        music_track: musicTrack,
-        music_volume: parseFloat(musicVolume),
-        art_style: artStyle,
-        video_mode: effectiveMode,
-        video_resolution: videoResolution
-      });
-      pollStatus(jobId);
-    } catch (error) {
-      console.error(error);
-      setStatus('error');
-      setProgressText('Video compilation render failed.');
-    }
-  };
-
-  function pollStatus(currentJobId, pollingMode = 'fast') {
-    // Clear any active polling timer before initiating a new sequence
-    if (pollingTimeoutRef.current) {
-      clearTimeout(pollingTimeoutRef.current);
-      pollingTimeoutRef.current = null;
-    }
-
-    // Adaptive polling: 2s when storyboard generating (fast), 5s during long image/video render
-    const fastInterval = 2000;
-    const slowInterval = 5000;
-    let currentDelay = pollingMode === 'fast' ? fastInterval : slowInterval;
-    let consecutiveErrors = 0;
-    const maxConsecutiveErrors = 5;
-
-    const doPoll = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/status/${currentJobId}`);
-        consecutiveErrors = 0; // Reset error counter on successful ping
-        const { state, message, polished_script, progress } = response.data;
-        
-        setProgressText(message);
-        if (progress !== undefined) setProgressPercent(progress);
-        if (polished_script) {
-          setPolishedScript(polished_script);
-          try { setStoryboardScenes(JSON.parse(polished_script)); } catch { /* Ignore storyboard parsing errors */ }
-        }
-        
-        // Switch to slow polling when in the heavy image/video render phase (progress > 60%)
-        if (progress > 60 && currentDelay === fastInterval) {
-          currentDelay = slowInterval;
-        }
-
-        if (state === 'storyboard_ready') {
-          setStatus('storyboard_ready');
-          setProgressPercent(100);
-          return; // Stop polling
-        } else if (state === 'completed') {
-          setStatus('completed');
-          setProgressPercent(100);
-          setVideoUrl(`${API_BASE_URL}/download/${currentJobId}.mp4`);
-          return; // Stop polling
-        } else if (state === 'error') {
-          setStatus('error');
-          setProgressPercent(0);
-          return; // Stop polling
-        }
-
-        // Continue polling
-        pollingTimeoutRef.current = setTimeout(doPoll, currentDelay);
-      } catch (err) {
-        consecutiveErrors += 1;
-        console.warn(`[pollStatus] Network ping failed (${consecutiveErrors}/${maxConsecutiveErrors}):`, err);
-        if (consecutiveErrors >= maxConsecutiveErrors) {
-          setStatus('error');
-          setProgressText('Lost connection to server after multiple attempts.');
-          return;
-        }
-        // Resilient retry with 3s backoff
-        pollingTimeoutRef.current = setTimeout(doPoll, 3000);
-      }
-    };
-
-    pollingTimeoutRef.current = setTimeout(doPoll, currentDelay);
-  }
-
-  // Save session state to localStorage when changes occur
-  useEffect(() => {
-    if (jobId) {
-      localStorage.setItem('active_job_id', jobId);
-      localStorage.setItem('active_job_status', status);
-    } else {
-      localStorage.removeItem('active_job_id');
-      localStorage.removeItem('active_job_status');
-    }
-  }, [jobId, status]);
-
-  useEffect(() => {
-    if (script) localStorage.setItem('active_script', script);
-    else localStorage.removeItem('active_script');
-  }, [script]);
-
-  useEffect(() => {
-    localStorage.setItem('active_voice_accent', voiceAccent);
-  }, [voiceAccent]);
-
-  useEffect(() => {
-    localStorage.setItem('active_music_track', musicTrack);
-  }, [musicTrack]);
-
-  useEffect(() => {
-    localStorage.setItem('active_caption_style', captionStyle);
-  }, [captionStyle]);
-
-  useEffect(() => {
-    localStorage.setItem('active_art_style', artStyle);
-  }, [artStyle]);
-
-  useEffect(() => {
-    localStorage.setItem('active_video_mode', videoMode);
-  }, [videoMode]);
-
-  useEffect(() => {
-    localStorage.setItem('active_video_resolution', videoResolution);
-  }, [videoResolution]);
-
-  // Auto-restore active session from localStorage on initial load
-  useEffect(() => {
-    const savedJobId = localStorage.getItem('active_job_id');
-    const savedStatus = localStorage.getItem('active_job_status');
-    const savedScript = localStorage.getItem('active_script');
-    
-    const savedVoice = localStorage.getItem('active_voice_accent');
-    const savedMusic = localStorage.getItem('active_music_track');
-    const savedCaption = localStorage.getItem('active_caption_style');
-    const savedArt = localStorage.getItem('active_art_style');
-    const savedMode = localStorage.getItem('active_video_mode');
-    const savedRes = localStorage.getItem('active_video_resolution');
-
-    if (savedScript) setScript(savedScript);
-    if (savedVoice) {
-      // Validate against current voice keys — discard stale keys from previous versions
-      const VALID_VOICES = new Set([
-        'in_female','in_male',
-        'hi_female','hi_male',
-        'bn_female','bn_male',
-        'pa_female','pa_male',
-        'bho_female','bho_male',
-        'child_english','child_hindi',
-      ]);
-      if (VALID_VOICES.has(savedVoice)) setVoiceAccent(savedVoice);
-      else localStorage.removeItem('active_voice_accent');
-    }
-    if (savedMusic) setMusicTrack(savedMusic);
-    if (savedCaption) setCaptionStyle(savedCaption);
-    if (savedArt) setArtStyle(savedArt);
-    if (savedMode) setVideoMode(savedMode);
-    if (savedRes) setVideoResolution(savedRes);
-
-    if (savedJobId && savedStatus && savedStatus !== 'completed' && savedStatus !== 'idle') {
-      setJobId(savedJobId);
-      setStatus(savedStatus);
-      pollStatus(savedJobId);
-    }
-  }, []);
-
-  const getSceneImageUrl = (index) => {
-    if (storyboardScenes && storyboardScenes[index] && storyboardScenes[index].image_url) {
-      return storyboardScenes[index].image_url;
-    }
-    return `${API_BASE_URL}/output/${jobId}_scene_${String(index).padStart(2, '0')}.jpg`;
-  };
-
-  const activeStepIdx = getActiveStepIndex();
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-gray-100 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl w-full space-y-10">
-        
-        {/* Header Block */}
-        <div className="text-center space-y-4">
-          <div className="flex justify-center">
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0.8 }}
-              animate={{ scale: [0.9, 1.05, 0.9], opacity: [0.8, 1, 0.8] }}
-              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              className="p-4 bg-indigo-600/10 rounded-3xl shadow-xl shadow-indigo-500/5 border border-indigo-500/20"
-            >
-              <Clapperboard className="w-14 h-14 text-indigo-400" />
-            </motion.div>
-          </div>
-          <motion.h1 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl font-extrabold tracking-tight sm:text-6xl bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
-          >
-            Shorts Studio AI
-          </motion.h1>
-          <p className="mt-2 text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            Overhaul raw scripts into dynamic YouTube Shorts. Powered by lifelike Neural TTS, contextual image storyboarding, and high-retention word highlights.
-          </p>
-        </div>
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <TopNav
+        phase={currentPhase}
+        onReset={handleReset}
+        studioTab={studioTab}
+        setStudioTab={setStudioTab}
+      />
 
-        {/* Studio Mode Switcher */}
-        <div className="flex rounded-2xl overflow-hidden border border-gray-800 bg-gray-950/80 p-1.5 gap-2 max-w-xl mx-auto shadow-2xl">
-          <button
-            onClick={() => setStudioTab('video_to_video')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer ${
-              studioTab === 'video_to_video'
-                ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white shadow-lg shadow-violet-500/25'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-900/40'
-            }`}
-          >
-            <span className="text-base">🎬</span>
-            <span>Video-to-Video Studio (4K/8K)</span>
-          </button>
-          <button
-            onClick={() => setStudioTab('image_to_video')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer ${
-              studioTab === 'image_to_video'
-                ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg shadow-indigo-500/25'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-900/40'
-            }`}
-          >
-            <span className="text-base">🖼️</span>
-            <span>Image-to-Video (Ken Burns)</span>
-          </button>
-        </div>
-
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 space-y-8">
+        {/* Render Video-to-Video Studio when tab is active */}
         {studioTab === 'video_to_video' ? (
           <VideoToVideoStudio />
         ) : (
-          /* Studio Panel (Image-to-Video) */
-          <div className="bg-gray-900/60 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden border border-gray-800 p-6 sm:p-8 space-y-8">
-          
-          {(status === 'idle' || status === 'error') && (
-            <div className="space-y-6 animate-fadeIn">
-
-              {/* Mode Toggle */}
-              <div className="flex rounded-2xl overflow-hidden border border-gray-800 bg-gray-950/60 p-1 gap-1">
-                <button
-                  onClick={() => { setVideoMode('shorts'); setCaptionStyle('tiktok'); }}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer ${
-                    videoMode === 'shorts'
-                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/20'
-                      : 'text-gray-400 hover:text-gray-200'
-                  }`}
-                >
-                  <span className="text-base">⚡</span>
-                  <span>Viral Shorts</span>
-                </button>
-                <button
-                  onClick={() => { setVideoMode('tutorial'); setCaptionStyle('elegant'); }}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer ${
-                    videoMode === 'tutorial'
-                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/20'
-                      : 'text-gray-400 hover:text-gray-200'
-                  }`}
-                >
-                  <span className="text-base">📚</span>
-                  <span>Tutorial / How-To</span>
-                </button>
-              </div>
-
-              {/* Mode description chip */}
-              <div className={`text-xs px-4 py-2.5 rounded-xl border leading-relaxed ${
-                videoMode === 'tutorial'
-                  ? 'bg-emerald-950/30 border-emerald-800/40 text-emerald-300/80'
-                  : 'bg-indigo-950/30 border-indigo-800/40 text-indigo-300/80'
-              }`}>
-                {videoMode === 'tutorial'
-                  ? '📚 Tutorial Mode — AI structures your topic into numbered steps (Introduction + Step 1→N + Summary). Step labels shown on each scene. Calm instructional tone, 60–90 seconds.'
-                  : '⚡ Viral Shorts Mode — AI rewrites your script into a punchy hook-first Short (5–7 scenes, 30 seconds, emoji subtitles, cinematic visuals).'}
-              </div>
-
-              {/* Input Area */}
-              <ScriptInput 
-                script={script} 
-                setScript={setScript} 
-                disabled={status.includes('generating')}
-                placeholder={videoMode === 'tutorial'
-                  ? 'Describe your tutorial topic... e.g. "How to make perfect scrambled eggs" or "Step-by-step Python list comprehensions"'
-                  : 'Write your script idea... e.g. "Did you know honey never expires? Ancient Egyptians used it in tombs..."'}
-              />
-
-              {/* Visual Art Presets Selectors */}
-              <StyleSelector 
-                artStyle={artStyle} 
-                setArtStyle={setArtStyle} 
-                artStyles={artStyles} 
-              />
-
-              {/* Advanced Configurations */}
-              <ConfigPanel 
-                voiceAccent={voiceAccent}
-                setVoiceAccent={setVoiceAccent}
-                musicTrack={musicTrack}
-                setMusicTrack={setMusicTrack}
-                captionStyle={captionStyle}
-                setCaptionStyle={setCaptionStyle}
-                captionLang={captionLang}
-                setCaptionLang={setCaptionLang}
-                musicVolume={musicVolume}
-                setMusicVolume={setMusicVolume}
-                videoResolution={videoResolution}
-                setVideoResolution={setVideoResolution}
-                isDialogueMode={isDialogueMode}
-                setIsDialogueMode={setIsDialogueMode}
-                voiceA={voiceA}
-                setVoiceA={setVoiceA}
-                voiceB={voiceB}
-                setVoiceB={setVoiceB}
-                transitionStyle={transitionStyle}
-                setTransitionStyle={setTransitionStyle}
-              />
-            </div>
-          )}
-
-          {/* Interactive Storyboard fine-tuning grid */}
-          {status === 'storyboard_ready' && storyboardScenes && (
-            <div className="space-y-6 animate-fadeIn">
-              <div className="flex flex-col md:flex-row justify-between md:items-center border-b border-gray-800 pb-4 gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent flex items-center">
-                    🎨 Storyboard Fine-Tuning
-                  </h2>
-                  <p className="text-xs text-gray-400 mt-1 leading-relaxed">
-                    Review and modify visual prompts, regenerate scene art, and customize scripts prior to compilation.
+          /* Image-to-Video Studio */
+          <div className="space-y-8">
+            {/* Phase 01: Concept & Setup */}
+            {currentPhase === 'concept' && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                {/* Hero Banner */}
+                <div className="text-center space-y-2 py-4">
+                  <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                    Create High-Retention YouTube Shorts
+                  </h1>
+                  <p className="text-sm text-slate-500 max-w-xl mx-auto">
+                    Turn any raw idea or topic into a viral 9:16 vertical short powered by Neural TTS, 
+                    AI scene art, and TikTok kinetic subtitles.
                   </p>
                 </div>
-                <div className="flex gap-3">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      localStorage.clear();
-                      setStatus('idle');
-                      setJobId(null);
-                      setScript('');
-                      setStoryboardScenes(null);
-                      setPolishedScript(null);
-                      setVideoUrl(null);
-                    }}
-                    className="px-4 py-3.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold text-sm border border-gray-700 shadow-xl flex items-center justify-center cursor-pointer uppercase tracking-wider"
-                  >
-                    <X className="w-4 h-4 mr-2 text-red-400" />
-                    Reset
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={handleCompileVideo}
-                    className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold text-sm shadow-xl flex items-center justify-center cursor-pointer uppercase tracking-wider"
-                  >
-                    <Clapperboard className="w-4 h-4 mr-2" />
-                    Render Final Video
-                  </motion.button>
+
+                {/* Story Starters */}
+                <div className="space-y-2">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
+                    Quick Story Starters
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {STORY_STARTERS.map((s, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setScript(s.text)}
+                        className="p-2.5 rounded-xl bg-white border border-slate-200 hover:border-slate-400 text-left transition-all cursor-pointer shadow-xs hover:shadow-sm"
+                      >
+                        <span className="text-xs font-bold text-slate-900 block truncate">{s.label}</span>
+                        <p className="text-[11px] text-slate-500 line-clamp-2 mt-1 leading-snug">{s.text}</p>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {storyboardScenes.map((scene, idx) => (
-                  <SceneCard 
-                    key={idx}
-                    idx={idx}
-                    scene={scene}
-                    imgUrl={getSceneImageUrl(idx)}
-                    onRegenerate={(prompt, slideData) => handleRegenerateSceneImage(idx, prompt, slideData)}
-                    isRegenerating={regeneratingIndex === idx}
-                    onUploadImage={handleUploadSceneImage}
-                    isUploading={uploadingIndex === idx}
-                    videoMode={videoMode}
+                {/* Main Script Box */}
+                <div className="lemon-card p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-bold text-slate-900">Script / Topic Draft</label>
+                    <span className="text-xs text-slate-400 font-medium">
+                      {script.trim().split(/\s+/).filter(Boolean).length} words
+                    </span>
+                  </div>
+
+                  <textarea
+                    rows={4}
+                    value={script}
+                    onChange={(e) => setScript(e.target.value)}
+                    placeholder="Enter your short story, facts, or topic draft here (English, Hindi, or Hinglish)..."
+                    className="w-full lemon-input resize-none text-sm leading-relaxed"
                   />
-                ))}
-              </div>
-            </div>
-          )}
 
-          {/* Pipeline Active Loader with Stepper */}
-          <AnimatePresence>
-            {(status === 'generating_storyboard' || status === 'compiling') && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.4 }}
-                className="overflow-hidden"
-              >
-                <RenderStepper 
-                  progressText={progressText} 
-                  progressPercent={progressPercent} 
-                  pipelineSteps={pipelineSteps} 
-                  activeStepIdx={activeStepIdx} 
-                />
+                  {/* Mode & Voice Controls */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    {/* Voice Selection */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-bold text-slate-700">Narrator Voice</label>
+                        <button
+                          type="button"
+                          onClick={() => setIsDialogueMode(!isDialogueMode)}
+                          className={`text-[11px] font-bold px-2 py-0.5 rounded cursor-pointer transition-colors ${
+                            isDialogueMode ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          👥 {isDialogueMode ? 'Dialogue Active' : 'Enable Dialogue'}
+                        </button>
+                      </div>
+
+                      {isDialogueMode ? (
+                        <div className="grid grid-cols-2 gap-2">
+                          <VoiceSelect id="voiceA" value={voiceA} onChange={setVoiceA} />
+                          <VoiceSelect id="voiceB" value={voiceB} onChange={setVoiceB} />
+                        </div>
+                      ) : (
+                        <VoiceSelect id="voiceSelect" value={voiceAccent} onChange={setVoiceAccent} />
+                      )}
+                    </div>
+
+                    {/* Format Toggle */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">Format</label>
+                      <div className="flex rounded-xl bg-slate-100 p-1 border border-slate-200">
+                        <button
+                          onClick={() => { setVideoMode('shorts'); setCaptionStyle('tiktok'); }}
+                          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                            videoMode === 'shorts' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500'
+                          }`}
+                        >
+                          ⚡ Viral Shorts (9:16)
+                        </button>
+                        <button
+                          onClick={() => { setVideoMode('tutorial'); setCaptionStyle('elegant'); }}
+                          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                            videoMode === 'tutorial' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500'
+                          }`}
+                        >
+                          📚 Slide Deck
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Art Styles */}
+                  <div className="space-y-2 pt-2">
+                    <label className="text-xs font-bold text-slate-700">Visual Art Style</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                      {ART_STYLES.map((st) => (
+                        <button
+                          key={st.id}
+                          type="button"
+                          onClick={() => setArtStyle(st.id)}
+                          className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                            artStyle === st.id
+                              ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
+                              : 'border-slate-200 bg-white hover:border-slate-300 text-slate-900'
+                          }`}
+                        >
+                          <span className="text-lg block mb-1">{st.icon}</span>
+                          <span className="text-xs font-bold block">{st.name}</span>
+                          <span className={`text-[10px] block line-clamp-1 ${artStyle === st.id ? 'text-slate-300' : 'text-slate-500'}`}>
+                            {st.desc}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Advanced Settings Drawer */}
+                  <div className="pt-2 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+                      className="text-xs font-bold text-slate-500 hover:text-slate-900 flex items-center gap-1.5 cursor-pointer py-1"
+                    >
+                      <Sliders className="w-3.5 h-3.5" />
+                      <span>{showAdvancedSettings ? 'Hide Studio Settings' : 'Advanced Studio Settings (4K/8K, Subtitles, BGM, Transitions)'}</span>
+                      {showAdvancedSettings ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    </button>
+
+                    {showAdvancedSettings && (
+                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-3">
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-slate-600">Resolution</label>
+                          <select
+                            value={videoResolution}
+                            onChange={(e) => setVideoResolution(e.target.value)}
+                            className="w-full lemon-input"
+                          >
+                            <option value="1080p">1080p Full HD</option>
+                            <option value="4k">4K Ultra HD (Recommended)</option>
+                            <option value="8k">8K Master</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-slate-600">Scene Transition</label>
+                          <select
+                            value={transitionStyle}
+                            onChange={(e) => setTransitionStyle(e.target.value)}
+                            className="w-full lemon-input"
+                          >
+                            <option value="dynamic">Dynamic Mix</option>
+                            <option value="dissolve">Cinematic Dissolve</option>
+                            <option value="whip_pan">Whip Pan</option>
+                            <option value="flash">Flash to Black</option>
+                            <option value="none">Hard Cut</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-slate-600">Subtitle Style</label>
+                          <select
+                            value={captionStyle}
+                            onChange={(e) => setCaptionStyle(e.target.value)}
+                            className="w-full lemon-input"
+                          >
+                            <option value="tiktok">TikTok Kinetic Pop</option>
+                            <option value="karaoke">Karaoke Yellow Glow</option>
+                            <option value="elegant">Cinematic Clean Bottom</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-slate-600">Background Music</label>
+                          <select
+                            value={musicTrack}
+                            onChange={(e) => setMusicTrack(e.target.value)}
+                            className="w-full lemon-input"
+                          >
+                            <option value="lofi">Lo-Fi Ambient (Ducked)</option>
+                            <option value="upbeat">Upbeat Energy</option>
+                            <option value="none">Zero BGM (Clean Voice)</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={handleGenerateStoryboard}
+                      disabled={!script.trim()}
+                      className="w-full lemon-btn-primary py-3.5 text-sm"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      <span>Generate Storyboard Draft</span>
+                    </button>
+                  </div>
+                </div>
               </motion.div>
             )}
-          </AnimatePresence>
 
-          {/* Completed State Display */}
-          <AnimatePresence>
-            {status === 'completed' && videoUrl && (
-              <ResultDisplay 
-                videoUrl={videoUrl} 
-                originalScript={script} 
-                polishedScript={polishedScript} 
-                jobId={jobId}
-                apiBaseUrl={API_BASE_URL}
-              />
-            )}
-          </AnimatePresence>
-
-          {/* Action Trigger Button */}
-          {(status === 'idle' || status === 'completed' || status === 'error') && (
-            <motion.button
-              type="button"
-              onClick={handleGenerateStoryboard}
-              disabled={status === 'idle' && !script.trim()}
-              whileHover={status === 'idle' && !script.trim() ? {} : { scale: 1.02, boxShadow: "0 10px 25px -5px rgba(99,102,241,0.3)" }}
-              whileTap={status === 'idle' && !script.trim() ? {} : { scale: 0.98 }}
-              className="flex w-full justify-center items-center rounded-2xl bg-indigo-600 px-6 py-4 text-sm font-bold text-white shadow-xl hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all uppercase tracking-widest border border-indigo-500/20 cursor-pointer"
-            >
-              {status === 'completed' || status === 'error' ? (
-                <>
-                  <RefreshCw className="w-5 h-5 mr-2 animate-spin-reverse" />
-                  Generate New Video
-                </>
-              ) : (
-                <>
-                  <Video className="w-5 h-5 mr-2 animate-pulse" />
-                  Create Storyboard Draft
-                </>
-              )}
-            </motion.button>
-          )}
-
-          {/* Error Message Box */}
-          {status === 'error' && (
-            <div className="rounded-2xl bg-red-950/20 border border-red-500/30 p-4">
-              <div className="flex">
-                <div className="ml-3">
-                  <h3 className="text-sm font-bold text-red-400 uppercase tracking-wider">Pipeline Render Failed</h3>
-                  <div className="mt-2 text-xs text-red-300/80 leading-relaxed">
-                    <p>{progressText}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SceneCard({ idx, scene, imgUrl, onRegenerate, isRegenerating, onUploadImage, isUploading, videoMode }) {
-  const isSlide = videoMode === 'tutorial';
-  
-  const getSafeBulletsArray = (bulletsVal) => {
-    if (Array.isArray(bulletsVal)) {
-      return bulletsVal.map(b => {
-        if (b && typeof b === 'object') {
-          return `${b.title || ''}: ${b.description || ''}`;
-        }
-        return String(b);
-      });
-    }
-    if (typeof bulletsVal === 'string') {
-      return bulletsVal.split('\n').map(b => b.trim()).filter(Boolean);
-    }
-    return [];
-  };
-  
-  const getSafeBulletsHTML = (bulletsVal) => {
-    if (typeof bulletsVal === 'string' && bulletsVal.includes('<li')) {
-      return bulletsVal;
-    }
-    const list = getSafeBulletsArray(bulletsVal);
-    if (list.length === 0) return '';
-    return '<ul>' + list.map(b => `<li>${b}</li>`).join('') + '</ul>';
-  };
-  
-  const parseBulletsHTMLToArray = (htmlStr) => {
-    if (!htmlStr) return [];
-    const matchLi = /<li[^>]*>([\s\S]*?)<\/li>/gi;
-    const items = [];
-    let match;
-    while ((match = matchLi.exec(htmlStr)) !== null) {
-      const val = match[1].trim();
-      if (val) {
-        items.push(val);
-      }
-    }
-    if (items.length > 0) return items;
-    return htmlStr.split(/<br\s*\/?>/i).map(b => b.trim()).filter(Boolean);
-  };
-
-  const [editedPrompt, setEditedPrompt] = useState((scene && scene.visual) || '');
-  const [editedTitle, setEditedTitle] = useState((scene && scene.slide_title) || '');
-  const [editedBulletsHTML, setEditedBulletsHTML] = useState(getSafeBulletsHTML(scene && scene.bullets));
-  const [editedCode, setEditedCode] = useState((scene && scene.code_snippet) || '');
-  const [editedNarration, setEditedNarration] = useState((scene && scene.narration) || '');
-  
-  // Custom Typography & Slide Styling Overrides
-  const [editedFontFamily, setEditedFontFamily] = useState(scene.font_family || 'sans');
-  const [editedFontSize, setEditedFontSize] = useState(scene.font_size || 72);
-  const [editedFontColor, setEditedFontColor] = useState(scene.font_color || '#1C1B1A');
-  const [editedAlignment, setEditedAlignment] = useState(scene.alignment || 'left');
-  const [editedLineHeight, setEditedLineHeight] = useState(scene.line_height || 1.35);
-  const [editedBgColor, setEditedBgColor] = useState(scene.bg_color || '#F9F6F0');
-  const [editedSlideStyle, setEditedSlideStyle] = useState(scene.slide_style || 'cinematic');
-  
-  const [isEditing, setIsEditing] = useState(false);
-  const [imgLoaded, setImgLoaded] = useState(false);
-
-  // Sync state values when the parent updates scene object
-  useEffect(() => {
-    if (!scene) return;
-    setEditedPrompt(scene.visual || '');
-    setEditedTitle(scene.slide_title || '');
-    setEditedBulletsHTML(getSafeBulletsHTML(scene.bullets));
-    setEditedCode(scene.code_snippet || '');
-    setEditedNarration(scene.narration || '');
-    setEditedFontFamily(scene.font_family || 'sans');
-    setEditedFontSize(scene.font_size || 72);
-    setEditedFontColor(scene.font_color || '#1C1B1A');
-    setEditedAlignment(scene.alignment || 'left');
-    setEditedLineHeight(scene.line_height || 1.35);
-    setEditedBgColor(scene.bg_color || '#F9F6F0');
-    setEditedSlideStyle(scene.slide_style || 'cinematic');
-  }, [scene]);
-
-  if (!scene) return null;
-
-  return (
-    <div className="bg-gray-950/40 rounded-2xl border border-gray-800 overflow-hidden flex flex-col h-full shadow-lg">
-      <div className="relative aspect-[9/16] max-h-[300px] bg-gray-950 overflow-hidden group flex items-center justify-center border-b border-gray-900">
-        {/* Shimmer skeleton shown while image is loading */}
-        {!imgLoaded && !isRegenerating && !isUploading && (
-          <div className="absolute inset-0 bg-gray-900 animate-pulse">
-            <div className="h-full w-full bg-gradient-to-br from-gray-800/60 via-gray-900 to-gray-800/40" />
-          </div>
-        )}
-        <img 
-          src={imgUrl} 
-          alt={`Scene ${idx + 1}`} 
-          className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-102 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
-          onLoad={() => setImgLoaded(true)}
-          onError={(e) => {
-            setImgLoaded(true);
-            e.target.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80";
-          }}
-        />
-        <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold border border-gray-800/80 text-amber-400 z-10 flex items-center gap-1.5">
-          <span>{isSlide ? `Slide ${idx + 1}` : `Scene ${idx + 1}`}</span>
-          {scene.speaker && (
-            <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-black tracking-wider ${
-              scene.voice_gender === 'female' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-            }`}>
-              🗣️ {scene.speaker}
-            </span>
-          )}
-        </div>
-        
-        {/* Custom File Upload Hover Overlay */}
-        {!isRegenerating && !isUploading && (
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2 z-10">
-            <label className="p-3.5 rounded-full bg-indigo-600/90 hover:bg-indigo-500 text-white cursor-pointer shadow-xl transition-all hover:scale-110 flex items-center justify-center border border-indigo-400/20 active:scale-95">
-              <Upload className="w-5 h-5" />
-              <input 
-                type="file" 
-                accept="image/*" 
-                className="hidden" 
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (file && onUploadImage) {
-                    onUploadImage(idx, file);
-                  }
-                }}
-              />
-            </label>
-          </div>
-        )}
-
-        {isRegenerating && (
-          <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-3 z-10">
-            <RefreshCw className="w-8 h-8 text-amber-400 animate-spin" />
-            <p className="text-xs text-amber-400 font-bold uppercase tracking-wider animate-pulse">Regenerating Slide...</p>
-          </div>
-        )}
-
-        {isUploading && (
-          <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-3 z-10">
-            <RefreshCw className="w-8 h-8 text-indigo-400 animate-spin" />
-            <p className="text-xs text-indigo-400 font-bold uppercase tracking-wider animate-pulse">Uploading Image...</p>
-          </div>
-        )}
-      </div>
-      
-      <div className="p-5 flex-1 flex flex-col space-y-4 justify-between">
-        <div className="space-y-4">
-          
-          {/* Spoken Voiceover Narration */}
-          <div>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Spoken voiceover script</span>
-            {isEditing ? (
-              <textarea
-                value={editedNarration}
-                onChange={(e) => setEditedNarration(e.target.value)}
-                className="w-full text-xs bg-gray-950 border border-gray-800 rounded-xl p-3 text-gray-300 focus:outline-none focus:border-indigo-500/50 min-h-[50px] resize-none leading-relaxed"
-                placeholder="Narration script spoken by neural TTS..."
-              />
-            ) : (
-              <p className="text-xs text-gray-200 leading-relaxed font-semibold bg-gray-950/60 p-3 rounded-xl border border-gray-800/60 shadow-inner">
-                {scene.narration}
-              </p>
-            )}
-          </div>
-
-          {/* Slide Title & Bullets */}
-          {isSlide && (
-            <div className="space-y-3 bg-indigo-950/10 border border-indigo-900/30 rounded-xl p-3.5 shadow-inner">
-              <div className="flex items-center gap-2 mb-2 border-b border-indigo-950/40 pb-1.5">
-                <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Slide Design Layout</span>
-              </div>
-              
-              {isEditing ? (
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Slide Heading</label>
-                    <input
-                      type="text"
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
-                      className="w-full text-xs bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-gray-300 focus:outline-none focus:border-indigo-500/50"
-                      placeholder="Slide title"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Bullet Points & Content (Rich WYSIWYG Editor)</label>
-                    <div className="rich-editor-wrapper text-xs text-gray-200 bg-gray-950 border border-gray-800 rounded-lg overflow-hidden">
-                      <Editor value={editedBulletsHTML} onChange={(e) => setEditedBulletsHTML(e.target.value)}>
-                        <Toolbar>
-                          <BtnBold />
-                          <BtnItalic />
-                          <BtnUnderline />
-                          <BtnBulletList />
-                          <BtnAlignLeft />
-                          <BtnAlignCenter />
-                          <BtnAlignRight />
-                          <BtnClearFormatting />
-                        </Toolbar>
-                      </Editor>
-                    </div>
-                  </div>
-                  
-                  {/* PPT Typography & Design Overrides Toolbar */}
-                  <div className="bg-gray-900/60 rounded-xl p-3 border border-gray-800 space-y-3">
-                    <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest block border-b border-gray-850 pb-1">
-                      🎨 Slide Canvas & PPT Styles
-                    </span>
-                    
-                    {/* PPT Template Override */}
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">PPT Slide Theme</label>
-                        <select
-                          value={editedSlideStyle}
-                          onChange={(e) => setEditedSlideStyle(e.target.value)}
-                          className="w-full text-[11px] bg-gray-950 border border-gray-850 rounded-lg p-1.5 text-gray-300 focus:outline-none focus:border-indigo-500/50"
-                        >
-                          <option value="cinematic">Cinematic Cream</option>
-                          <option value="cyberpunk">Cyberpunk Neon</option>
-                          <option value="pixar">Cozy Pixar</option>
-                          <option value="anime">Anime Sky</option>
-                          <option value="oil_painting">Oil Painting Gold</option>
-                        </select>
-                      </div>
-                      
-                      {/* Font Family Selection */}
-                      <div>
-                        <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Font Family</label>
-                        <select
-                          value={editedFontFamily}
-                          onChange={(e) => setEditedFontFamily(e.target.value)}
-                          className="w-full text-[11px] bg-gray-950 border border-gray-855 rounded-lg p-1.5 text-gray-300 focus:outline-none focus:border-indigo-500/50"
-                        >
-                          <option value="sans">Sans-Serif (Modern)</option>
-                          <option value="serif">Serif (Classical)</option>
-                          <option value="mono">Monospace (Code)</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Font Size & Line Height Sliders */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Font Size: {editedFontSize}px</label>
-                        <input
-                          type="range"
-                          min="40"
-                          max="120"
-                          value={editedFontSize}
-                          onChange={(e) => setEditedFontSize(parseInt(e.target.value))}
-                          className="w-full h-1.5 bg-gray-950 rounded-lg appearance-none cursor-pointer accent-indigo-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Line Height: {editedLineHeight}</label>
-                        <input
-                          type="range"
-                          min="1"
-                          max="2"
-                          step="0.05"
-                          value={editedLineHeight}
-                          onChange={(e) => setEditedLineHeight(parseFloat(e.target.value))}
-                          className="w-full h-1.5 bg-gray-950 rounded-lg appearance-none cursor-pointer accent-indigo-500"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Background & Text Color pickers */}
-                    <div className="grid grid-cols-2 gap-3 border-t border-gray-850/40 pt-2">
-                      <div>
-                        <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Slide Canvas Color</label>
-                        <div className="flex items-center gap-1.5">
-                          <input
-                            type="color"
-                            value={editedBgColor.startsWith('#') ? editedBgColor : '#F9F6F0'}
-                            onChange={(e) => setEditedBgColor(e.target.value)}
-                            className="w-6 h-6 rounded-md cursor-pointer border border-gray-800 bg-transparent"
-                          />
-                          <input
-                            type="text"
-                            value={editedBgColor}
-                            onChange={(e) => setEditedBgColor(e.target.value)}
-                            className="flex-1 text-[10px] bg-gray-950 border border-gray-855 rounded-lg px-2 py-0.5 text-gray-300 focus:outline-none"
-                            placeholder="#F9F6F0"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Typographic Color</label>
-                        <div className="flex items-center gap-1.5">
-                          <input
-                            type="color"
-                            value={editedFontColor.startsWith('#') ? editedFontColor : '#1C1B1A'}
-                            onChange={(e) => setEditedFontColor(e.target.value)}
-                            className="w-6 h-6 rounded-md cursor-pointer border border-gray-800 bg-transparent"
-                          />
-                          <input
-                            type="text"
-                            value={editedFontColor}
-                            onChange={(e) => setEditedFontColor(e.target.value)}
-                            className="flex-1 text-[10px] bg-gray-950 border border-gray-855 rounded-lg px-2 py-0.5 text-gray-300 focus:outline-none"
-                            placeholder="#1C1B1A"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Horizontal Alignment Option Selector */}
-                    <div className="flex items-center justify-between border-t border-gray-850/40 pt-2">
-                      <span className="text-[9px] font-bold text-gray-400 uppercase">Text Alignment</span>
-                      <div className="flex bg-gray-950 p-0.5 rounded-lg border border-gray-850">
-                        {['left', 'center', 'right'].map((align) => (
-                          <button
-                            key={align}
-                            type="button"
-                            onClick={() => setEditedAlignment(align)}
-                            className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase transition-all ${
-                              editedAlignment === align
-                                ? 'bg-indigo-600 text-white shadow-sm'
-                                : 'text-gray-400 hover:text-gray-300'
-                            }`}
-                          >
-                            {align}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Optional Code Box (Single or Multi-line)</label>
-                    <textarea
-                      value={editedCode}
-                      onChange={(e) => setEditedCode(e.target.value)}
-                      className="w-full text-xs font-mono bg-gray-950 border border-gray-800 rounded-lg p-2 text-emerald-400 focus:outline-none focus:border-indigo-500/50 min-h-[50px] resize-none leading-relaxed"
-                      placeholder="my_var = [1, 2, 3]"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <span className="text-[10px]">📌</span>
-                    <span>{scene.slide_title}</span>
-                  </div>
-                  
-                  {/* Rich HTML slide bullets preview safely formatted */}
-                  <div 
-                    className="text-[11px] text-gray-300 leading-relaxed rich-bullets-preview"
-                    dangerouslySetInnerHTML={{ __html: getSafeBulletsHTML(scene.bullets) }}
+            {/* Generating Storyboard State */}
+            {status === 'generating_storyboard' && (
+              <div className="lemon-card p-8 text-center space-y-4">
+                <Loader2 className="w-8 h-8 animate-spin text-slate-900 mx-auto" />
+                <h3 className="font-bold text-base text-slate-900">{progressText}</h3>
+                <div className="max-w-md mx-auto w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                  <div
+                    className="bg-slate-900 h-full transition-all duration-300 rounded-full"
+                    style={{ width: `${progressPercent}%` }}
                   />
-                  
-                  {/* PPT Settings Override Badge Pills */}
-                  <div className="flex flex-wrap gap-1.5 pt-2 mt-1 border-t border-indigo-950/40">
-                    {scene.slide_style && (
-                      <span className="text-[8px] font-bold bg-indigo-950/30 text-indigo-400 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                        Theme: {scene.slide_style}
-                      </span>
-                    )}
-                    {scene.bg_color && (
-                      <span className="text-[8px] font-bold bg-amber-950/30 text-amber-400 px-2 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ backgroundColor: scene.bg_color }} />
-                        BG: {scene.bg_color}
-                      </span>
-                    )}
-                    {scene.font_family && (
-                      <span className="text-[8px] font-bold bg-teal-950/30 text-teal-400 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                        Font: {scene.font_family}
-                      </span>
-                    )}
-                    {scene.alignment && (
-                      <span className="text-[8px] font-bold bg-fuchsia-950/30 text-fuchsia-400 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                        Align: {scene.alignment}
-                      </span>
-                    )}
-                  </div>
-
-                  {scene.code_snippet && (
-                    <div className="mt-2 text-[10px] font-mono bg-black/60 text-emerald-400 p-2 rounded-lg border border-gray-850 shadow-inner overflow-x-auto whitespace-pre">
-                      {scene.code_snippet}
-                    </div>
-                  )}
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Background Visual Art Prompt */}
-          <div>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
-              {isSlide ? "Slide Illustration Icon Prompt" : "Visual Art Prompt"}
-            </span>
-            {isEditing ? (
-              <textarea
-                value={editedPrompt}
-                onChange={(e) => setEditedPrompt(e.target.value)}
-                className="w-full text-xs bg-gray-950 border border-gray-800 rounded-xl p-3 text-gray-300 focus:outline-none focus:border-indigo-500/50 min-h-[60px] resize-none leading-relaxed"
-              />
-            ) : (
-              <p className="text-xs text-gray-400 leading-relaxed bg-gray-950/20 p-3 rounded-xl border border-gray-855/30 italic">
-                {scene.visual}
-              </p>
+            {/* Phase 02: Interactive Storyboard */}
+            {currentPhase === 'storyboard' && storyboardScenes && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">Interactive Storyboard Draft</h2>
+                    <p className="text-xs text-slate-500">Edit narration sentences or regenerate scene backgrounds before compiling.</p>
+                  </div>
+                  <button
+                    onClick={handleCompileVideo}
+                    disabled={status === 'compiling'}
+                    className="lemon-btn-primary px-6 py-2.5 text-xs font-bold"
+                  >
+                    {status === 'compiling' ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" /> Compiling...
+                      </>
+                    ) : (
+                      <>
+                        <Film className="w-4 h-4" /> Compile Final Video
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {status === 'compiling' && (
+                  <div className="lemon-card p-4 space-y-2 border-emerald-300 bg-emerald-50/50">
+                    <div className="flex justify-between text-xs font-bold text-emerald-900">
+                      <span>{progressText}</span>
+                      <span>{progressPercent}%</span>
+                    </div>
+                    <div className="w-full bg-emerald-200/60 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-emerald-600 h-full transition-all duration-300 rounded-full"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Scene Cards Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {storyboardScenes.map((scene, idx) => (
+                    <div key={idx} className="lemon-card p-4 space-y-3 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-extrabold px-2 py-0.5 rounded bg-slate-100 text-slate-800">
+                            Scene {idx + 1}
+                          </span>
+                          <span className="text-[10px] text-slate-400">
+                            {scene.narration ? scene.narration.split(' ').length : 0} words
+                          </span>
+                        </div>
+
+                        {/* Image Preview */}
+                        <div className="aspect-[9/16] max-h-48 rounded-xl bg-slate-100 overflow-hidden border border-slate-200 relative">
+                          <img
+                            src={scene.image_url || `${API_BASE_URL}/output/${jobId}_scene_${String(idx).padStart(2, '0')}.jpg`}
+                            alt={`Scene ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        </div>
+
+                        {/* Editable Narration */}
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-500 block mb-1">Narration:</label>
+                          <textarea
+                            rows={2}
+                            value={scene.narration || ''}
+                            onChange={(e) => {
+                              const updated = [...storyboardScenes];
+                              updated[idx].narration = e.target.value;
+                              setStoryboardScenes(updated);
+                            }}
+                            className="w-full lemon-input text-xs p-2 resize-none"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Regenerate Button */}
+                      <button
+                        onClick={() => handleRegenerateScene(idx, scene.visual || '')}
+                        disabled={regeneratingIndex === idx}
+                        className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        {regeneratingIndex === idx ? (
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <RefreshCw className="w-3.5 h-3.5" />
+                        )}
+                        <span>Regenerate Background</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Phase 03: Export & Publishing */}
+            {currentPhase === 'export' && videoUrl && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="lemon-card p-6 md:p-8 space-y-6 max-w-2xl mx-auto"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-slate-900 font-extrabold text-lg">
+                    <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                    <span>Your Master Short is Ready!</span>
+                  </div>
+                  <a
+                    href={videoUrl}
+                    download="master_short.mp4"
+                    className="lemon-btn-primary px-5 py-2 text-xs"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Download MP4
+                  </a>
+                </div>
+
+                <div className="aspect-[9/16] max-h-[500px] mx-auto rounded-2xl overflow-hidden bg-black shadow-xl border border-slate-200">
+                  <video src={videoUrl} controls autoPlay className="w-full h-full object-cover" />
+                </div>
+              </motion.div>
+            )}
+
+            {status === 'error' && (
+              <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
+                {progressText || 'An error occurred during generation.'}
+              </div>
             )}
           </div>
-        </div>
-
-        {/* Action buttons */}
-        <div className="flex space-x-2 pt-2 border-t border-gray-850/40">
-          {isEditing ? (
-            <>
-              <button
-                onClick={() => {
-                  setIsEditing(false);
-                  const bulletsList = parseBulletsHTMLToArray(editedBulletsHTML);
-                  
-                  onRegenerate(editedPrompt, {
-                    slide_title: editedTitle,
-                    bullets: bulletsList,
-                    code_snippet: editedCode,
-                    narration: editedNarration,
-                    font_family: editedFontFamily,
-                    font_size: editedFontSize,
-                    font_color: editedFontColor,
-                    alignment: editedAlignment,
-                    line_height: editedLineHeight,
-                    bg_color: editedBgColor,
-                    slide_style: editedSlideStyle
-                  });
-                }}
-                className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center space-x-1"
-              >
-                <Check className="w-3.5 h-3.5" />
-                <span>Save & Redraw Slide</span>
-              </button>
-              <button
-                onClick={() => {
-                  setEditedPrompt(scene.visual || '');
-                  setEditedTitle(scene.slide_title || '');
-                  setEditedBulletsHTML(getSafeBulletsHTML(scene.bullets));
-                  setEditedCode(scene.code_snippet || '');
-                  setEditedNarration(scene.narration || '');
-                  setEditedFontFamily(scene.font_family || 'sans');
-                  setEditedFontSize(scene.font_size || 72);
-                  setEditedFontColor(scene.font_color || '#1C1B1A');
-                  setEditedAlignment(scene.alignment || 'left');
-                  setEditedLineHeight(scene.line_height || 1.35);
-                  setEditedBgColor(scene.bg_color || '#F9F6F0');
-                  setEditedSlideStyle(scene.slide_style || 'cinematic');
-                  setIsEditing(false);
-                }}
-                className="px-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold text-xs transition-all cursor-pointer flex items-center justify-center"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="w-full py-2.5 rounded-xl bg-gray-800/40 hover:bg-gray-800/80 text-gray-300 font-bold text-xs border border-gray-800/50 transition-all flex items-center justify-center space-x-1 cursor-pointer"
-            >
-              <Edit className="w-3.5 h-3.5 mr-1 text-gray-400" />
-              <span>Modify Slide Details</span>
-            </button>
-          )}
-        </div>
-      </div>
+        )}
+      </main>
     </div>
   );
 }
-
-export default App;
-
