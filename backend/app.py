@@ -706,6 +706,163 @@ def generate():
     
     return jsonify({'job_id': job_id})
 
+def assemble_video_clips_task(
+    job_id: str,
+    video_clips: list,
+    script_data: list,
+    voice_accent: str = 'in_female',
+    caption_style: str = 'tiktok',
+    caption_lang: str = 'English',
+    music_track: str = 'lofi',
+    video_resolution: str = '4k',
+    transition_style: str = 'dynamic',
+    duration_mode: str = 'speed_ramp'
+):
+    try:
+        with jobs_lock:
+            running_jobs.add(job_id)
+
+        update_job_status(job_id, state='processing', message='Standardizing 9:16 clips & adapting durations...', progress=20)
+        
+        job_dir = os.path.join(OUTPUT_DIR, f"{job_id}_video_job")
+        os.makedirs(job_dir, exist_ok=True)
+
+        from scripts.video_to_video_assembler import assemble_video_to_video
+
+        update_job_status(job_id, message='Synthesizing TTS narration & generating subtitles...', progress=40)
+
+        final_path = assemble_video_to_video(
+            video_clips=video_clips,
+            script_or_scenes=script_data,
+            job_dir=job_dir,
+            voice=voice_accent,
+            caption_style=caption_style,
+            caption_lang=caption_lang,
+            music_track=music_track,
+            resolution=video_resolution,
+            transition_style=transition_style,
+            duration_mode=duration_mode
+        )
+
+        update_job_status(
+            job_id,
+            state='completed',
+            message='Master video generated successfully!',
+            file=final_path,
+            progress=100
+        )
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        update_job_status(job_id, state='error', message=str(e), progress=0)
+    finally:
+        with jobs_lock:
+            running_jobs.discard(job_id)
+            if job_id in active_jobs:
+                active_jobs.remove(job_id)
+
+@app.route('/upload-video-clips', methods=['POST'])
+def upload_video_clips():
+    job_id = str(uuid.uuid4())
+    job_dir = os.path.join(OUTPUT_DIR, f"{job_id}_video_job")
+    os.makedirs(job_dir, exist_ok=True)
+
+    uploaded_files = []
+    # Collect files sent as 'clips' or individual file inputs
+    for key in request.files:
+        f = request.files[key]
+        if f and f.filename:
+            save_name = f"clip_{len(uploaded_files):02d}_{os.path.basename(f.filename)}"
+            dest = os.path.join(job_dir, save_name)
+            f.save(dest)
+            uploaded_files.append(dest)
+
+    if not uploaded_files:
+        return jsonify({'error': 'No video clips uploaded. Please upload at least 1 video clip.'}), 400
+
+    uploaded_files.sort()
+
+    script_raw = request.form.get('script', '')
+    voice_accent = request.form.get('voice_accent', 'in_female')
+    caption_style = request.form.get('caption_style', 'tiktok')
+    caption_lang = request.form.get('caption_lang', 'English')
+    music_track = request.form.get('music_track', 'lofi')
+    video_resolution = request.form.get('video_resolution', '4k')
+    transition_style = request.form.get('transition_style', 'dynamic')
+    duration_mode = request.form.get('duration_mode', 'speed_ramp')
+
+    try:
+        import json
+        import re
+        if script_raw.strip().startswith('[') or script_raw.strip().startswith('{'):
+            parsed = json.loads(script_raw)
+            scenes = parsed.get('scenes', parsed) if isinstance(parsed, dict) else parsed
+        else:
+            sentences = [s.strip() for s in re.split(r'[.!?]+', script_raw) if len(s.strip()) > 3]
+            scenes = []
+            for idx in range(len(uploaded_files)):
+                narr = sentences[idx] if idx < len(sentences) else f"Scene {idx+1} moment."
+                scenes.append({"scene_number": idx + 1, "narration": narr})
+    except Exception:
+        scenes = [{"scene_number": i + 1, "narration": f"Scene {i+1}"} for i in range(len(uploaded_files))]
+
+    db.create_job(job_id, state='pending', message='Video clips uploaded, queueing assembly...', video_mode='video_to_video', video_resolution=video_resolution)
+
+    with jobs_lock:
+        active_jobs.append(job_id)
+    executor.submit(
+        assemble_video_clips_task,
+        job_id,
+        uploaded_files,
+        scenes,
+        voice_accent=voice_accent,
+        caption_style=caption_style,
+        caption_lang=caption_lang,
+        music_track=music_track,
+        video_resolution=video_resolution,
+        transition_style=transition_style,
+        duration_mode=duration_mode
+    )
+
+    return jsonify({'job_id': job_id})
+
+@app.route('/generate-video-prompts', methods=['POST'])
+def generate_video_prompts():
+    data = request.json or {}
+    topic = data.get('topic', '').strip()
+    language = data.get('language', 'English')
+    if not topic:
+        return jsonify({'error': 'Topic or raw script is required'}), 400
+
+    from scripts.llm_client import query_llm, clean_json_string
+    import json
+
+    sys_prompt = f"""You are a master AI video director specializing in viral 9:16 vertical shorts for Google Veo, VideoFX, and Kling.
+The user will provide a topic or rough draft. Generate exactly 5 scenes (under 55 seconds total speech) with:
+1. "scene_number": integer (1 to 5)
+2. "narration": 1 punchy, high-retention narration sentence with 1-2 embedded emojis. In {language}.
+3. "video_prompt": A hyper-specific cinematic video generation prompt for Google Veo/VideoFX.
+   Always begin with: "Vertical 9:16 ratio. [Camera move: dolly in/drone descent/low angle tilt/orbit]. [Subject in motion with fluid dynamics]. [Atmospheric volumetric lighting, 35mm anamorphic lens, photorealistic 8K, 24fps]."
+   Maintain character/environment visual consistency across all 5 scenes.
+
+Output strict JSON array of objects only. No markdown, no commentary."""
+
+    try:
+        raw_res = query_llm(topic, system_prompt=sys_prompt, response_format_json=True)
+        cleaned = clean_json_string(raw_res)
+        parsed = json.loads(cleaned)
+        scenes = parsed.get("scenes", parsed) if isinstance(parsed, dict) else parsed
+        return jsonify({'scenes': scenes})
+    except Exception as e:
+        fallback = [
+            {"scene_number": 1, "narration": f"Did you know the secret behind {topic}? 🤯", "video_prompt": f"Vertical 9:16 ratio. Dramatic cinematic push in on {topic}. Volumetric atmospheric rim lighting, photorealistic 8K, 24fps."},
+            {"scene_number": 2, "narration": "Scientists made an unexpected discovery in 2026. 🔬", "video_prompt": "Vertical 9:16 ratio. Orbital 360 camera sweep around high-tech holographic scanning laboratory. Neon blue glow, 24fps."},
+            {"scene_number": 3, "narration": "The deeper they looked, the stranger the phenomenon became. ⚡", "video_prompt": "Vertical 9:16 ratio. Slow motion macro shot of energy pulsing and rippling outward with realistic particle physics, 8K."},
+            {"scene_number": 4, "narration": "Every test revealed patterns that shouldn't exist. 📜", "video_prompt": "Vertical 9:16 ratio. Cinematic low-angle tilt up revealing massive ancient geometric stone monoliths under a starry galaxy sky."},
+            {"scene_number": 5, "narration": "What do you think is really happening? Subscribe for part two! 🔔", "video_prompt": "Vertical 9:16 ratio. Cinematic slow drone pull back into misty clouds as dawn breaks over the horizon. Warm golden light, 8K, 24fps."}
+        ]
+        return jsonify({'scenes': fallback})
+
 @app.route('/status/<job_id>', methods=['GET'])
 def get_status(job_id):
     job = db.get_job(job_id)

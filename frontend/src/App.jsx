@@ -15,10 +15,12 @@ import StyleSelector from './components/StyleSelector';
 import ConfigPanel from './components/ConfigPanel';
 import RenderStepper from './components/RenderStepper';
 import ResultDisplay from './components/ResultDisplay';
+import VideoToVideoStudio from './components/VideoToVideoStudio';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 function App() {
+  const [studioTab, setStudioTab] = useState('video_to_video'); // 'video_to_video' | 'image_to_video'
   const [script, setScript] = useState('');
   const [status, setStatus] = useState('idle'); // idle, generating_storyboard, storyboard_ready, compiling, completed, error
   const [jobId, setJobId] = useState(null);
@@ -416,8 +418,37 @@ function App() {
           </p>
         </div>
 
-        {/* Studio Panel */}
-        <div className="bg-gray-900/60 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden border border-gray-800 p-6 sm:p-8 space-y-8">
+        {/* Studio Mode Switcher */}
+        <div className="flex rounded-2xl overflow-hidden border border-gray-800 bg-gray-950/80 p-1.5 gap-2 max-w-xl mx-auto shadow-2xl">
+          <button
+            onClick={() => setStudioTab('video_to_video')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer ${
+              studioTab === 'video_to_video'
+                ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white shadow-lg shadow-violet-500/25'
+                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-900/40'
+            }`}
+          >
+            <span className="text-base">🎬</span>
+            <span>Video-to-Video Studio (4K/8K)</span>
+          </button>
+          <button
+            onClick={() => setStudioTab('image_to_video')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer ${
+              studioTab === 'image_to_video'
+                ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg shadow-indigo-500/25'
+                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-900/40'
+            }`}
+          >
+            <span className="text-base">🖼️</span>
+            <span>Image-to-Video (Ken Burns)</span>
+          </button>
+        </div>
+
+        {studioTab === 'video_to_video' ? (
+          <VideoToVideoStudio />
+        ) : (
+          /* Studio Panel (Image-to-Video) */
+          <div className="bg-gray-900/60 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden border border-gray-800 p-6 sm:p-8 space-y-8">
           
           {(status === 'idle' || status === 'error') && (
             <div className="space-y-6 animate-fadeIn">
@@ -633,7 +664,8 @@ function App() {
             </div>
           )}
           
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
