@@ -50,9 +50,102 @@ AI video generators introduce significant inconsistencies that traditionally cra
 
 ---
 
-## 2. Multi-Clip Story Architecture (5 Scenes $\times$ 8–10s) 🎬
+## 2. End-to-End 7-Step Production Lifecycle (The "Magic Millstone" Standard) 🔄🎬
+
+This is the exact, battle-tested operational sequence executed to produce high-retention AI Video Shorts with zero errors in one single run:
+
+```
+[Step 1: Story & Script Calibration] ──> 100-115 words, 5 scenes, validator pre-flight (0 errors)
+                 │
+                 ▼
+[Step 2: Reference Image Generation] ──> 9:16 Pixar 3D master + Visual Reference Chaining (ImagePaths)
+                 │
+                 ▼
+[Step 3: 4-Layer Video Prompting]    ──> Camera Vector + Rigid Anatomy Guard + Gravity Dynamics + 30fps
+                 │
+                 ▼
+[Step 4: AI Video Clip Drop-In]      ──> Veo 2 / Kling 1.5 (clip_1.mp4 ... clip_5.mp4)
+                 │
+                 ▼
+[Step 5: Pre-Flight Clip Dry Run]    ──> assemble_video_short.py --dry_run (verifies decode & CFR)
+                 │
+                 ▼
+[Step 6: Master Broadcast Assembly]  ──> Speed-ramp sync + Swara TTS + CFR 30 + xfade + ASS captions
+                 │
+                 ▼
+[Step 7: Dual-Platform Publishing]   ──> YouTube Shorts + Instagram Reels + Pinned Comment Magnet
+```
+
+### Detailed Operational Steps:
+
+#### Step 1: Story Selection & Script Calibration (100–115 Words)
+* Select priority story from the 3 Golden Clusters in `story_roadmap.md` (e.g., Cluster 1: Relic Multiplication).
+* Draft 5-scene JSON with `character_anchor`, `world_anchor`, 0–3s sensory hook, moral takeaway, and pinned engagement question.
+* Run pre-flight validator:
+  ```powershell
+  python -u backend/scripts/storyboard_validator.py --json "backend/output/<story_dir>/storyboard.json"
+  ```
+* **Hard Gate**: Must achieve `STATUS: ✅ PASSED VALIDATION` (0 blocking errors, word count strictly 100–115 words / ~45s–52s).
+
+#### Step 2: Reference Image Generation (Character & World Anchor)
+* Generate `scene_1.jpg` in 9:16 vertical ratio using Antigravity's `generate_image` (defines 3D Pixar character age, clothing, eyes, and environment).
+* For Scenes 2–5, use **Visual Reference Chaining** (`ImagePaths: ["<path_to_scene_1.jpg>"]`) to condition the diffusion latent space, locking character identity and relic texture across all 5 scenes.
+* Save as `scene_1.jpg` through `scene_5.jpg` in `backend/output/<story_dir>/`.
+
+#### Step 3: Ultra-Precision 4-Layer Prompt Engineering (I2V Mode)
+* Formulate 4-layer prompts for Google Veo 2 / Kling 1.5 / Luma Dream Machine:
+  * `Layer 1: Camera Vector & Speed Modulation` (e.g., slow forward dolly-in with gimbal stabilization).
+  * `Layer 2: Rigid Body & Material Guards` (e.g., character facial features and stone millstone maintain rigid geometry without morphing, zero melting).
+  * `Layer 3: Gravity & Fluid Dynamics` (e.g., realistic gravity simulation for cascading sweets, streaming coins, pouring salt).
+  * `Layer 4: Engine Style & FPS Lock` (e.g., 3D Pixar aesthetic, 30fps, 8K resolution, natural motion blur).
+* Define tool-specific motion sliders (Camera Intensity 2/10 to 4/10, Motion Brush targets).
+
+#### Step 4: AI Video Clip Generation & Drop-In
+* Attach `scene_1.jpg` to `scene_5.jpg` as the starting frame in the AI video tool.
+* Apply the 4-layer prompt and motion brush.
+* Download and place the 5 rendered MP4s into `backend/output/<story_dir>/` as:
+  `clip_1.mp4`, `clip_2.mp4`, `clip_3.mp4`, `clip_4.mp4`, `clip_5.mp4`.
+
+#### Step 5: Pre-Flight Health Inspection & Dry Run
+* Run the inspection tool to verify decode health, durations, resolutions, and pixel formats before processing:
+  ```powershell
+  python -u backend/scripts/assemble_video_short.py --job_dir "backend/output/<story_dir>" --dry_run
+  ```
+* Flags corrupted clips or mismatched aspect ratios.
+
+#### Step 6: Master Broadcast Assembly (Single-Pass 0-Error Render)
+* Execute the master assembly command:
+  ```powershell
+  python -u backend/scripts/assemble_video_short.py `
+      --job_dir "backend/output/<story_dir>" `
+      --resolution 1080p `
+      --voice hi_female `
+      --caption_style tiktok `
+      --caption_lang English `
+      --music none `
+      --transition dynamic `
+      --mode speed_ramp `
+      --fps 30
+  ```
+* **Automated Engine Tasks Performed**:
+  1. Hindi Swara Neural TTS with broadcast loudness compliance (`I=-16, TP=-1.5`).
+  2. Proportional scene duration calculation based on spoken word counts + 1.5s outro CTA loop padding.
+  3. Center-crop to 9:16 vertical full frame, audio stripping (`-an`), CFR 30fps lock.
+  4. Monotonic PTS clock reset (`setpts=PTS-STARTPTS`) preventing xfade DTS desync.
+  5. Optical xfade transitions with synchronized whoosh SFX.
+  6. Kinetic ASS word-by-word highlighted subtitles with DirectWrite font fallback.
+  7. High-res 9:16 poster thumbnail auto-extraction at $t = 1.0\text{s}$ (`thumbnail.jpg`).
+
+#### Step 7: Dual-Platform Publishing & Community Growth
+* Publish to YouTube Shorts and Instagram Reels using our automated scripts.
+* Attach to official playlist (`PLJE6ifX-QD0A`), enforce Category 1 (Film & Animation), set `selfDeclaredMadeForKids = false`, and immediately post the high-engagement pinned comment.
+
+---
+
+## 3. Multi-Clip Story Architecture (5 Scenes $\times$ 8–10s) 🎬
 
 A viral Short or Reel must stay **strictly under 55 seconds** to maximize Average Percentage Viewed (APV >95%):
+
 
 1. **Scene 1 (0s–4s) — High-Stakes Sensory Hook**:
    - Immediate dynamic action or shocking question. Never start with static scenery.
@@ -68,27 +161,77 @@ A viral Short or Reel must stay **strictly under 55 seconds** to maximize Averag
 
 ---
 
-## 3. High-Fidelity Prompt Engineering for Google Veo 2 / Kling / Luma 🎥
+## 3. Mandatory Ultra-Precision Video Prompt Protocol (Image-to-Video Mode) 🎥🛡️
 
-To prevent generic outputs or distorted movement, structure every video prompt with 5 physical parameters:
+> [!CRITICAL]
+> **Why Short 1-Sentence Prompts Cause AI Video Failures**:
+> In Image-to-Video (I2V) mode (Google Veo 2, Kling 1.5, Luma Dream Machine, Runway Gen-3), the starting image supplies the initial latent geometry. Short or vague text prompts force the generative diffusion model to guess physical rigidity, leading to 3 catastrophic errors:
+> 1. **Rubber Warping / Morphing**: Rigid stone, metal, or wooden objects bend, flex, or melt like rubber.
+> 2. **Character Anatomy Distortion**: Fast or unconstrained camera motion tears, morphs, or stretches faces and fingers.
+> 3. **Static Freeze**: Fluid elements (cascading sweets, silver coins, pouring salt, steam) remain frozen or float sideways like smoke without realistic gravity.
+
+---
+
+### The 4-Layer Studio Prompt Architecture:
+Every single video prompt generated in this workspace MUST follow this 4-layer structure:
 
 ```text
-[Framing & Aspect Ratio] + [Camera Motion Vector] + [Subject & Dynamic Physical Action] + [Lighting & Atmospheric Texture] + [Quality & Frame Cadence]
+[Layer 1: Camera Vector & Speed] + [Layer 2: Rigid Anatomy & Material Guards] + [Layer 3: Gravity & Fluid Dynamics] + [Layer 4: Engine Style & FPS Lock]
 ```
 
-### Video Prompt Syntax Checklist:
-* **Framing**: Always prefix with `Vertical 9:16 portrait ratio, centered composition`.
-* **Camera Movement Vector**: `Cinematic slow dolly-in`, `low-angle heroic tilt-up`, `dynamic orbital 180 sweep`, `crane descent`.
-* **Physical Dynamics & Particle Flow**: Explicitly describe fluids, particles, or fabric in motion (`floating golden embers drifting upward`, `shimmering ripples in turquoise water`, `billowing silk kurta in desert wind`).
-* **Lighting & Shading**: `Volumetric god rays`, `golden hour sunset rim lighting`, `deep chiaroscuro shadows`, `iridescent bioluminescent glow`.
-* **Rendering Style**: `Octane 3D render, Pixar Disney animation aesthetic, photorealistic 8K, 30fps, motion blur`.
+1. **Layer 1: Camera Movement Vector & Speed Modulation**:
+   - Explicitly define camera trajectory and physical stabilization.
+   - *Syntax*: `Slow cinematic forward dolly-in with smooth gimbal stabilization`, `Macro 45-degree slow orbital camera pan`, `Cinematic wide overhead crane shot slowly rising upward`.
+2. **Layer 2: Rigid Body Anatomy & Material Preservation Guards**:
+   - Explicitly instruct the diffusion model to preserve geometry and prevent morphing.
+   - *Syntax*: `[Character] maintains rigid, anatomically consistent facial features and body geometry without morphing or warping`, `[Object] maintains solid rigid structure while spinning smoothly`, `zero face distortion, rigid stone/wood geometry, no melting`.
+3. **Layer 3: Realistic Gravity-Driven Fluid & Particle Dynamics**:
+   - Explicitly dictate directional gravity, fluid viscosity, and realistic particle motion.
+   - *Syntax*: `Steaming hot golden sweets cascade downward under realistic gravity simulation, tumbling and settling onto the shining brass plate with curling wisps of white volumetric steam`, `A steady, shimmering waterfall of heavy solid silver coins streams continuously out, cascading downward under gravity with metallic clinking dynamics`.
+4. **Layer 4: Engine Style, Atmospheric Texture & Cadence**:
+   - Lock frame cadence, lighting texture, and render style.
+   - *Syntax*: `3D Pixar Disney animation aesthetic, warm ambient rim lighting, volumetric god rays, smooth natural motion blur, 30fps, 8K resolution`.
 
-### Example 5-Scene Prompt Set:
-* **Scene 1**: `Vertical 9:16 portrait ratio. Low-angle dynamic push-in shot of Mohan, a 30yo Indian farmer in ochre kurta, pulling an ancient terracotta clay pot with glowing turquoise runes out of cracked earth. Golden dust particles drifting in sunset backlighting, 3D Pixar animation style, 8K, 30fps.`
-* **Scene 2**: `Vertical 9:16 ratio. Medium action eye-level shot. Dozens of glowing iron axes multiply and levitate upwards from the clay pot with sparkling golden particle trails. Mohan gasping in delight, warm amber glow on his face, volumetric lighting.`
-* **Scene 3**: `Vertical 9:16 portrait ratio. Macro extreme close-up of the ancient clay pot rim. Overflowing 24K gold coins pouring out onto fresh green grass, glittering golden bokeh, shallow depth of field, Octane 3D render, hyper-detailed.`
-* **Scene 4**: `Vertical 9:16 ratio. Dramatic over-the-shoulder shot inside a dark rustic clay hut. A greedy landlord in emerald green silk tumbling headfirst into the oversized glowing pot, turquoise vortex illumination, deep cobalt shadows, cinematic tension.`
-* **Scene 5**: `Vertical 9:16 ratio. Wide comical tracking shot at golden sunrise. Dozens of identical miniature greedy landlords running in hilarious panic across a village square while Mohan smiles peacefully beside happy villagers. 3D Pixar animation, vibrant colors, 8K.`
+---
+
+### Tool-Specific Motion Configuration Matrix:
+
+| Platform | Recommended Mode | Camera Slider | Motion Brush Targets | Anti-Warp Settings |
+| :--- | :--- | :---: | :--- | :--- |
+| **Kling AI 1.5** | Image-to-Video (Professional 10s) | Intensity `2/10` to `4/10` | Brush moving hand/spout + falling particles (set downward vector) | Relevance: `0.75` |
+| **Google Veo 2** | Image-to-Video | Cinematic Gimbal | Particle emitters + character action zone | High prompt fidelity |
+| **Luma Dream Machine** | Keyframe / I2V | Smooth Dolly/Pan | Highlight kinetic subjects (water, coins, steam) | Strict geometry lock |
+| **Runway Gen-3 Alpha** | Gen-3 I2V | Fixed Camera or Pan `1.5` | Motion Brush 1 on character arm, Brush 2 on falling particles | Motion level `3` |
+
+---
+
+### Production Benchmark: The Magic Millstone (5 Ultra-Precision Clips):
+
+* **Clip 1 (`clip_1.mp4`) — Cave & Glowing Runes (Discovery)**:
+  *Attached Starting Frame: `scene_1.jpg`*
+  ```text
+  Slow cinematic forward dolly-in with smooth gimbal stabilization. Keshav maintains rigid, anatomically consistent facial features and body geometry without morphing; his right hand slowly and gently moves forward to touch the glowing circular stone millstone. Golden mystical runes pulse with warm breathing light, casting flickering amber reflections across his face and clothes. Soft golden dust particles drift upward through volumetric sunbeams filtering into the mossy cave. 3D Pixar Disney aesthetic, smooth natural motion blur, 30fps, zero face distortion, rigid stone geometry.
+  ```
+* **Clip 2 (`clip_2.mp4`) — Turning Handle & Sweets (Miracle)**:
+  *Attached Starting Frame: `scene_2.jpg`*
+  ```text
+  Eye-level smooth tracking camera. Keshav's joyful smile and face remain completely consistent without warping as his hands grip and smoothly rotate the rigid wooden handle clockwise in a continuous circular motion. The ancient stone millstone maintains solid rigid structure while spinning smoothly. Steaming hot golden jalebis and round sweets cascade downward under realistic gravity simulation, tumbling and settling onto the shining brass plate with curling wisps of white volumetric steam and magical sparkling golden embers. High physical realism, Pixar 3D animation, fluid particle dynamics, 30fps, no melting.
+  ```
+* **Clip 3 (`clip_3.mp4`) — Coins Waterfall (Multiplication)**:
+  *Attached Starting Frame: `scene_3.jpg`*
+  ```text
+  Macro 45-degree slow orbital camera pan. The round stone millstone wheel spins smoothly on its axis with unwavering solid geometry while glowing ancient runes emit a continuous warm luminescence. A steady, shimmering waterfall of heavy solid silver and gold coins streams continuously out from the stone spout, cascading downward under gravity and piling up naturally on the clay ground with metallic clinking dynamics. Glinting metallic specular reflections, sparkling silver bokeh in shallow depth of field, warm candlelight illumination, Octane 3D render, hyper-detailed physics, 30fps.
+  ```
+* **Clip 4 (`clip_4.mp4`) — Storm & Salt Torrent (The Greed Trap)**:
+  *Attached Starting Frame: `scene_4.jpg`*
+  ```text
+  Dramatic high-angle camera with subtle natural ocean roll. The rustic wooden rowboat rocks violently amidst turbulent crashing turquoise sea swells and distant white lightning flashes in storm clouds. The thief clutches his head, his terrified facial expression and clothing holding strict physical consistency. The solid stone millstone sits firmly in the boat, continuously spewing an overwhelming torrent of granulated white salt that pours rapidly downward, spreading and filling the hull, causing the wooden boat to slowly sit deeper into the water. Deep chiaroscuro atmospheric tension, Pixar 3D style, realistic granular fluid physics, 30fps.
+  ```
+* **Clip 5 (`clip_5.mp4`) — Resolution & Sea Whirlpool (Moral Climax)**:
+  *Attached Starting Frame: `scene_5.jpg`*
+  ```text
+  Cinematic wide overhead crane shot slowly rising upward toward golden morning sunbeams breaking through parting dark storm clouds. On the ocean surface, a spiraling white foam whirlpool gently dissipates into crystal-clear turquoise waters. Deep beneath the clear water on the sunlit sandy seabed, the ancient stone millstone rests firmly, steadily emitting smooth ribbons of luminous white salt that swirl gently through the azure currents like silk trails. Inspiring epic moral climax, serene water caustics, radiant lens flare, 3D Pixar Disney aesthetic, 8K, 30fps, pristine motion blur.
+  ```
 
 ---
 

@@ -45,8 +45,11 @@ def main():
     os.makedirs(job_dir, exist_ok=True)
 
     # 1. Discover or create script
+    storyboard_file = os.path.join(job_dir, "storyboard.json")
     script_file = os.path.join(job_dir, "script.json")
-    if not os.path.exists(script_file):
+    target_script = storyboard_file if os.path.exists(storyboard_file) else script_file
+
+    if not os.path.exists(target_script):
         default_scenes = [
             {"scene": 1, "narration": "Deep beneath the ocean surface lies a hidden realm that modern science cannot explain. 🌊"},
             {"scene": 2, "narration": "In twenty twenty-six, autonomous deep-sea probes detected rhythmic light pulses miles underwater. ✨"},
@@ -58,9 +61,10 @@ def main():
             json.dump(default_scenes, f, indent=2)
         scenes = default_scenes
     else:
-        with open(script_file, "r", encoding="utf-8") as f:
+        with open(target_script, "r", encoding="utf-8") as f:
             s_data = json.load(f)
             scenes = s_data.get("scenes", s_data) if isinstance(s_data, dict) else s_data
+
 
     # 2. Discover clips
     clip_patterns = [

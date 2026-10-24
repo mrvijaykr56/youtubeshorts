@@ -93,6 +93,15 @@ To ensure every scene's imagery looks like it belongs in the **same exact movie*
      - **Scene 4**: *Over-the-shoulder / High-Tension Angle* (Climax, reaction, or revelation)
      - **Scene 5+**: *Hero Low-Angle / Cinematic Climax* (Resolution and CTA)
 
+4. **Mandatory Ultra-Precision Protocol for Generative AI Video (Veo 2 / Kling / Luma)** 🎥🛡️:
+   - When generating prompts for AI Video-to-Video assembly, ALWAYS format scene prompts using the **4-Layer Studio Prompt Architecture** (defined in `video-to-video-director`):
+     - `Layer 1: Camera Vector & Speed Modulation` (slow forward dolly, 45° orbital pan, gimbal stabilization)
+     - `Layer 2: Rigid Body Anatomy & Material Preservation Guards` (`[Character] maintains rigid, anatomically consistent facial features without morphing/warping`, `rigid stone/wood geometry`, `zero face melting`)
+     - `Layer 3: Realistic Gravity-Driven Fluid & Particle Dynamics` (`cascading downward under realistic gravity simulation`, `fluid particle dynamics`, `curling volumetric steam`)
+     - `Layer 4: Engine Style & FPS Lock` (`3D Pixar Disney aesthetic, 30fps, 8K resolution, smooth natural motion blur`)
+   - Never use short 1-line video prompts in Image-to-Video mode; short prompts cause rubber warping and face melting.
+
+
 ---
 
 ## 3. Storyboard Types & Formats
