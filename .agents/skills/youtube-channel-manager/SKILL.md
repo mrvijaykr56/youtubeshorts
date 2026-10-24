@@ -149,4 +149,20 @@ YouTube returns `invalidTags` (HTTP 400) if the comma-joined tags exceed 400–5
 - **Category ID**: `1` (Film & Animation) — Highest CPM and recommendation velocity for animated stories.
 - **COPPA Status**: `selfDeclaredMadeForKids = False` — Unlocks viewer comments, notification bell alerts, and community tab interactions.
 - **Binge Playlist Sync**: Every video must be added to the official channel playlist (`PLJE6ifX-QD0A`) upon upload to trigger YouTube's auto-play session watch-time boost.
+- **Instant Pinned Discussion Comment**: Immediately post an engagement magnet comment via `youtube.commentThreads().insert` containing the curiosity question + official playlist link + `?sub_confirmation=1` link to trigger algorithmic discussion velocity.
+
+---
+
+## 8. Catalog Synchronization & Upload Ledger 🗂️
+
+All published videos must be logged in `backend/uploads_tracker.json` and synchronized with the official playlist:
+- `vPdF1JQcZz8`: *The Magic Pot (जादुई मटका)* (Oct 24, 2026) - **Latest**
+- `yQQlvP0MtG8`: *The Clever Crow (बुद्धिमान कौवा)* (Oct 23, 2026)
+- `RQsyj6r_980`: *Goose of Gold (सोने का अंडा)* (Oct 22, 2026)
+- `1d8fNhpscXY`: *The Blue Jackal (नीला सियार)* (Oct 22, 2026)
+- `Wio6lrQKrjA`: *Honest Woodcutter (ईमानदार लकड़हारा)* (Oct 22, 2026)
+- `wsaNFDsKSM8`: *Monkey & Crocodile (बंदर और मगरमच्छ)* (Oct 22, 2026)
+- `HEVzgJuGzyE`: *The Clever Rabbit (चतुर खरगोश)* (Oct 21, 2026)
+- `WNNNbeNU_o4`: *The Mouse & Lion (शेर और चूहा)* (Oct 21, 2026)
+- Total Catalog: 18 Videos active, 100% categorized in Category 1, COPPA unlocked.
 
