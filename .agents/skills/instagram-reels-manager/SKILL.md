@@ -12,117 +12,138 @@ This skill orchestrates the multi-platform expansion of **Magical Tales Kidz** a
 
 ## 1. Instagram Reels Algorithm Mechanics 🧠
 
-Instagram Reels uses a distinct recommendation engine compared to YouTube Shorts:
-1. **Watch Time & Completion Rate**: Watching the video to completion signals quality.
-2. **Saves & Shares > Likes**: The algorithm weights **Shares** (DM sends to friends/parents) and **Saves** (bookmarking moral stories for kids) 5x higher than passive likes.
-3. **First 125 Characters (Above the Fold)**: Instagram captions truncate at ~125 characters. The hook question and topic must be completely visible before the viewer clicks "...more".
-4. **Keyword Search Indexing**: Instagram indexes the entire caption text, not just hashtags. Using natural phrases like `"Hindi Kahaniya"`, `"Panchatantra Stories"`, and `"Bal Kahani"` in the text directly ranks the Reel in Instagram Explore Search.
+Instagram Reels operates on a multi-stage recommendation and indexing system:
+1. **Watch Time & Completion Rate**: Watching a 30–45s reel to completion (or looping) signals algorithmic quality.
+2. **Saves & Shares > Likes**: The algorithm weights **Shares** (DM sends between parents) and **Saves** (bookmarking stories for bedtime) 5x higher than passive likes.
+3. **The 3-Second Retention Rule**: The first 1.5–3 seconds determine whether a non-follower in the Explore/Reels tab swipes away. Dynamic visual motion and bold Devanagari text overlays are mandatory in frame 1.
+4. **First 100 Characters (Above the Fold)**: Mobile captions truncate at ~100–120 characters. The curiosity hook question and emojis must be visible before the user clicks "...more".
+5. **Multimodal SEO (Text + Speech + OCR)**: Instagram's AI indexes spoken audio, on-screen text, caption keywords, and display name. Keywords like `"Hindi Kahaniya"`, `"Panchatantra Stories"`, and `"Moral Stories"` directly rank the post in search.
 
 ---
 
-## 2. Technical Specifications & Quality Assurance 📐
+## 2. Anti-Cannibalization Cadence & Publishing Rules ⏱️
+
+Empirical audit data from October 2026 revealed that **batch-uploading destroys algorithmic distribution**:
+- On Oct 21, 2026, dropping 8 Reels within a 40-minute window choked the seed distribution engine, yielding single-digit views on 3 videos.
+- Conversely, single isolated drops (e.g. *Jadui Chakki*) surged to **360 plays and 13 likes (+433% above median)**.
+
+### Strict Publishing Protocol:
+- **Daily Frequency**: Exactly **1 Reel per day**.
+- **Optimal Time**: **18:30 IST (6:30 PM Indian Standard Time)** to capture peak evening family relaxation and bedtime co-viewing.
+- **Minimum Interval**: Never publish two Reels within 12 hours of each other.
+
+---
+
+## 3. Profile SEO & Conversion Architecture 🔍
+
+The profile page is a landing page that must convert non-follower viewers into followers and YouTube subscribers:
+
+1. **Display Name SEO**:
+   - Must contain high-traffic vernacular search terms within the 30-character limit.
+   - Configured: `Magical Tales | Hindi Kahaniya`
+   - *Never* leave the name field as just the brand handle.
+2. **Bio Copy Architecture (Parenting & Value Focus)**:
+   ```text
+   ✨ 3D जादुई कहानियां & पंचतंत्र सीख 🌟
+   👶 बच्चों के लिए सुरक्षित & ज्ञानवर्धक मनोरंजन
+   🎬 नए 3D एपिसोड्स YouTube पर देखें 👇
+   ```
+   - Strip unclickable plain-text URLs out of the bio body to save characters.
+3. **Bio Link Target**:
+   - `https://youtube.com/@magicaltaleskidz?sub_confirmation=1`
+4. **Highlights Tray (4 Permanent Pillars)**:
+   - `🎬 Top Stories`: Golden icons featuring the 3 best-performing tales.
+   - `🌟 Moral Values`: Slide breakdowns of life lessons (Kindness, Honesty, Wit).
+   - `📺 YouTube`: Showcasing the 4K full episode library.
+   - `👶 About Us`: Brand mission of screen-safe Indian storytelling.
+5. **Pinned Posts**:
+   - Always pin the top 3 highest-converting assets to the top of the grid header:
+     1. Top Outlier (*Jadui Chakki* - 360 plays)
+     2. Classic Panchatantra (*Neela Siyar* / *Thirsty Crow*)
+     3. Channel Intro / Welcome Reel
+
+---
+
+## 4. Technical Specifications & Quality Assurance 📐
 
 Every reel published to `@magicaltaleskid` MUST adhere to these technical standards:
 - **Aspect Ratio**: 9:16 vertical (1080x1920 pixels).
-- **Duration**: 30 to 55 seconds (ideal for retention loops).
+- **Duration**: 28 to 45 seconds (optimal for loop completion).
 - **Codec**: H.264 video, AAC audio at 48kHz stereo.
 - **Safe Margins**:
-  - Keep important visual focus (character faces, main action) inside the central 1080x1350 area.
+  - Keep visual focus (character faces, main action) inside the central 1080x1350 area.
   - Subtitles must be centered with a safe bottom margin of 280–320px so Instagram's caption overlay and audio attribution don't obscure them.
-- **Cover Photo (Thumbnail)**: 9:16 high-contrast frame with bold emotional expression.
+- **Cover Photo (Thumbnail)**: 9:16 high-contrast frame with bold emotional character expression.
 
 ---
 
-## 3. High-Conversion Instagram Caption Architecture ✍️
+## 5. High-Conversion Instagram Caption Architecture ✍️
 
 Every Instagram Reel caption must follow this proven high-engagement structure:
 
 ```text
-[Line 1-2 Hook Question / Curiosity Trigger with Emojis] 🪺✨
-(Must be under 120 characters so it fits before the "...more" fold)
+[Line 1 Hook Question / Curiosity Trigger with Emojis] 🪨✨
+(Must be under 100 characters so it fits completely before the "...more" fold)
 
-[2-3 sentence Hindi story summary highlighting the drama or conflict]
+[2-3 sentence Hindi story summary highlighting the moral dilemma or magical wonder]
 
 🌟 कहानी की सीख (Moral of the Story):
-[Inspiring 1-sentence moral takeaway]
+[Inspiring 1-sentence moral takeaway for parents and children]
 
-💬 [Discussion / Engagement Trigger]:
+💾 SAVE करें बच्चों के लिए और अपने दोस्तों के साथ SHARE करें! ❤️
+💬 [Discussion Question]:
 क्या आपने भी कभी ऐसी सीख अनुभव की है? हमें Comments में ज़रूर बताएं! 👇
 
-👉 अपने बच्चों और दोस्तों के साथ यह जादुई कहानी ज़रूर SHARE और SAVE करें! ❤️
 🎬 पूरी 3D कहानी और नए एपिसोड्स देखने के लिए BIO में दिए गए YouTube लिंक पर क्लिक करें! 🔔
-Follow @magicaltaleskid for daily 3D Hindi moral stories! ✨
+👉 Follow @magicaltaleskid for daily 3D Hindi stories! ✨
 
-#HindiReels #HindiKahaniya #MoralStories #Panchatantra #KidsAnimation #HindiStories #ReelsIndia #PanchatantraTales #3DAnimation #ReelsInstagram #ExplorePage #MagicalTalesKidz
+[Story Specific Tags] #HindiReels #HindiKahaniya #MoralStories #Panchatantra #KidsAnimation #HindiStories #ReelsIndia #PanchatantraTales #3DAnimation #ExplorePage
 ```
 
 ---
 
-## 4. Curated Instagram Hashtag Matrix 🏷️
+## 6. Curated 13-Tag Dual-Tier Hashtag Matrix 🏷️
 
-Instagram ranks posts best with **8 to 12 hyper-relevant hashtags**. Never spam 30 irrelevant tags.
+Instagram ranks posts best with **8 to 13 hyper-relevant hashtags**. Never spam 30 irrelevant tags.
 
-### Standard 10-Hashtag Cluster:
-1. **Core Genre**: `#HindiKahaniya #MoralStories #Panchatantra`
-2. **Niche & Audience**: `#KidsAnimation #HindiStories #BalKahaniya`
-3. **Format & Distribution**: `#HindiReels #ReelsIndia #ExplorePage`
-4. **Brand Anchor**: `#MagicalTalesKidz #magicaltaleskid`
-
----
-
-## 5. Funneling Instagram Reach to YouTube Growth 🚀
-
-Instagram is a prime discovery channel to drive high-retention subscribers to YouTube:
-1. **Instagram Bio Optimization**:
-   - Bio Text:
-     ```text
-     ✨ 3D Pixar-Style Hindi Moral Stories for Kids & Family 🌟
-     📚 पंचतंत्र और जादुई बाल कहानियां
-     🎬 Watch Full Episodes & Daily Shorts on YouTube 👇
-     ```
-   - Bio Link: `https://www.youtube.com/@MagicalTalesKidz?sub_confirmation=1`
-2. **Pinned Comment on Every Reel**:
-   Pin the first comment with the direct episode and playlist link:
-   > *"🎬 इस कहानी का पूरा 3D अनुभव हमारे YouTube चैनल पर देखें! Link bio में उपलब्ध है 👉 @magicaltaleskid ✨"*
+### Standard Dual-Tier Cluster:
+1. **Tier 1 (Specific Story Tags - 3 tags)**: e.g. `#JaduiChakki #MagicMillstone #NamakKaSamandar`
+2. **Tier 2 (Evergreen Genre & Audience Tags - 10 tags)**:
+   `#HindiReels #HindiKahaniya #MoralStories #Panchatantra #KidsAnimation #HindiStories #ReelsIndia #PanchatantraTales #3DAnimation #ExplorePage`
 
 ---
 
-## 6. Automated Reel Packaging & Upload Workflow 📦
+## 7. Automated Python Tooling (`backend/scripts/`) 🛠️
 
-### A. Packaging Reels
-Run [`backend/scripts/prepare_instagram_reels.py`](file:///d:/WorkSpace/MyVideoWorkspace/backend/scripts/prepare_instagram_reels.py) to package any ready Short:
-- Copies the final MP4 to `backend/output/instagram_reels_packages/[video_id]/`.
-- Generates high-res 1080x1920 cover photo thumbnail.
-- Creates `caption.txt` containing the pre-formatted hook, story, moral, engagement CTA, and hashtag cloud.
-
-### B. Automated Uploading via Python (`instagrapi`)
-Run [`backend/scripts/upload_instagram_reel.py`](file:///d:/WorkSpace/MyVideoWorkspace/backend/scripts/upload_instagram_reel.py) to publish directly to [@magicaltaleskid](https://www.instagram.com/magicaltaleskid/):
-
-```powershell
-# 1. List all ready reels
-.\backend\venv\Scripts\python.exe backend\scripts\upload_instagram_reel.py --list
-
-# 2. Upload a specific story reel
-.\backend\venv\Scripts\python.exe backend\scripts\upload_instagram_reel.py --story golden_goose
-
-# 3. Batch upload all packaged reels
-.\backend\venv\Scripts\python.exe backend\scripts\upload_instagram_reel.py --story all
-```
-
-- **Session Persistence**: Saves login token to `backend/instagram_session.json` (gitignored) so you only need to authenticate once.
-- **2FA & Challenges**: Prompts for SMS/Authenticator code if 2FA is active.
-- **Auto-Traffic Funnel**: Automatically posts a first comment on the Reel pointing viewers to the YouTube link in bio.
+- **Inspect Account Health & Recent Reels**:
+  ```powershell
+  python backend/scripts/analyze_instagram_account.py
+  ```
+- **Update Profile Name, Bio & Clickable Link**:
+  ```powershell
+  python backend/scripts/optimize_instagram_profile.py
+  ```
+- **Batch Upgrade All Published Reels SEO, Captions & Pinned Comments**:
+  ```powershell
+  python backend/scripts/optimize_all_instagram_reels_seo.py
+  ```
+- **Package New Reels for Publication**:
+  ```powershell
+  python backend/scripts/prepare_instagram_reels.py
+  ```
+- **Automated Uploading via instagrapi**:
+  ```powershell
+  python backend/scripts/upload_instagram_reel.py --story [story_key]
+  ```
 
 ---
 
-## 7. The 12x–15x Cold-Start Discovery Multiplier ⚡📈
+## 8. Empirical Discovery Insights (The Outlier Formula) ⚡📈
 
-Live channel audit data on October 24, 2026 revealed that **Instagram Reels tests brand new content 12x–15x faster than YouTube Shorts**:
-- *The Goose of Gold*: 11 views on YouTube vs **138 plays on Instagram Reels**.
-- *The Blue Jackal*: 7 views on YouTube vs **127 plays on Instagram Reels**.
-- *The Honest Woodcutter*: 5 views on YouTube vs **122 plays on Instagram Reels**.
+Audit analysis of `@magicaltaleskid` shows that **Curiosity / Natural Origin Stories outperform standard character tales by >400%**:
+- *Jadui Chakki* (*"समंदर का पानी खारा क्यों है?"*): **360 plays, 13 likes, 4 comments** (Viral outlier).
+- *Golden Goose* (*"एक झटके में अमीर बनने का सपना पड़ा भारी"*): **139 plays, 6 likes**.
+- *Neela Siyar* (*"अचानक ये सियार पूरा नीला कैसे हो गया?"*): **129 plays, 5 likes**.
 
-### The High-Speed Cross-Platform Flywheel:
-1. **Publish to YouTube First**: Obtain the permanent YouTube video link and playlist link.
-2. **Publish to Instagram within 15 Minutes**: Leverage Instagram's immediate algorithmic test feed.
-3. **Capture & Funnel**: Use Instagram's organic discovery to funnel high-retention viewers to YouTube via bio link (`?sub_confirmation=1`) and pinned comments, effectively breaking YouTube's cold-start sandbox.
+### Creative Takeaway for Future Reels:
+Always frame the opening hook around **answering a fascinating childhood mystery** or **resolving a high-stakes dilemma** within the first 2 seconds.

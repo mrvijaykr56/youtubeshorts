@@ -25,20 +25,22 @@ def optimize_profile():
     cl.load_settings(SESSION_FILE)
     cl.username = "magicaltaleskid"
 
+    new_full_name = "Magical Tales | Hindi Kahaniya"
     new_bio = (
-        "✨ 3D Pixar Hindi Moral Stories for Kids & Family 🌟\n"
-        "📚 पंचतंत्र और जादुई बाल कहानियां\n"
-        "🎬 Watch Full 3D Episodes & Daily Shorts 👇"
+        "✨ 3D जादुई कहानियां & पंचतंत्र सीख 🌟\n"
+        "👶 बच्चों के लिए सुरक्षित & ज्ञानवर्धक मनोरंजन\n"
+        "🎬 नए 3D एपिसोड्स YouTube पर देखें 👇"
     )
     yt_url = "https://www.youtube.com/@MagicalTalesKidz?sub_confirmation=1"
 
     try:
-        # Edit biography and website
+        # Edit full name, biography and website
         cl.account_edit(
+            full_name=new_full_name,
             biography=new_bio,
             external_url=yt_url
         )
-        print("✅ Successfully updated Bio & Clickable External Link to YouTube!")
+        print("✅ Successfully updated Display Name, Bio & Clickable External Link to YouTube!")
     except Exception as e:
         print(f"⚠️ Account edit note: {e}")
         try:

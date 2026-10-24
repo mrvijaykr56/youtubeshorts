@@ -49,3 +49,8 @@
 3. **Leading Hashtag Cloud**: 5–8 top hashtags on Line 1 of YouTube description.
 4. **COPPA Setting**: `selfDeclaredMadeForKids = false` to preserve notification bell & comments.
 5. **Instant Pinned Comment**: Immediately post discussion question on YouTube + cross-funnel comment on Instagram.
+
+---
+
+## 📌 Staged Milestones & Reminders
+- [ ] **Facebook Channel Expansion (Deferred)**: When ready to expand, create a dedicated Facebook Page for `@MagicalTalesKidz` / `@magicaltaleskid` and link it in Meta Accounts Center. (Note: Instagram's *"Recommend Reels on Facebook"* can also be toggled without a Facebook account whenever desired).

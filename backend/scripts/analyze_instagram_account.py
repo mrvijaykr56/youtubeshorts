@@ -47,7 +47,7 @@ def analyze_account():
     print("-" * 70)
 
     # Fetch recent medias
-    medias = cl.user_medias(user_id, amount=12)
+    medias = cl.user_medias(user_id, amount=20)
 
     if not medias:
         print("No posts or reels found on this account yet.")

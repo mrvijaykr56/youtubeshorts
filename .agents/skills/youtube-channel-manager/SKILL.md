@@ -71,56 +71,67 @@ When optimizing videos for click-through rate (CTR) and search discoverability:
 
 ---
 
-## 5. Automated Channel Branding Updates 🎨
+## 5. Channel Geographic & Vernacular Localization (`backend/scripts/optimize_youtube_channel_branding.py`) 🌍
 
-YouTube Data API v3 supports updating channel branding directly:
-
-1. **Channel Banner Upload**:
-   - Upload 2560x1440 JPEG using `youtube.channelBanners().insert(media_body=media)`.
-   - Capture returned CDN URL (`https://yt3.googleusercontent.com/...`).
-   - Attach to channel via `youtube.channels().update(part="brandingSettings", body={"id": CHANNEL_ID, "brandingSettings": {"image": {"bannerExternalUrl": banner_url}, "channel": {"title": "..."}}})`.
-2. **Channel Description & Keywords**:
-   - Injected into `brandingSettings.channel.description` and `brandingSettings.channel.keywords`.
-3. **Channel Avatar / Profile Picture**:
-   - Generated as 1024x1024 3D mascot image.
-   - User uploads in 1 click at [YouTube Studio Customization](https://studio.youtube.com/channel/UCL3Xsads7oyNr70erqz8vPQ/editing/images).
-
----
-
-## 6. Community Tab Posts & Polls 📊
-
-- **Google API Constraint**: YouTube Data API v3 does NOT have public endpoints for creating Community Tab posts or polls.
-- **Workflow**:
-  - Agent prepares 4 square 1:1 character cards in `backend/output/community_poll_assets/`.
-  - Agent prepares viral Hindi/English poll copy.
-  - User posts via 1-click link to [YouTube Studio Community](https://studio.youtube.com/channel/UCL3Xsads7oyNr70erqz8vPQ/posts).
+YouTube requires clear geographic and linguistic signals to route newly published Shorts into the correct regional recommendation feeds:
+1. **Country Code**: `IN` (India). Never leave unassigned.
+2. **Default Language**: `hi` (Hindi).
+3. **Execution Script**:
+   ```powershell
+   python backend/scripts/optimize_youtube_channel_branding.py
+   ```
+4. **Channel Search Keywords (42 Dual-Script Tags)**:
+   Injected into `brandingSettings.channel.keywords`:
+   ```text
+   "Hindi Kahaniya" "Moral Stories in Hindi" "Panchatantra Stories" "Kids Stories in Hindi" "3D Animated Stories" "Hindi Cartoon" "Jadui Kahaniya" "Stories for kids" "Bal Kahaniya" "Bedtime Stories Hindi" "Hindi Fairy Tales" "MagicalTalesKidz" "हिंदी कहानियां" "पंचतंत्र की कहानियां" "बाल कहानियां" "नैतिक कहानियां" "3D कार्टून"
+   ```
 
 ---
 
-## 7. Top 10 Competitor SEO Architecture (Koo Koo TV, Infobells, PunToon Kids) 🏆
+## 6. Anti-Cannibalization Publishing Cadence (The 18:00 IST Rule) ⏱️
+
+Empirical analysis of the October 21 relaunch batch (9 shorts in 3 hours) revealed severe **algorithmic seed starvation**:
+- When multiple Shorts are published in rapid succession, YouTube terminates seed distribution on earlier uploads to test the newer ones.
+- **Enforced Protocol**:
+  - Exactly **1 Short per day**.
+  - Published at **18:00 IST (6:00 PM Indian Standard Time)** to capture peak evening co-viewing.
+  - Minimum gap between uploads: **12 hours**.
+
+---
+
+## 7. Shorts Retention Benchmarks & Feed Mechanics 📊
+
+To graduate from the initial 50–200 impression seed tier to the 2,000–10,000 Browse/Explore tier, a Short must achieve:
+1. **Viewed vs. Swiped-Away**: **> 70%** (Controlled by the first 1.5 seconds: bold Devanagari motion hook + instant visual drama).
+2. **Average Percentage Viewed (APV)**: **> 100%** (Requires loopable 28–38s pacing).
+3. **Engagement Velocity**: Pinned comments and immediate like/comment signals.
+
+---
+
+## 8. The 16:9 Long-Form Compilation & "Related Video" Bridge 🌉
+
+Shorts drive top-of-funnel reach, but 16:9 long-form videos drive YouTube Partner Program watch-time and TV app co-viewing:
+1. **Compilation Assembly**: Stitch every 5 Shorts into a 6–8 minute continuous 16:9 4K story collection (e.g. *पंचतंत्र की 5 सबसे प्रसिद्ध कहानियां*).
+2. **The "Related Video" Bridge**: Link each Short directly to its full compilation episode inside YouTube Studio. Viewers can tap the bridge banner to jump directly to long-form watch time.
+
+---
+
+## 9. Top 10 Competitor SEO Architecture (Koo Koo TV, Infobells, PunToon Kids) 🏆
 
 Learned from direct API analysis of the top 3 Hindi kids storytelling channels:
 - **Infobells Hindi** (72.8M subscribers, 50B+ views)
 - **Koo Koo TV Hindi** (4.88M subscribers, 2.5B+ views)
 - **PunToon Kids** (3.94M subscribers, 2.8B+ views)
 
-### A. Channel-Level Keyword Cloud Formula
-Inject into `brandingSettings.channel.keywords` (space-separated, multi-word terms enclosed in double quotes):
-```text
-"Hindi Kahaniya" "Moral Stories in Hindi" "Panchatantra Stories" "Kids Stories" "Hindi Cartoon" "Jadui Kahaniya" "Stories for kids" "Infobells Hindi" "Koo Koo TV" "PunToon Kids" "Bal Kahaniya" "Hindi Fairy Tales" "Bedtime Stories" "3D Animated Stories" "Hindi Stories for Kids" "MagicalTalesKidz" "हिंदी कहानियां" "पंचतंत्र की कहानियां" "बाल कहानियां" "नैतिक कहानियां"
-```
-> [!IMPORTANT]
-> **API Constraint**: Always isolate writable properties when updating `brandingSettings`. Never pass read-only fields like `image.bannerExternalUrl`. Keep the keywords string $\le 400$ characters to avoid HTTP 400 `badRequest`.
-
-### B. Video Title Architecture (Max 95 Chars)
+### A. Video Title Architecture (Max 95 Chars)
 YouTube enforces a strict 100-character ceiling for video titles. Any title $\ge 100$ characters is rejected with `invalidTitle`.
 **Top 10 Formula**:
 `[Emotional Hook / Question in Hindi + 1-2 Emojis] [English Story Title] | 3D Hindi Kahaniya #Shorts`
 - *Example*: `रोज एक सोने का अंडा! पर लालच ने क्या किया? 🪺✨ Goose of Gold | 3D Hindi Kahaniya #Shorts` (90 chars)
 - *Example*: `अचानक ये सियार पूरा नीला कैसे हो गया? 🐺💙 The Blue Jackal | 3D Hindi Kahaniya #Shorts` (87 chars)
 
-### C. Infobells-Style Top-of-Description Hashtag Cloud
-Infobells always places 5–8 high-velocity hashtags at the very first line of the description. This enables YouTube Shorts feed classification within seconds of publication:
+### B. Infobells-Style Top-of-Description Hashtag Cloud
+Infobells always places 5–8 high-velocity hashtags at the very first line of the description:
 ```text
 #Shorts #HindiKahaniya #MoralStories #Panchatantra #GoldenGoose #SoneKaAnda #3DAnimation #HindiCartoon #BalKahani
 
@@ -138,31 +149,31 @@ https://www.youtube.com/@MagicalTalesKidz?sub_confirmation=1
 #Shorts #HindiKahaniya #MoralStories #Panchatantra #3DAnimation
 ```
 
-### D. 3-Tier Video Tags Architecture (Strictly $\le 380$ Chars)
-YouTube returns `invalidTags` (HTTP 400) if the comma-joined tags exceed 400–500 characters. Always use the 3-Tier Tag Assembly:
+### C. 3-Tier Video Tags Architecture (Strictly $\le 380$ Chars)
 1. **Tier 1 (Specific Story Tags - 5-7 tags)**: `"golden goose story"`, `"sone ka anda"`, `"lalchi kisan"`, `"the goose of gold"`, `"lalach buri bala hai"`.
 2. **Tier 2 (Competitor Algorithmic Anchor Tags - 8-10 tags)**: `"Hindi Kahaniya"`, `"moral stories in hindi"`, `"panchatantra stories"`, `"kids moral stories"`, `"3d animated stories"`, `"hindi cartoon"`, `"jadui kahaniya"`, `"stories for kids"`, `"shorts"`, `"yt shorts"`.
 3. **Tier 3 (Devanagari Dual-Script Tags - 4-5 tags)**: `"हिंदी कहानियां"`, `"पंचतंत्र की कहानियां"`, `"नैतिक कहानियां"`, `"हिंदी कार्टून"`.
-- Total tags: 18–22 tags. Total length: strictly $\le 380$ characters.
-
-### E. Algorithm & Audience Compliance
-- **Category ID**: `1` (Film & Animation) — Highest CPM and recommendation velocity for animated stories.
-- **COPPA Status**: `selfDeclaredMadeForKids = False` — Unlocks viewer comments, notification bell alerts, and community tab interactions.
-- **Binge Playlist Sync**: Every video must be added to the official channel playlist (`PLJE6ifX-QD0A`) upon upload to trigger YouTube's auto-play session watch-time boost.
-- **Instant Pinned Discussion Comment**: Immediately post an engagement magnet comment via `youtube.commentThreads().insert` containing the curiosity question + official playlist link + `?sub_confirmation=1` link to trigger algorithmic discussion velocity.
 
 ---
 
-## 8. Catalog Synchronization & Upload Ledger 🗂️
+## 10. Catalog Synchronization & Upload Ledger 🗂️
 
-All published videos must be logged in `backend/uploads_tracker.json` and synchronized with the official playlist:
-- `vPdF1JQcZz8`: *The Magic Pot (जादुई मटका)* (Oct 24, 2026) - **Latest**
-- `yQQlvP0MtG8`: *The Clever Crow (बुद्धिमान कौवा)* (Oct 23, 2026)
-- `RQsyj6r_980`: *Goose of Gold (सोने का अंडा)* (Oct 22, 2026)
+All published videos are logged and synchronized with the official playlist (`PLJE6ifX-QD0A`):
+- `witZgIQJ5u4`: *The Magic Millstone (जादुई चक्की)* (Oct 24, 2026) - **Latest**
+- `vPdF1JQcZz8`: *The Magic Pot (जादुई मटका)* (Oct 24, 2026)
+- `yQQlvP0MtG8`: *The Clever Crow (बुद्धिमान कौवा)* (Oct 23, 2026) - **Top Performer (19 views)**
+- `RQsyj6r_980`: *Goose of Gold (सोने का अंडा)* (Oct 22, 2026) - **15 views**
 - `1d8fNhpscXY`: *The Blue Jackal (नीला सियार)* (Oct 22, 2026)
 - `Wio6lrQKrjA`: *Honest Woodcutter (ईमानदार लकड़हारा)* (Oct 22, 2026)
 - `wsaNFDsKSM8`: *Monkey & Crocodile (बंदर और मगरमच्छ)* (Oct 22, 2026)
 - `HEVzgJuGzyE`: *The Clever Rabbit (चतुर खरगोश)* (Oct 21, 2026)
 - `WNNNbeNU_o4`: *The Mouse & Lion (शेर और चूहा)* (Oct 21, 2026)
-- Total Catalog: 18 Videos active, 100% categorized in Category 1, COPPA unlocked.
+- `cKAR_Y-g0Gw`: *The Magic Paintbrush (जादुई ब्रश)* (Oct 21, 2026)
+- `cN6k6lu0-Mc`: *The Proud Peacock (घमंडी मोर)* (Oct 21, 2026)
+- `JNMuCm6b8xg`: *Crow & Monkey (कौवा और बंदर)* (Oct 21, 2026)
+- `OHny_kUkjAw`: *Cheeku & Magic Star (जादुई तारा)* (Oct 21, 2026)
+- `mR2eWSWiZoE`: *Golu Elephant (नन्हा हाथी)* (Oct 21, 2026)
+- `OQGNGYqde3c`: *Sheru Lion (जंगल का राजा)* (Oct 21, 2026)
+- `cuaCG-6B-1M`: *Miku Monkey (लालिची बंदर)* (Oct 21, 2026)
+- Total Catalog: 19 Videos (16 modern 3D Panchatantra + 3 legacy), 100% categorized in Category 1 (Film & Animation), COPPA unlocked, Country & Language verified.
 
