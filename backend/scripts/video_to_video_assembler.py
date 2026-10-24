@@ -534,9 +534,14 @@ def assemble_video_to_video(
     num_mix = len(mix_inputs)
     mix_str = "".join(mix_inputs)
     if num_mix > 1:
-        audio_filters.append(f"{mix_str}amix=inputs={num_mix}:duration=longest,atrim=0:{total_video_duration:.3f},afade=t=out:st={total_video_duration-1.0:.3f}:d=1.0[final_a]")
+        audio_filters.append(
+            f"{mix_str}amix=inputs={num_mix}:duration=longest:normalize=0,"
+            f"atrim=0:{total_video_duration:.3f},"
+            f"alimiter=limit=0.89:level=false:attack=5:release=50,"
+            f"afade=t=out:st={total_video_duration-1.0:.3f}:d=1.0[final_a]"
+        )
     else:
-        audio_filters.append(f"[voice]atrim=0:{total_video_duration:.3f}[final_a]")
+        audio_filters.append(f"[voice]atrim=0:{total_video_duration:.3f},alimiter=limit=0.89:level=false[final_a]")
 
     filter_complex = video_chain + ";".join(audio_filters)
     encoder_args = get_video_encoder_args(crf=16)

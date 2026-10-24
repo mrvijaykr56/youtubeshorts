@@ -459,15 +459,26 @@ def generate_video(
                 filter_parts.append(f"[{w_idx}:a]adelay={delay_ms}|{delay_ms},volume=0.35[whoosh_{idx}]")
                 mix_inputs.append(f"[whoosh_{idx}]")
                 
-        # 4. Blend all audio inputs using amix — duration=longest keeps bg music running, atrim sets exactly narration + 2s outro
+        # 4. Blend all audio inputs using amix with normalize=0 and lookahead limiter
+        # IMPORTANT: amix by default has normalize=1 and dropout_transition=2.
+        # When short transition whooshes (0.43s) reach EOF, default amix dynamically recalibrates
+        # and ramps up the volume divisor (from 1/6 to 1/5 to 1/4... to 1/2), causing the voice volume
+        # to creep up and end 4x louder (+13.6 dB) at the climax of the video.
+        # Setting normalize=0 disables dynamic gain ramps, and alimiter guarantees True Peak protection (-1.0 dB).
         num_mix = len(mix_inputs)
         mix_str = "".join(mix_inputs)
         if num_mix > 1:
             # atrim after amix ensures the final audio is exactly the narration + 2s outro duration
-            # Apply a smooth 1-second audio fade out at the very end of the video
-            filter_parts.append(f"{mix_str}amix=inputs={num_mix}:duration=longest,atrim=0:{duration:.3f},afade=t=out:st={duration-1.0:.3f}:d=1.0[a]")
+            # alimiter=limit=0.89 (-1.0 dBFS) with level=false prevents clipping without pumping quiet passages
+            # afade smoothly fades out the final 1.0 second
+            filter_parts.append(
+                f"{mix_str}amix=inputs={num_mix}:duration=longest:normalize=0,"
+                f"atrim=0:{duration:.3f},"
+                f"alimiter=limit=0.89:level=false:attack=5:release=50,"
+                f"afade=t=out:st={duration-1.0:.3f}:d=1.0[a]"
+            )
         else:
-            filter_parts.append("[voice]anull[a]")
+            filter_parts.append("[voice]alimiter=limit=0.89:level=false[a]")
             
         filter_complex_str = ";".join(filter_parts)
 

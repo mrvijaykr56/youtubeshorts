@@ -76,6 +76,7 @@ def format_16x9_clip(input_mp4, output_mp4):
         "-filter_complex", filter_complex,
         "-map", "[v]", "-map", "0:a?",
         "-c:v", "libx264", "-preset", "fast", "-crf", "18",
+        "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
         "-c:a", "aac", "-b:a", "192k",
         "-r", "30",
         output_mp4
