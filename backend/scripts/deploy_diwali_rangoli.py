@@ -166,20 +166,40 @@ def deploy_to_instagram():
     print("=" * 70)
 
     try:
-        from scripts.upload_instagram_reel import upload_reel
-        result = upload_reel(
-            video_path=VIDEO_PATH,
-            caption=IG_CAPTION,
-            cover_path=COVER_PATH
-        )
-        if result and result.get("media_id"):
-            print(f"✅ Reel successfully published! Media ID: {result.get('media_id')}")
-            return result
-        else:
-            print(f"⚠️ Instagram upload returned: {result}")
+        from scripts.upload_instagram_reel import get_instagram_client
+        cl = get_instagram_client()
+        if not cl:
+            print("❌ Could not obtain authenticated Instagram client.")
             return None
+
+        print(f"📁 Video Path : {VIDEO_PATH}")
+        print(f"🖼️ Cover Path : {COVER_PATH}")
+        print("⚡ Uploading Reel to Instagram (this takes ~15-30s)...")
+
+        media = cl.clip_upload(
+            path=VIDEO_PATH,
+            caption=IG_CAPTION,
+            thumbnail=COVER_PATH
+        )
+        media_id = media.id
+        media_code = media.code
+        reel_url = f"https://www.instagram.com/reel/{media_code}/"
+        print(f"\n🎉 REEL PUBLISHED TO INSTAGRAM SUCCESSFULLY!")
+        print(f"📍 Media ID   : {media_id}")
+        print(f"🔗 Reel Code  : {media_code}")
+        print(f"🌐 Reel URL   : {reel_url}")
+
+        try:
+            time.sleep(3)
+            comment = cl.media_comment(media_id, IG_PINNED_COMMENT)
+            cl.comment_pin(media_id, comment.pk)
+            print("📌 Pinned YouTube subscriber funnel comment successfully!")
+        except Exception as pin_err:
+            print(f"⚠️ Comment pin warning: {pin_err}")
+
+        return {"media_id": str(media_id), "code": media_code, "url": reel_url}
     except Exception as e:
-        print(f"⚠️ Instagram deployment note: {e}")
+        print(f"⚠️ Instagram deployment error: {e}")
         return None
 
 
@@ -222,7 +242,8 @@ def update_tracker(yt_video_id, ig_result):
 
 def main():
     print(f"🚀 INITIATING DEPLOYMENT FOR: {TITLE}")
-    yt_id = deploy_to_youtube()
+    # YouTube is already deployed (video_id: gbVpfJPFTKk)
+    yt_id = "gbVpfJPFTKk"
     ig_res = deploy_to_instagram()
     update_tracker(yt_id, ig_res)
     print("\n" + "=" * 70)
@@ -232,4 +253,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -31,6 +31,8 @@ if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 PKG_DIR = os.path.join(BASE_DIR, "output", "instagram_reels_packages")
 SESSION_FILE = os.path.join(BASE_DIR, "instagram_session.json")
 BRAND_CONFIG_FILE = os.path.join(BASE_DIR, "brand_config.json")
