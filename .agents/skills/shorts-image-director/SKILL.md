@@ -4,8 +4,8 @@ description: >-
   Specialized agentic skill to direct, engineer prompts, batch generate, manually curate, and assemble
   high-quality 9:16 vertical images for Image-to-Video YouTube Shorts using Antigravity's generate_image
   tool and the MyVideoWorkspace backend rendering engine. Maintains character and world visual consistency,
-  features Chintu the Monkey mascot, enforces 2-3s visual cut pacing, strict kid-safe shields, and delivers
-  pristine full-frame video renders with zero scrubber bars.
+  features Chintu the Monkey mascot, enforces 2-3s visual cut pacing, dual-reference chaining (drift control),
+  strict kid-safe shields, and delivers pristine full-frame video renders with zero scrubber bars.
 ---
 
 # YouTube Shorts Visual Director & Image-to-Video Skill (MagicalTalesKidz)
@@ -18,25 +18,27 @@ This skill guides the agent in generating, managing, and rendering cohesive, cin
 
 When generating images for an Image-to-Video Short, avoiding stylistic or character drift is critical. If a character's face, clothing, or environment shifts randomly between scenes, video immersion breaks.
 
-### The 3 Pillars of Scene-to-Scene Synchronization:
+### The 4 Pillars of Scene-to-Scene Synchronization:
 
 1. **The Official Channel Mascot DNA: Chintu the Monkey (चिंटू बंदर)** 🐒✨
    - When generating or featuring the channel mascot, ALWAYS use the immutable character anchor:
      `"Chintu, an adorable 3D Pixar-style golden-brown Indian monkey mascot, oversized expressive warm amber eyes, soft cream-colored tummy and muzzle, wearing a tiny red festive vest with gold trim, bouncy curled tail, emotive floppy ears, lively and playful gestures."`
-   - *Role*: Chintu can be the story protagonist, a curious spectator on a branch, or the friendly companion who reacts to the plot twists.
+   - For all recurring characters, **copy the `anchor` string verbatim from `backend/output/series_bible.json`**. Never paraphrase it.
 
 2. **The World & Lighting Anchor**:
    - Define a shared environment statement prepended to all scene prompts:
      `[Setting] + [Primary light source & color temperature] + [Shadow style] + [Atmosphere]`
    - *Example*: `"Ancient Indian banyan forest, warm amber morning sunbeams piercing through mist, glowing golden dust motes, rich terracotta soil, 3D Pixar aesthetic, 9:16 vertical framing."`
 
-3. **Visual Reference Chaining (`ImagePaths` parameter)** 🔗:
-   - Antigravity's `generate_image` tool natively supports **`ImagePaths`** (passing previous images as visual conditioning references).
+3. **Dual Visual Reference Chaining (`ImagePaths` parameter)** 🔗:
+   - Antigravity's `generate_image` tool natively supports **`ImagePaths`** (passing previous images as conditioning references).
    - **The Workflow**:
-     1. Generate **Scene 1** (establishing master character and lighting).
-     2. Save `scene_1.jpg`.
-     3. For **Scene 2, 3, 4...**, pass `ImagePaths: ["<path_to_scene_1.jpg>"]` into `generate_image`.
-     4. This feeds Scene 1's visual latent features directly to Imagen 3, anchoring face shape, clothing color, and environmental tones across all subsequent scenes!
+     1. Generate **Scene 1** (establishing master character look and lighting). Save it.
+     2. For **Scene 2, 3, 4, 5...**, pass both references: `ImagePaths: ["<path_to_scene_1.jpg>", "<path_to_previous_scene.jpg>"]`.
+     3. This conditions the generative model on both the master character appearance (Scene 1) and the immediate preceding action state (previous scene), eliminating character drift!
+
+4. **The Single-Scene Re-Roll Rule**:
+   - If a character drifts in a scene (e.g. wrong vest color, altered facial shape), **re-roll only that specific scene** rather than regenerating the entire batch. Feed Scene 1 and the best prior scene as references.
 
 ### The 3D Pixar & Disney Animation Art Style Standard 🎨✨
 
@@ -53,16 +55,15 @@ In modern YouTube Shorts, holding a single static image for 8–10 seconds cause
 For high-retention 30–38s Shorts (70–85 words), enforce **rapid visual cut pacing**:
 
 1. **Cut Frequency**:
-   - Plan a dynamic visual beat change every **2 to 3 seconds** (6 to 10 visual prompt beats across the Short).
-   - If using 5 narrative scenes, each scene MUST feature distinct camera angles and perspective changes rather than static repeats.
+   - Plan a dynamic visual beat change every **2 to 3 seconds** (5 to 6 distinct scenes across a 32–36s Short).
+   - Each scene MUST feature distinct camera angles and perspective changes rather than static repeats.
 
 2. **The 5-Beat Kinetic Camera Progression**:
    - **Beat 1 (0–3s - Immediate Action Hook)**: Dynamic low-angle or Dutch tilt dropping into crisis (e.g. net collapsing, pot bubbling gold).
    - **Beat 2 (3–7s - Tension / Reaction)**: Over-the-shoulder medium shot showing character emotional reaction (wide eyes, gasping).
-   - **Beat 3 (7–12s - The Catalyst / Decision)**: Close-up on the magical object or determined character gesture.
-   - **Beat 4 (12–18s - The Climax / Collective Action)**: Dynamic upward action angle (flapping wings, swirling light, bursting sparks).
-   - **Beat 5 (18–25s - The Foil / Comedic Reaction)**: Reaction shot of the antagonist/villain frozen in comedic surprise.
-   - **Beat 6 (25–35s - Heroic Resolution & Loop Staging)**: Radiant golden-hour macro or wide hero shot resolving into the loop.
+   - **Beat 3 (7–14s - The Catalyst / Decision)**: Close-up on the magical object or determined character gesture.
+   - **Beat 4 (14–22s - The Climax / Collective Action)**: Dynamic upward action angle (flapping wings, swirling light, bursting sparks).
+   - **Beat 5 (22–32s - Celebratory Resolution & Loop Staging)**: Radiant golden-hour macro or wide hero shot resolving into the loop.
 
 ---
 
@@ -74,113 +75,53 @@ Because our primary audience includes toddlers, young children (ages 3–9), and
 - ❌ **No Nightmare Horror**: No eerie dark shadows, glowing red eyes, creepy silhouettes, or demonic grins.
 - ❌ **No Realistic Violence / Pain**: No blood, open wounds, sharp fangs snapping on necks, weapons piercing bodies, or animals in genuine distress.
 - ❌ **No Grotesque Predators**: Wolves, lions, snakes, and hunters must be styled as cute, animated, or softly comedic characters (similar to *The Lion King* or *Madagascar*), never menacing or photorealistic monsters.
-- ❌ **No Text or Artifacts**: Never write "letters", "text", "watermark", "subtitles" in prompts (distorts image synthesis).
+- ❌ **No Banned Text Tokens**: Never write `text`, `words`, `letters`, `subtitles`, `watermark`, `font`, `logo`, `title card`, `captions` in prompts (distorts image synthesis into illegible scribbles).
 
 ### Approved Visual Tones:
 - Warm, luminous color palettes (mango yellow, peacock teal, marigold orange, emerald green, warm terracotta).
-- Soft rounded edges on characters and props.
-- Comedic, expressive character expressions (pouting, wide-eyed curiosity, cheerful smiles, funny exaggerated jaw drops).
+- Cozy fairytale textures and radiant volumetric sunlight.
 
 ---
 
 ## 4. Pre-Flight Validation & User Approval 🛑
 
-**CRITICAL REQUIREMENT (Zero Token Wastage)**:
-Before executing batch `generate_image` calls:
-1. **Run the Pre-Flight Storyboard Validator**:
-   ```powershell
-   python -u backend/scripts/storyboard_validator.py --json "path/to/script.json"
-   ```
-   - Must have **0 blocking errors** (e.g., no banned text tokens, valid 9:16 signals, within Shorts ceiling).
-2. **Present the Validated Storyboard & Art Style** to the user with the validation stats.
-3. **Ask for explicit user approval**:
-   > *"The storyboard has passed all pre-flight safety checks (0 errors, ~Xs estimated length). Would you like me to proceed with generating these [N] 9:16 images, or would you like to tweak any scenes or style parameters first?"*
-4. **DO NOT generate images until the user gives explicit confirmation.**
+Never generate images without explicit human confirmation:
+1. Verify script has passed `backend/scripts/storyboard_validator.py`.
+2. Present all 5 scene prompts to the user with camera, lighting, and mascot specifications.
+3. Wait for explicit user approval before calling the image generator.
 
 ---
 
-## 5. Generating Images with Antigravity `generate_image`
+## 5. Generating Images with Gemini Inbuilt AI
 
-For each scene in the storyboard (after receiving user approval):
-
-1. **Pre-Generation Duplicate / Cache Check** 🛑:
-   - Check if `scene_{X}.jpg` or `scene_{X}.png` already exists in destination folder (`backend/output/<job_id>/`) and is valid (>10 KB).
-   - If it already exists, **skip regeneration** to prevent wasted tokens, unless the user explicitly requests a re-roll.
-
-2. **Synthesize the Final Prompt (Ensuring Distinct Camera Framing)**:
-   ```
-   [World Anchor] + [Character Anchor (including Chintu if present)] + [Scene Action & DISTINCT Camera Angle] + [3D Pixar Art Style Template] + [Kid-Safe Shields] + [9:16 Vertical Composition]
-   ```
-
-3. **Invoke the Tool**:
-   Call `generate_image` with:
-   - `AspectRatio`: `"9:16"`
-   - `ImageName`: `scene_1`, `scene_2`, `scene_3`, etc. (strictly unique per scene).
-   - `Prompt`: The synthesized prompt.
-   - `ImagePaths`: For scenes 2..N, pass `["<path_to_scene_1.jpg>"]` for visual conditioning.
+Always invoke the `image-generator` subagent using **Gemini inbuilt AI**:
+- Prompt specification includes: 9:16 vertical aspect ratio, 3D Disney Pixar animation aesthetic, character anchor, world lighting, and 8k Octane rendering cues.
+- Save assets cleanly as `scene_1.jpg`, `scene_2.jpg`, `scene_3.jpg`, `scene_4.jpg`, `scene_5.jpg` in the corresponding `backend/output/<story_key>/` directory.
+- Create or select a high-contrast **cover thumbnail** (`cover.jpg` / `scene_1.jpg`) with bold character expression.
 
 ---
 
-## 6. Manual Scene Image Upload & Replacement 📤🖼️
+## 6. Optional Image-to-Video Motion Prompts 🎥
 
-The Image-to-Video pipeline supports **manual scene image uploads**, allowing creators or agents to supply custom stills, high-resolution art, or real photography for any scene without re-running AI generation:
-
-1. **Frontend Web Interface**:
-   - In **Step 2 (Storyboard & Prompts)**, each scene card features an **"Upload Image"** action with drag-and-drop and file selection.
-   - Selecting a file immediately uploads the image, refreshes the scene preview with a cache-busting timestamp, and saves the asset into the active job directory.
-
-2. **Backend API Endpoint**:
-   - `POST /upload-scene-image`
-   - **Form Fields**:
-     - `image`: The uploaded image binary (PNG, JPG, JPEG, WebP, AVIF).
-     - `scene_number`: 1-based integer corresponding to target scene.
-     - `job_id` (optional): Active job directory in `backend/output/`.
-   - **Processing**:
-     - The backend standardizes all uploads into high-quality RGB JPEG format (`scene_{scene_number}.jpg`).
-     - Cleans up stale legacy PNG variants (`scene_{scene_number}.png`).
-     - Automatically updates `storyboard.json` and `script.json` with the new file path.
+When generating or extending visuals into full video animation (e.g. via Veo 2 or Luma Dream Machine), append camera motion vectors:
+- **Scene 1 (Hook)**: `Fast dynamic push-in camera track, slight low-angle rise, dramatic volumetric dust swirl.`
+- **Scene 2 (Reaction)**: `Smooth orbital pan 15 degrees around character, shallow depth of field shift.`
+- **Scene 3 (Magic/Action)**: `Rapid rising crane shot, glittering particles exploding outward, kinetic camera shake.`
+- **Scene 4 (Payoff)**: `Slow-motion cinematic glide, soft glowing god rays, warm lens flare.`
+- **Scene 5 (Loop End)**: `Wide static tableau with gentle breathing character animation, smooth wind through leaves.`
 
 ---
 
-## 7. Asset Deployment & Workspace Organization
+## 7. Video Compilation & Rendering Specifications 🚀
 
-All assets for the active Short must be organized in the job directory under `backend/output/<job_id>/`:
-
-```text
-backend/output/<job_id>/
-├── script.json          # Storyboard metadata and narration lines
-├── storyboard.json      # Complete validated storyboard schema
-├── scene_1.jpg          # Standard 9:16 visual for Scene 1
-├── scene_2.jpg          # Standard 9:16 visual for Scene 2
-├── scene_3.jpg          # Standard 9:16 visual for Scene 3
-...
-└── final_short.mp4      # Compiled video output
-```
-
----
-
-## 8. Video Compilation & Rendering (Image to Video) 🚀
-
-Once images and `script.json` are staged in `backend/output/<job_id>/`, video assembly can be triggered via the web UI or CLI:
-
+Assemble the Short using the standalone pipeline:
 ```powershell
-python backend\scripts\assemble_short.py `
-    --job_dir "backend/output/<job_id>" `
-    --voice in_female `
-    --caption_style tiktok `
-    --music none `
-    --resolution 1080p `
-    --transition dynamic
+python -u backend/scripts/assemble_short.py --job_dir "backend/output/<story_key>" --voice hi_female --caption_lang Hindi --caption_style tiktok --music none --resolution 1080p --transition dynamic
 ```
 
-### Critical Rendering Specifications:
-1. **Pristine Full-Frame Standard (Zero Scrubber Bar)**:
-   - The final video MUST have **zero bottom progress scrubber bars**. Clean, uninterrupted 9:16 vertical canvas.
-2. **Compile Auto-Recovery / Fault Tolerance**:
-   - If a scene image is missing or corrupted, the pipeline synthesizes a **3D Pixar enchanted storybook fallback card** (`_create_fallback_image`) with an indigo-to-amber gradient, golden fairytale border, and stardust aura.
-3. **Motion & Transitions**:
-   - Continuous subtle Ken Burns camera motion (pan/zoom) on each still to create lifelike motion.
-   - Smooth optical transitions (`xfade`) between scenes.
-4. **Audio & Subtitles**:
-   - High-definition Edge-TTS / KittenTTS narration.
-   - Word-level synchronized ASS subtitles positioned bottom-center (Alignment 2, MarginV=240, 50px compact font).
+### Rendering Specifications:
+- **Resolution**: 1080x1920 Full HD (9:16 portrait).
+- **Motion Engine**: Ken Burns zoom_in, zoom_out, pan_left, pan_right proportionally aligned to spoken word count.
+- **Hardware Acceleration**: Automatically selects `h264_qsv` (Intel QuickSync) or `h264_nvenc` (NVIDIA) for fast 60fps encoding.
+- **Transitions**: Cinematic xfade transitions with matched whoosh Foley audio cues.
+- **Subtitles**: ASS TikTok-style animated word-by-word subtitles centered in the lower-third with safe margins.
