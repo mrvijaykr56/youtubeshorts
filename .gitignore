@@ -60,6 +60,7 @@ backend/jobs.db
 backend/output/
 backend/output/*
 !backend/output/.gitkeep
+!backend/output/series_bible.json
 output/
 
 # Cache
