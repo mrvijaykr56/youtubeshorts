@@ -1,0 +1,504 @@
+{
+  "audited_at": "2026-11-03T00:15:55.890623",
+  "total_videos": 24,
+  "videos": [
+    {
+      "story_key": "golden_goose",
+      "video_id": "RQsyj6r_980",
+      "current": {
+        "title": "रोज एक सोने का अंडा! पर लालच ने क्या किया? 🪺✨ Goose of Gold | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (87 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "blue_jackal",
+      "video_id": "1d8fNhpscXY",
+      "current": {
+        "title": "अचानक ये सियार पूरा नीला कैसे हो गया? 🐺💙 The Blue Jackal | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (84 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "honest_woodcutter",
+      "video_id": "Wio6lrQKrjA",
+      "current": {
+        "title": "कुल्हाड़ी नदी में गिरी, जलपरी ने क्या दिया? 🪓✨ Honest Woodcutter | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (92 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "monkey_and_crocodile",
+      "video_id": "wsaNFDsKSM8",
+      "current": {
+        "title": "मगरमच्छ ने बंदर के साथ क्या धोखा किया? 🐒🐊 The Monkey & The Crocodile | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (96 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "clever_rabbit",
+      "video_id": "HEVzgJuGzyE",
+      "current": {
+        "title": "चतुर खरगोश ने घमंडी शेर को कैसे हराया? 🐰🦁 The Clever Rabbit & The Lion | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (98 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "mouse_and_lion",
+      "video_id": "WNNNbeNU_o4",
+      "current": {
+        "title": "छोटे से चूहे ने जंगल के राजा को कैसे बचाया? 🐭🦁 The Mouse & The Lion | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (95 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "magic_paintbrush",
+      "video_id": "cKAR_Y-g0Gw",
+      "current": {
+        "title": "जादुई ब्रश से निकली असली तितलियाँ! 🖌️✨ Rohan's Magic Paintbrush | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (91 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "peacock_feathers",
+      "video_id": "cN6k6lu0-Mc",
+      "current": {
+        "title": "घमंडी मोर के पंख क्यों उड़े? 🦚🌈 The Secret of True Beauty | Bal Kahani #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (78 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "crow_mango",
+      "video_id": "JNMuCm6b8xg",
+      "current": {
+        "title": "कौवे और बंदर की अनोखी दोस्ती! 🐦🥭 Sharing Brings Joy | 3D Cartoon Hindi #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (78 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "squirrel_star",
+      "video_id": "OHny_kUkjAw",
+      "current": {
+        "title": "आसमान से गिरा एक जादुई तारा! 🐿️⭐ Cheeku's Magic Wish | Hindi Kids Story #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (79 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "diwali_elephant",
+      "video_id": "mR2eWSWiZoE",
+      "current": {
+        "title": "जब छोटे हाथी ने पूरे जंगल को बचाया! 🐘🪔 True Kindness Wins | 3D Hindi Kahani #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (83 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "diwali_lion",
+      "video_id": "OQGNGYqde3c",
+      "current": {
+        "title": "जंगल के राजा को किसने झुकाया? 🦁🔥 Power vs Love | Panchatantra Moral Story #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (81 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "miku_laddoo",
+      "video_id": "cuaCG-6B-1M",
+      "current": {
+        "title": "लालिची बंदर को मिली जादुई सीख! 🐒✨ Never Be Greedy | Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (74 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "ant_and_dove",
+      "video_id": "HYHK9AW6tA8",
+      "current": {
+        "title": "नन्ही चींटी ने शिकारी का तीर कैसे रोका? 🐜🕊️ The Ant & The Dove | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (90 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "thirsty_crow",
+      "video_id": "yQQlvP0MtG8",
+      "current": {
+        "title": "कौवे ने एक घूंट पानी के लिए क्या कमाल किया? 🦅💧 The Thirsty Crow | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (91 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": {
+        "title": "प्यासे कौए की होशियारी: पानी कैसे मिला? 🐦💧 The Thirsty Crow | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 90,
+          "grade": "A",
+          "issues": [
+            "Title too long (87 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "needs_upgrade": true
+    },
+    {
+      "story_key": "magic_pot",
+      "video_id": "vPdF1JQcZz8",
+      "current": {
+        "title": "मिट्टी में मिला एक जादुई मटका! जो डाला 100 गुना हो गया! 🏺✨ The Magic Pot | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (100 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": {
+        "title": "जादुई हांडी: गरीब किसान की किस्मत बदली! 🪄✨ The Magic Pot | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 90,
+          "grade": "A",
+          "issues": [
+            "Title too long (84 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "needs_upgrade": true
+    },
+    {
+      "story_key": "magic_millstone",
+      "video_id": "witZgIQJ5u4",
+      "current": {
+        "title": "जादुई चक्की: जो मांगो वो निकले! 🪨✨ The Magic Millstone | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (82 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": {
+        "title": "जादुई चक्की: नमक ही नमक! समंदर नमकीन क्यों? 🌊 The Magic Millstone | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 89,
+          "grade": "A",
+          "issues": [
+            "Title too long (93 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "needs_upgrade": true
+    },
+    {
+      "story_key": "diwali_magic_diya",
+      "video_id": "rADH3-CTZDs",
+      "current": {
+        "title": "गरीब बच्चे की जादुई दिवाली और सोने का दीया! 🪔✨ The Magic Diya | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 74,
+          "grade": "B",
+          "issues": [
+            "Title too long (89 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": {
+        "title": "दिवाली की जादुई दिया: अँधेरे में रोशनी! 🪔✨ The Magic Diya | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 86,
+          "grade": "A",
+          "issues": [
+            "Title too long (85 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "needs_upgrade": true
+    },
+    {
+      "story_key": "panchatantra_compilation_vol1",
+      "video_id": "dofdwj_-GzY",
+      "current": {
+        "title": "पंचतंत्र की 4 सबसे प्रसिद्ध जादुई कहानियां 🌟 3D Pixar Hindi Moral Stories Compilation",
+        "score": {
+          "score": 68,
+          "grade": "B",
+          "issues": [
+            "Title too long (85 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": null,
+      "needs_upgrade": false
+    },
+    {
+      "story_key": "chhath_puja_miracle",
+      "video_id": "oue3cmlebMo",
+      "current": {
+        "title": "छठी मईया का चमत्कारी वरदान और सूर्य देव का अर्घ्य! 🌅🌾 Chhath Puja 3D Special #Shorts",
+        "score": {
+          "score": 74,
+          "grade": "B",
+          "issues": [
+            "Title too long (84 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": {
+        "title": "छठ पूजा का चमत्कार: सूर्य देव का आशीर्वाद! 🌅 Chhath Puja 3D Special #Shorts",
+        "score": {
+          "score": 86,
+          "grade": "A",
+          "issues": [
+            "Title too long (75 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "needs_upgrade": true
+    },
+    {
+      "story_key": "hunter_and_pigeons",
+      "video_id": "lGGcCfZYAH8",
+      "current": {
+        "title": "शिकारी का जाल उड़ा ले गए कबूतर! 🕊️🕸️ Unity is Strength | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (82 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": {
+        "title": "शिकारी और कबूतर: एकता में बल है! 🕊️💪 Unity is Strength | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 89,
+          "grade": "A",
+          "issues": [
+            "Title too long (82 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "needs_upgrade": true
+    },
+    {
+      "story_key": "diwali_magic_rangoli",
+      "video_id": "gbVpfJPFTKk",
+      "current": {
+        "title": "जादुई दिवाली और सोने की रंगोली! 🪔🌸 The Magic Rangoli | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 74,
+          "grade": "B",
+          "issues": [
+            "Title too long (80 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": {
+        "title": "जादुई रंगोली: दिवाली की रात चमत्कार! 🎨🪔 The Magic Rangoli | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 86,
+          "grade": "A",
+          "issues": [
+            "Title too long (85 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "needs_upgrade": true
+    },
+    {
+      "story_key": "clever_crow_necklace",
+      "video_id": "-p64-JoC61Q",
+      "current": {
+        "title": "कौवे की चतुराई और हीरों का हार! 🦅💎 The Clever Crow | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (78 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": {
+        "title": "चालाक कौए ने हार कैसे पाया? 🐦💎 The Clever Crow | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 89,
+          "grade": "A",
+          "issues": [
+            "Title too long (74 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "needs_upgrade": true
+    },
+    {
+      "story_key": "magic_wishing_tree",
+      "video_id": "rtr6ezPZgo0",
+      "current": {
+        "title": "जादुई कल्पवृक्ष: जो सोचोगे वो सच होगा! 🌳✨ The Magic Wishing Tree | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 78,
+          "grade": "B",
+          "issues": [
+            "Title too long (92 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "upgraded": {
+        "title": "जादुई कल्पवृक्ष: सच्ची इच्छा पूरी होती है! 🌳✨ The Magic Wishing Tree | 3D Hindi Kahaniya #Shorts",
+        "score": {
+          "score": 89,
+          "grade": "A",
+          "issues": [
+            "Title too long (96 chars) — YouTube truncates at ~70"
+          ],
+          "suggestions": []
+        }
+      },
+      "needs_upgrade": true
+    }
+  ]
+}

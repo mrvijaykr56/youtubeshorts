@@ -106,3 +106,4 @@ if __name__ == "__main__":
         print_ideas()
     else:
         generate_calendar()
+
