@@ -1,0 +1,505 @@
+{
+  "fetched_at": "2026-11-02T18:51:17.245132Z",
+  "channel_totals": {
+    "total_videos_tracked": 25,
+    "total_views": 203,
+    "total_watch_time_minutes": 0,
+    "total_likes": 22,
+    "total_comments": 26,
+    "total_shares": 0,
+    "total_subscribers_gained": 0,
+    "avg_viral_score": 8.12,
+    "tier_breakdown": {
+      "viral": 0,
+      "hot": 0,
+      "warm": 0,
+      "cold": 25
+    }
+  },
+  "videos": {
+    "RQsyj6r_980": {
+      "story_key": "golden_goose",
+      "title": "Goose of Gold | 3D Hindi Kahaniya",
+      "metrics": {
+        "views": 17,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 17.0,
+      "performance_tier": "cold"
+    },
+    "1d8fNhpscXY": {
+      "story_key": "blue_jackal",
+      "title": "The Blue Jackal | 3D Hindi Kahaniya",
+      "metrics": {
+        "views": 16,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 16.0,
+      "performance_tier": "cold"
+    },
+    "Wio6lrQKrjA": {
+      "story_key": "honest_woodcutter",
+      "title": "Honest Woodcutter | 3D Hindi Kahaniya",
+      "metrics": {
+        "views": 13,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 13.0,
+      "performance_tier": "cold"
+    },
+    "wsaNFDsKSM8": {
+      "story_key": "monkey_and_crocodile",
+      "title": "The Monkey & Crocodile",
+      "metrics": {
+        "views": 14,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 2,
+        "comments": 2,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 14.01,
+      "performance_tier": "cold"
+    },
+    "HEVzgJuGzyE": {
+      "story_key": "clever_rabbit",
+      "title": "The Clever Rabbit",
+      "metrics": {
+        "views": 11,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 11.0,
+      "performance_tier": "cold"
+    },
+    "WNNNbeNU_o4": {
+      "story_key": "mouse_and_lion",
+      "title": "The Lion and Mouse",
+      "metrics": {
+        "views": 10,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 10.0,
+      "performance_tier": "cold"
+    },
+    "cKAR_Y-g0Gw": {
+      "story_key": "magic_paintbrush",
+      "title": "The Magic Paintbrush",
+      "metrics": {
+        "views": 8,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 8.0,
+      "performance_tier": "cold"
+    },
+    "cN6k6lu0-Mc": {
+      "story_key": "peacock_feathers",
+      "title": "The Proud Peacock",
+      "metrics": {
+        "views": 7,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 2,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 7.01,
+      "performance_tier": "cold"
+    },
+    "JNMuCm6b8xg": {
+      "story_key": "crow_mango",
+      "title": "Sharing Brings Joy",
+      "metrics": {
+        "views": 9,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 2,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 9.01,
+      "performance_tier": "cold"
+    },
+    "OHny_kUkjAw": {
+      "story_key": "squirrel_star",
+      "title": "Cheeku's Magic Wish",
+      "metrics": {
+        "views": 9,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 9.0,
+      "performance_tier": "cold"
+    },
+    "mR2eWSWiZoE": {
+      "story_key": "diwali_elephant",
+      "title": "True Kindness",
+      "metrics": {
+        "views": 7,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 7.0,
+      "performance_tier": "cold"
+    },
+    "OQGNGYqde3c": {
+      "story_key": "diwali_lion",
+      "title": "Power vs Love",
+      "metrics": {
+        "views": 9,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 9.0,
+      "performance_tier": "cold"
+    },
+    "cuaCG-6B-1M": {
+      "story_key": "miku_laddoo",
+      "title": "Never Be Greedy",
+      "metrics": {
+        "views": 9,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 2,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 9.01,
+      "performance_tier": "cold"
+    },
+    "HYHK9AW6tA8": {
+      "story_key": "ant_and_dove",
+      "title": "The Ant & Dove",
+      "metrics": {
+        "views": 16,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 2,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 16.01,
+      "performance_tier": "cold"
+    },
+    "yQQlvP0MtG8": {
+      "story_key": "thirsty_crow",
+      "title": "कौवे ने एक घूंट पानी के लिए क्या कमाल किया? 🦅💧 The Clever Crow | 3D Hindi Kahaniya #Shorts",
+      "metrics": {
+        "views": 30,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 3,
+        "comments": 2,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 30.01,
+      "performance_tier": "cold"
+    },
+    "rADH3-CTZDs": {
+      "story_key": "diwali_magic_diya",
+      "title": "गरीब बच्चे की जादुई दिवाली और सोने का दीया! 🪔✨ The Magic Diya | 3D Hindi Kahaniya #Shorts",
+      "metrics": {
+        "views": 5,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 5.0,
+      "performance_tier": "cold"
+    },
+    "dofdwj_-GzY": {
+      "story_key": "panchatantra_compilation_vol1",
+      "title": "पंचतंत्र की 4 सबसे प्रसिद्ध जादुई कहानियां 🌟 3D Pixar Hindi Moral Stories Compilation",
+      "metrics": {
+        "views": 7,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 0,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 7.0,
+      "performance_tier": "cold"
+    },
+    "oue3cmlebMo": {
+      "story_key": "chhath_puja_miracle",
+      "title": "छठी मईया का चमत्कारी वरदान और सूर्य देव का अर्घ्य! 🌅🌾 Chhath Puja 3D Special #Shorts",
+      "metrics": {
+        "views": 1,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 1.0,
+      "performance_tier": "cold"
+    },
+    "lGGcCfZYAH8": {
+      "story_key": "hunter_and_pigeons",
+      "title": "शिकारी का जाल उड़ा ले गए कबूतर! 🕊️🕸️ Unity is Strength | 3D Hindi Kahaniya #Shorts",
+      "metrics": {
+        "views": 1,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 0,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 1.0,
+      "performance_tier": "cold"
+    },
+    "gbVpfJPFTKk": {
+      "story_key": "diwali_magic_rangoli",
+      "title": "जादुई दिवाली और सोने की रंगोली! 🪔🌸 The Magic Rangoli | 3D Hindi Kahaniya #Shorts",
+      "metrics": {
+        "views": 4,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 1,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 4.0,
+      "performance_tier": "cold"
+    },
+    "-p64-JoC61Q": {
+      "story_key": "clever_crow_necklace",
+      "title": "कौवे की चतुराई और हीरों का हार! 🦅💎 The Clever Crow | 3D Hindi Kahaniya #Shorts",
+      "metrics": {
+        "views": 0,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 0,
+        "comments": 1,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 0.0,
+      "performance_tier": "cold"
+    },
+    "rtr6ezPZgo0": {
+      "story_key": "magic_wishing_tree",
+      "title": "जादुई कल्पवृक्ष: जो सोचोगे वो सच होगा! 🌳✨ The Magic Wishing Tree | 3D Hindi Kahaniya #Shorts",
+      "metrics": {
+        "views": 0,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 0.0,
+      "performance_tier": "cold"
+    },
+    "T1RWHj3kohk": {
+      "story_key": "magic_cauldron",
+      "title": "जादुई कड़ाही: जो मांगो वो मिले! 🪄✨ The Magic Cauldron | 3D Hindi Kahaniya #Shorts",
+      "metrics": {
+        "views": 0,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 0.0,
+      "performance_tier": "cold"
+    },
+    "dCxDiwiYpIc": {
+      "story_key": "talkative_turtle",
+      "title": "बातूनी कछुआ: चुप रहना भी सीखो! 🐢💬 The Talkative Turtle | 3D Hindi Kahaniya #Shorts",
+      "metrics": {
+        "views": 0,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 0.0,
+      "performance_tier": "cold"
+    },
+    "nLKe4Cx3WzU": {
+      "story_key": "golden_fish",
+      "title": "सोने की मछली: लालच का फल कड़वा होता है! 🐟✨ The Golden Fish | 3D Hindi Kahaniya #Shorts",
+      "metrics": {
+        "views": 0,
+        "watch_time_minutes": 0,
+        "avg_view_duration_s": 0,
+        "avg_view_percentage": 0,
+        "ctr_impressions": 0,
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "subscribers_gained": 0,
+        "impressions": 0
+      },
+      "viral_score": 0.0,
+      "performance_tier": "cold"
+    }
+  },
+  "top_performers": [
+    {
+      "video_id": "yQQlvP0MtG8",
+      "story_key": "thirsty_crow",
+      "viral_score": 30.01
+    },
+    {
+      "video_id": "RQsyj6r_980",
+      "story_key": "golden_goose",
+      "viral_score": 17.0
+    },
+    {
+      "video_id": "HYHK9AW6tA8",
+      "story_key": "ant_and_dove",
+      "viral_score": 16.01
+    },
+    {
+      "video_id": "1d8fNhpscXY",
+      "story_key": "blue_jackal",
+      "viral_score": 16.0
+    },
+    {
+      "video_id": "wsaNFDsKSM8",
+      "story_key": "monkey_and_crocodile",
+      "viral_score": 14.01
+    }
+  ],
+  "recommendations": [
+    "📌 Average CTR is 0.0% — below 4% benchmark. A/B test 2-3 thumbnail variations with stronger emotional hook faces.",
+    "⚠️ Average view retention is 0.0% — aim for >65%. Tighten scripts to 28-35s, open with a stronger visual shock in first 1.5s.",
+    "❄️ 25 videos are in COLD tier. Review their hooks — replace any opener starting with 'एक' and add a curiosity gap question in first frame.",
+    "📊 Subscriber conversion is low (<2 per 1k views). Add a consistent end-card CTA: 'Subscribe for daily Kahaniyaan' in last 3s of every Short.",
+    "📅 Maintain 18:30 IST daily publish schedule — algorithm rewards consistent cadence. Pre-schedule 7 days ahead using YouTube Studio batch upload."
+  ]
+}
