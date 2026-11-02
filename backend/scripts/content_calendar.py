@@ -28,18 +28,18 @@ TRACKER_PATH = os.path.join(BASE_DIR, "uploads_tracker.json")
 def generate_calendar():
     start_date = datetime(2026, 11, 3)
     
-    # Pre-defined high retention stories & upcoming festival anchors
+    # Verified against uploads_tracker.json to eliminate ANY duplicate concept
     schedule_data = [
         ("2026-11-03", "Tuesday", "magic_wishing_tree", "Shorts + Reel", "Kalpavriksha Wisdom", "Scheduled (18:30 IST)"),
-        ("2026-11-04", "Wednesday", "magic_cauldron", "Shorts + Reel", "Greed vs Contentment", "Ready in Queue"),
-        ("2026-11-05", "Thursday", "talkative_turtle", "Shorts + Reel", "Mindful Speech", "Ready in Queue"),
-        ("2026-11-06", "Friday", "golden_fish", "Shorts + Reel", "Wishes & Karma", "Ready in Queue"),
-        ("2026-11-07", "Saturday", "lion_and_clever_hare", "Shorts + Reel", "Wit over Strength", "Scripting"),
+        ("2026-11-04", "Wednesday", "magic_cauldron", "Shorts + Reel", "Greed vs Contentment", "Scheduled (18:30 IST)"),
+        ("2026-11-05", "Thursday", "talkative_turtle", "Shorts + Reel", "Mindful Speech", "Scheduled (18:30 IST)"),
+        ("2026-11-06", "Friday", "golden_fish", "Shorts + Reel", "Wishes & Karma", "Scheduled (18:30 IST)"),
+        ("2026-11-07", "Saturday", "loyal_mongoose", "Shorts + Reel", "Haste Brings Regret (Panchatantra Classic)", "Scripting"),
         ("2026-11-08", "Sunday", "panchatantra_compilation_vol2", "16:9 Longform", "Weekend Watch-Time Boost", "Compilation"),
-        ("2026-11-09", "Monday", "two_fighting_goats", "Shorts + Reel", "Stubbornness Warning", "Scripting"),
-        ("2026-11-10", "Tuesday", "monkey_and_cats_loaf", "Shorts + Reel", "Third-Party Meddling", "Scripting"),
+        ("2026-11-09", "Monday", "two_cats_clever_monkey", "Shorts + Reel", "Third-Party Dispute Warning", "Scripting"),
+        ("2026-11-10", "Tuesday", "jackal_and_war_drum", "Shorts + Reel", "Facing the Unknown Fear", "Scripting"),
         ("2026-11-11", "Wednesday", "brave_little_potter", "Shorts + Reel", "Accidental Bravery", "Planned"),
-        ("2026-11-12", "Thursday", "four_friends_deer_tortoise", "Shorts + Reel", "Children's Day Leadup", "Planned"),
+        ("2026-11-12", "Thursday", "four_friends_deer_crow", "Shorts + Reel", "Children's Day Leadup", "Planned"),
         ("2026-11-13", "Friday", "chintu_special_adventure", "Shorts + Reel", "Mascot Milestone", "Planned"),
         ("2026-11-14", "Saturday", "childrens_day_grand_magic", "Shorts + Reel", "Children's Day Special (Bal Diwas)", "Anchor Event"),
         ("2026-11-15", "Sunday", "chintu_friends_moral_quiz", "Community Poll", "Interactive Sunday", "Poll + Clip"),
@@ -50,16 +50,16 @@ def generate_calendar():
         ("2026-11-20", "Friday", "elephant_and_sparrow_solidarity", "Shorts + Reel", "Power of Small Allies", "Planned"),
         ("2026-11-21", "Saturday", "guru_nanak_jayanti_compassion", "Shorts + Reel", "Guru Nanak Jayanti Festival Special", "Festival Anchor"),
         ("2026-11-22", "Sunday", "panchatantra_compilation_vol3", "16:9 Longform", "Weekend Watch-Time Boost", "Compilation"),
-        ("2026-11-23", "Monday", "cunning_jackal_drum_sound", "Shorts + Reel", "Facing the Unknown Fear", "Planned"),
-        ("2026-11-24", "Tuesday", "mongoose_and_farmer_wife", "Shorts + Reel", "Haste Brings Regret", "Planned"),
-        ("2026-11-25", "Wednesday", "foolish_camel_bell", "Shorts + Reel", "Self-Control Under Pressure", "Planned"),
-        ("2026-11-26", "Thursday", "lion_mouse_eternal_friendship", "Shorts + Reel", "No Friend Too Small", "Planned"),
-        ("2026-11-27", "Friday", "tortoise_flute_magical_melody", "Shorts + Reel", "Artistic Triumph", "Planned"),
-        ("2026-11-28", "Saturday", "sparrows_nest_wild_wind", "Shorts + Reel", "Perseverance in Crisis", "Planned"),
-        ("2026-11-29", "Sunday", "best_moments_chintu_shorts", "Shorts + Reel", "Channel Recap & Teaser", "Recap"),
-        ("2026-11-30", "Monday", "golden_feather_swan_part2", "Shorts + Reel", "Sequel Story Arc", "Sequel"),
-        ("2026-12-01", "Tuesday", "winter_forest_magic_lantern", "Shorts + Reel", "Winter Season Kickoff", "Seasonal"),
-        ("2026-12-02", "Wednesday", "magic_snow_deer_himalayas", "Shorts + Reel", "Winter Wonderland Special", "Seasonal")
+        ("2026-11-23", "Monday", "brahmin_and_three_thugs", "Shorts + Reel", "Never Doubt Your Beliefs", "Planned"),
+        ("2026-11-24", "Tuesday", "foolish_camel_bell", "Shorts + Reel", "Self-Control Under Pressure", "Planned"),
+        ("2026-11-25", "Wednesday", "tortoise_flute_magical_melody", "Shorts + Reel", "Artistic Triumph", "Planned"),
+        ("2026-11-26", "Thursday", "sparrows_nest_wild_wind", "Shorts + Reel", "Perseverance in Crisis", "Planned"),
+        ("2026-11-27", "Friday", "two_fighting_goats_bridge", "Shorts + Reel", "Stubbornness Warning", "Planned"),
+        ("2026-11-28", "Saturday", "best_moments_chintu_shorts", "Shorts + Reel", "Channel Recap & Teaser", "Recap"),
+        ("2026-11-29", "Sunday", "golden_feather_swan_part2", "Shorts + Reel", "Sequel Story Arc", "Sequel"),
+        ("2026-11-30", "Monday", "winter_forest_magic_lantern", "Shorts + Reel", "Winter Season Kickoff", "Seasonal"),
+        ("2026-12-01", "Tuesday", "magic_snow_deer_himalayas", "Shorts + Reel", "Winter Wonderland Special", "Seasonal"),
+        ("2026-12-02", "Wednesday", "mountain_echo_kind_words", "Shorts + Reel", "What You Give Comes Back", "Seasonal")
     ]
 
     md_content = "# 📅 30-Day Growth & Publishing Calendar — MagicalTalesKidz\n\n"

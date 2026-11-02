@@ -18,7 +18,12 @@
       "hindi_name": "चिंटू",
       "species": "Monkey",
       "role": "protagonist",
-      "personality": ["curious", "kind-hearted", "mischievous", "brave"],
+      "personality": [
+        "curious",
+        "kind-hearted",
+        "mischievous",
+        "brave"
+      ],
       "appearance": {
         "fur": "warm golden-brown",
         "eyes": "large expressive amber",
@@ -27,14 +32,24 @@
         "height_ratio": "child-sized relative to adult animals"
       },
       "voice_style": "playful, warm, slightly high-pitched",
-      "story_appearances": ["thirsty_crow", "magic_pot", "diwali_magic_rangoli", "magic_wishing_tree"]
+      "story_appearances": [
+        "thirsty_crow",
+        "magic_pot",
+        "diwali_magic_rangoli",
+        "magic_wishing_tree"
+      ]
     },
     "kalu": {
       "name": "Kalu",
       "hindi_name": "कालू",
       "species": "Crow",
       "role": "sidekick/comic relief",
-      "personality": ["clever", "witty", "loyal", "sometimes greedy"],
+      "personality": [
+        "clever",
+        "witty",
+        "loyal",
+        "sometimes greedy"
+      ],
       "appearance": {
         "feathers": "glossy midnight black with iridescent blue sheen",
         "eyes": "bright yellow",
@@ -42,14 +57,23 @@
         "beak": "slightly oversized for comedy"
       },
       "voice_style": "raspy, comedic, wise",
-      "story_appearances": ["thirsty_crow", "crow_mango", "clever_crow_necklace"]
+      "story_appearances": [
+        "thirsty_crow",
+        "crow_mango",
+        "clever_crow_necklace"
+      ]
     },
     "pinki": {
       "name": "Pinki",
       "hindi_name": "पिंकी",
       "species": "Elephant",
       "role": "friend/gentle giant",
-      "personality": ["gentle", "wise", "generous", "emotional"],
+      "personality": [
+        "gentle",
+        "wise",
+        "generous",
+        "emotional"
+      ],
       "appearance": {
         "skin": "soft lavender-grey",
         "eyes": "large warm brown with long lashes",
@@ -57,14 +81,24 @@
         "signature_accessory": "flower garland around neck"
       },
       "voice_style": "calm, warm, motherly",
-      "story_appearances": ["diwali_elephant", "diwali_magic_rangoli"]
+      "story_appearances": [
+        "diwali_elephant",
+        "diwali_magic_rangoli"
+      ]
     }
   },
   "visual_bible": {
     "art_style": "Pixar/Disney 3D CGI, ultra-realistic lighting, subsurface scattering on characters",
     "color_palette": {
-      "primary": ["warm saffron #FF9933", "deep forest green #2D6A2E", "royal blue #1A3D8F"],
-      "accent": ["gold #FFD700", "sunset orange #FF6B35"],
+      "primary": [
+        "warm saffron #FF9933",
+        "deep forest green #2D6A2E",
+        "royal blue #1A3D8F"
+      ],
+      "accent": [
+        "gold #FFD700",
+        "sunset orange #FF6B35"
+      ],
       "background_sky": "gradient from deep blue to warm orange at golden hour"
     },
     "environment": "Ancient Indian village, lush forests, rivers, temples",
@@ -76,46 +110,163 @@
   "audio_bible": {
     "primary_voice": "hi-IN-SwaraNeural (Edge TTS)",
     "narration_language": "Pure Hindi Devanagari",
-    "banned_constructs": ["Hinglish", "Roman script in narration", "एक बार की बात है as opener"],
+    "banned_constructs": [
+      "Hinglish",
+      "Roman script in narration",
+      "एक बार की बात है as opener"
+    ],
     "music_style": "Indian classical/folk fusion, tabla, sitar, flute",
     "sfx_philosophy": "Foley-first, culturally authentic, child-appropriate",
     "volume_ducking": "BGM at -18dB under narration, peaks at -3dB true peak"
   },
   "content_bible": {
-    "story_length_words": {"min": 70, "max": 85},
-    "story_length_seconds": {"min": 28, "max": 42},
-    "scenes_per_short": {"min": 4, "max": 6},
+    "story_length_words": {
+      "min": 70,
+      "max": 85
+    },
+    "story_length_seconds": {
+      "min": 28,
+      "max": 42
+    },
+    "scenes_per_short": {
+      "min": 4,
+      "max": 6
+    },
     "hook_formula": "First 1.5s = visual shock/curiosity gap, first word NOT 'एक'",
     "ending_formula": "Moral revealed + loop-back to hook image",
-    "banned_openers": ["एक बार की बात है", "बहुत समय पहले", "एक गाँव में"],
-    "required_elements": ["moral lesson", "character growth", "emotional moment", "surprise twist"],
+    "banned_openers": [
+      "एक बार की बात है",
+      "बहुत समय पहले",
+      "एक गाँव में"
+    ],
+    "required_elements": [
+      "moral lesson",
+      "character growth",
+      "emotional moment",
+      "surprise twist"
+    ],
     "seasonal_calendar": {
-      "jan": ["Makar Sankranti", "Republic Day"],
-      "feb": ["Basant Panchami", "Valentine's Day"],
-      "mar": ["Holi", "World Wildlife Day"],
-      "apr": ["Ram Navami", "Earth Day"],
-      "may": ["Buddha Purnima", "Mother's Day"],
-      "jun": ["Environment Day", "Father's Day"],
-      "jul": ["Guru Purnima", "Van Mahotsav"],
-      "aug": ["Independence Day", "Raksha Bandhan", "Janmashtami"],
-      "sep": ["Ganesh Chaturthi", "Teachers' Day"],
-      "oct": ["Navratri", "Dussehra", "Diwali prep"],
-      "nov": ["Diwali", "Chhath Puja", "Children's Day Nov 14"],
-      "dec": ["Christmas", "New Year"]
+      "jan": [
+        "Makar Sankranti",
+        "Republic Day"
+      ],
+      "feb": [
+        "Basant Panchami",
+        "Valentine's Day"
+      ],
+      "mar": [
+        "Holi",
+        "World Wildlife Day"
+      ],
+      "apr": [
+        "Ram Navami",
+        "Earth Day"
+      ],
+      "may": [
+        "Buddha Purnima",
+        "Mother's Day"
+      ],
+      "jun": [
+        "Environment Day",
+        "Father's Day"
+      ],
+      "jul": [
+        "Guru Purnima",
+        "Van Mahotsav"
+      ],
+      "aug": [
+        "Independence Day",
+        "Raksha Bandhan",
+        "Janmashtami"
+      ],
+      "sep": [
+        "Ganesh Chaturthi",
+        "Teachers' Day"
+      ],
+      "oct": [
+        "Navratri",
+        "Dussehra",
+        "Diwali prep"
+      ],
+      "nov": [
+        "Diwali",
+        "Chhath Puja",
+        "Children's Day Nov 14"
+      ],
+      "dec": [
+        "Christmas",
+        "New Year"
+      ]
     }
   },
   "published_stories": [
-    "thirsty_crow", "magic_pot", "magic_millstone", "diwali_magic_diya",
-    "panchatantra_vol1", "chhath_puja_miracle", "hunter_and_pigeons",
-    "diwali_magic_rangoli", "clever_crow_necklace"
+    "golden_goose",
+    "blue_jackal",
+    "honest_woodcutter",
+    "monkey_and_crocodile",
+    "clever_rabbit",
+    "mouse_and_lion",
+    "magic_paintbrush",
+    "peacock_feathers",
+    "crow_mango",
+    "squirrel_star",
+    "diwali_elephant",
+    "diwali_lion",
+    "miku_laddoo",
+    "ant_and_dove",
+    "thirsty_crow",
+    "magic_pot",
+    "magic_millstone",
+    "diwali_magic_diya",
+    "panchatantra_compilation_vol1",
+    "chhath_puja_miracle",
+    "hunter_and_pigeons",
+    "diwali_magic_rangoli",
+    "clever_crow_necklace",
+    "magic_wishing_tree",
+    "magic_cauldron",
+    "talkative_turtle",
+    "golden_fish"
   ],
   "story_queue": [
-    {"key": "magic_wishing_tree", "status": "scheduled", "scheduled": "2026-11-03T13:00:00.000Z"},
-    {"key": "magic_cauldron", "status": "ready", "scheduled": "2026-11-04T13:00:00.000Z"},
-    {"key": "talkative_turtle", "status": "ready", "scheduled": "2026-11-05T13:00:00.000Z"},
-    {"key": "golden_fish", "status": "ready", "scheduled": "2026-11-06T13:00:00.000Z"},
-    {"key": "childrens_day_special", "status": "planned", "scheduled": "2026-11-13T13:00:00.000Z", "occasion": "Children's Day Nov 14"},
-    {"key": "lion_and_mouse", "status": "planned", "scheduled": "2026-11-14T13:00:00.000Z"}
+    {
+      "key": "magic_wishing_tree",
+      "status": "scheduled",
+      "scheduled": "2026-11-03T13:00:00.000Z"
+    },
+    {
+      "key": "magic_cauldron",
+      "status": "scheduled",
+      "scheduled": "2026-11-04T13:00:00.000Z"
+    },
+    {
+      "key": "talkative_turtle",
+      "status": "scheduled",
+      "scheduled": "2026-11-05T13:00:00.000Z"
+    },
+    {
+      "key": "golden_fish",
+      "status": "scheduled",
+      "scheduled": "2026-11-06T13:00:00.000Z"
+    },
+    {
+      "key": "loyal_mongoose",
+      "status": "scripting",
+      "scheduled": "2026-11-07T13:00:00.000Z",
+      "title_hi": "वफादार नेवला: जल्दबाज़ी का पछतावा"
+    },
+    {
+      "key": "two_cats_clever_monkey",
+      "status": "scripting",
+      "scheduled": "2026-11-09T13:00:00.000Z",
+      "title_hi": "दो बिल्लियां और बंदर: झगड़े का नुकसान"
+    },
+    {
+      "key": "childrens_day_special",
+      "status": "planned",
+      "scheduled": "2026-11-14T13:00:00.000Z",
+      "title_hi": "बाल दिवस जादुई मेला: चिंटू का सरप्राइज",
+      "occasion": "Children's Day Nov 14"
+    }
   ]
 }
-
