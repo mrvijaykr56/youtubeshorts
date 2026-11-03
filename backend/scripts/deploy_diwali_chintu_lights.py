@@ -26,7 +26,7 @@ if BASE_DIR not in sys.path:
 VIDEO_PATH = os.path.join(BASE_DIR, "output", "diwali_chintu_lights", "final_video.mp4")
 COVER_PATH = os.path.join(BASE_DIR, "output", "diwali_chintu_lights", "scene_5.jpg")
 
-TITLE = "चिंटू की अनोखी दिवाली: पटाखों का शोर या खुशियों का प्रकाश? 🪔🐒 The Festival of Lights | 3D Hindi Kahaniya #Shorts"
+TITLE = "चिंटू की अनोखी दिवाली: खुशियों का प्रकाश! 🪔🐒 The Festival of Lights | 3D Hindi #Shorts"
 
 DESCRIPTION = """#Shorts #DiwaliSpecial #ChintuMonkey #HindiKahaniya #MoralStories #GreenDiwali #3DAnimation #MagicalTalesKidz #KidsStories
 
